@@ -12,12 +12,18 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+ADMINS = (
+)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'w735l4bkg)9k_3!48it^c&f&&l)7+5fp)(768vppge!f1va)_('
+try:
+    from secrets import SECRET_KEY
+except ImportError:
+    print "WARNING: Please create a ssp_canvassing/settings/secrets.py file and add a SECRET_KEY"
+    SECRET_KEY = 'w735l4bkg)9k_3!48it^c&f&&l)7+5fp)(768vppge!f1va)_('
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -36,6 +42,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'postcode_locator',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -56,12 +63,15 @@ WSGI_APPLICATION = 'ssp_canvassing.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+try:
+    from secrets import DATABASES
+except ImportError:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.spatialite',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
