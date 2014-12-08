@@ -1,0 +1,3 @@
+[submodule "postcode_locator"]
+	path = postcode_locator
+	url = scotm@scottmac.org:/home/scotm/postcode_locator.git
