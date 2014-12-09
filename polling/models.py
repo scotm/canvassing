@@ -2,7 +2,7 @@ from django.contrib.gis.db import models
 from django.db import models
 
 # Create your models here.
-from core.models import Campaign
+from campaigns.models import Campaign
 
 
 class CanvassQuestionaire(models.Model):

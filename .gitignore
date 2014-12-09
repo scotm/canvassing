@@ -52,3 +52,4 @@ docs/_build/
 .idea/
 
 ssp_canvassing/settings/secrets.py
+postcode_locator

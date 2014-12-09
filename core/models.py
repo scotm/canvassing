@@ -1,21 +1,9 @@
 from django.contrib.gis.db import models
-from django.core.validators import RegexValidator
-
-
-class Campaign(models.Model):
-    parent_campaign = models.ForeignKey('Campaign', null=True)
-    name = models.CharField(max_length=100)
-
-
-class DownloadFile(models.Model):
-    parent_campaign = models.ForeignKey(Campaign)
-    short_name = models.CharField(max_length=100)
-    description = models.TextField()
-    download_path = models.FileField()
 
 
 class ElectoralRegistrationOffice(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
+    short_name = models.CharField(max_length=20)
     address_1 = models.CharField(max_length=100)
     address_2 = models.CharField(max_length=100)
     address_3 = models.CharField(max_length=100)
@@ -47,6 +35,7 @@ class Domecile(models.Model):
 
 
 class Contact(models.Model):
+    ero_number = models.IntegerField()
     title = models.CharField(max_length=10)
     first_name = models.CharField(max_length=100)
     initials = models.CharField(max_length=10)
@@ -62,8 +51,3 @@ class Contact(models.Model):
 class Conversation(models.Model):
     person = models.ForeignKey(Contact)
     notes = models.TextField()
-
-
-class LeafletDrop(models.Model):
-    leaflet = models.ForeignKey(DownloadFile)
-    households = models.ManyToManyField(Domecile)
