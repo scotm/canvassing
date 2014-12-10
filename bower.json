@@ -1,0 +1,23 @@
+{
+  "name": "ssp_canvassing",
+  "version": "0.0.1",
+  "authors": [
+    "Scott Macdonald <scott.scotm@gmail.com>"
+  ],
+  "description": "The Scottish Socialist Party's canvassing software",
+  "keywords": [
+    "na"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "foundation": "~5.4.7"
+  }
+}
