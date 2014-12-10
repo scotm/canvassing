@@ -1,4 +1,6 @@
-from django.contrib.gis.db import models
+from django.db import models
+
+from postcode_locator.models import PostcodeMapping
 
 
 class ElectoralRegistrationOffice(models.Model):
@@ -9,6 +11,9 @@ class ElectoralRegistrationOffice(models.Model):
     address_3 = models.CharField(max_length=100)
     postcode = models.CharField(max_length=10)
     phone_number = models.CharField(max_length=15, blank=True)
+
+    def __unicode__(self):
+        return self.name
 
 
 class Domecile(models.Model):
@@ -24,14 +29,16 @@ class Domecile(models.Model):
     address_9 = models.CharField(max_length=60)
     phone_number = models.CharField(max_length=15, blank=True)
     postcode = models.CharField(max_length=10)
-    postcode_point = models.PointField()
-
-    objects = models.GeoManager()
+    postcode_point = models.ForeignKey(PostcodeMapping)
 
     def __unicode__(self):
-        return ", ".join([getattr(self, x) for x in
-                          ["address_1", "address_2", "address_3", "address_4", "address_5", "address_6", "address_7",
-                           "address_8", "address_9", "postcode"]])
+        return ", ".join(getattr(self, x) for x in
+                         ["address_1", "address_2", "address_3", "address_4", "address_5", "address_6", "address_7",
+                          "address_8", "address_9", "postcode"] if getattr(self, x))
+
+    def save(self, *args, **kwargs):
+        self.postcode_point = PostcodeMapping.match_postcode(self.postcode, raise_exceptions=False)
+        super(Domecile, self).save(*args, **kwargs)
 
 
 class Contact(models.Model):
@@ -45,7 +52,7 @@ class Contact(models.Model):
     opt_out = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return " ".join([getattr(self, x) for x in ["first_name", "initials", "surname", "suffix"]])
+        return " ".join([getattr(self, x) for x in ["first_name", "initials", "surname", "suffix"] if getattr(self,x)])
 
 
 class Conversation(models.Model):

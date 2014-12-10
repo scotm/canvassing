@@ -2,25 +2,22 @@ __author__ = 'scotm'
 from copy import deepcopy
 import csv
 
-from core.models import Contact, ElectoralRegistrationOffice
+from core.models import Contact, ElectoralRegistrationOffice, Domecile
 from postcode_locator.models import PostcodeMapping
 
 
-def process_elector_data(line, mapping):
-    line = BaseImporter.change_dictionary(line, mapping)
-    try:
-        line['postcode_point'] = PostcodeMapping.match_postcode(line['postcode'])
-    except PostcodeMapping.DoesNotExist:
-        pass
-    contact = Contact(**line)
-    return contact
+class ImproperlyConfiguredImport(Exception):
+    pass
 
 
 class BaseImporter(object):
     mapping = {}
     ero_name = ''
+    domeciles = set()
 
     def __init__(self):
+        if not (self.mapping and self.ero_name):
+            raise ImproperlyConfiguredImport("The importer needs a mapping object and an ero_name")
         self.electoral_registration_office = ElectoralRegistrationOffice.objects.get(name=self.ero_name)
 
     @staticmethod
@@ -34,6 +31,23 @@ class BaseImporter(object):
             output_dict.update({i: j(output_dict.get(i, '')) for i, j in processing_dict.iteritems()})
         return output_dict
 
+    def process_elector_data(self, line):
+        line = BaseImporter.change_dictionary(line, self.mapping)
+        line['Domecile.electoral_registration_office'] = self.electoral_registration_office
+        return line
+
+    def separate_contacts_and_domiciles(self, line):
+        domecile = {key.replace('Domecile.', ''): y for key, y in line.items() if 'Domecile.' in key}
+        try:
+            matched = Domecile.objects.get(**{key.replace('Domecile.',''): y for key, y in line.items() if 'Domecile.' in key})
+        except Domecile.DoesNotExist:
+            matched = Domecile(**domecile)
+            matched.save()
+        contact = {key.replace('Contact.', ''): y for key, y in line.items() if 'Contact.' in key}
+        contact = Contact(**contact)
+        contact.domecile = matched
+        return contact
+
     def fill_up_db(self, filename):
         records_written = 0
         with open(filename) as myfile:
@@ -43,18 +57,29 @@ class BaseImporter(object):
             fieldnames = reader.fieldnames
             data = list(reader)
 
-        # INCOMPLETE - DO NOT USE!
-        process_elector_data
+        # Preprocess the data
+        data = (self.process_elector_data(i) for i in data)
 
-        Contact.objects.bulk_create(chunk)
-        records_written += len(chunk)
+        # Separate the Contacts from Domeciles
+        contacts = [self.separate_contacts_and_domiciles(i) for i in data]
+
+        Contact.objects.bulk_create(contacts)
+        records_written += len(contacts)
         return records_written
 
 
 class DundeeImporter(BaseImporter):
-    mapping = {"ENO": 'ero_number', "First Names": "first_name", "Initials": "initials", "Surname": "surname",
-               "Suffix": "suffix", "Address 1": "address_1", "Address 2": "address_2",
-               "Address 3": "address_3", "Address 4": "address_4", "Address 5": "address_5",
-               "Address 6": "address_6", "Address 7": "address_7", "Address 8": "address_8",
-               "Address 9": "address_9", "Postcode": "postcode", }
-    name = 'Dundee/Fife'
+    mapping = {"ENO": 'Contact.ero_number', "First Names": "Contact.first_name", "Initials": "Contact.initials",
+               "Surname": "Contact.surname",
+               "Suffix": "Contact.suffix", "Address 1": "Domecile.address_1", "Address 2": "Domecile.address_2",
+               "Address 3": "Domecile.address_3", "Address 4": "Domecile.address_4", "Address 5": "Domecile.address_5",
+               "Address 6": "Domecile.address_6", "Address 7": "Domecile.address_7", "Address 8": "Domecile.address_8",
+               "Address 9": "Domecile.address_9", "Postcode": "Domecile.postcode", }
+    ero_name = 'Dundee/Fife'
+
+    def __init__(self):
+        try:
+            super(DundeeImporter, self).__init__()
+        except ElectoralRegistrationOffice.DoesNotExist:
+            self.electoral_registration_office = ElectoralRegistrationOffice.objects.create(name=self.ero_name)
+
