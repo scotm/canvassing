@@ -10,7 +10,10 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+from unipath import Path
+BASE_DIR = Path(os.path.dirname(__file__)).parent.parent
+
+#BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 ADMINS = (
 )
@@ -94,4 +97,5 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
+STATIC_ROOT = Path(BASE_DIR, 'static')
 STATIC_URL = '/static/'
