@@ -50,6 +50,7 @@ INSTALLED_APPS = (
     'core',
     'campaigns',
     'polling',
+    'OpenStreetMap',
 )
 
 MIDDLEWARE_CLASSES = (
