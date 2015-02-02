@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block page_title %}{{ object.first_name }} {{ object.surname }}{% endblock %}
+{% block content %}
+    <h1>{{ object.first_name }} {{ object.surname }}</h1>
+{% endblock %}
