@@ -4,7 +4,7 @@ import fcntl
 
 __author__ = 'scotm'
 
-from . import base
+from base import *
 
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
