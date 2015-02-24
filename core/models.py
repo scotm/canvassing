@@ -43,6 +43,7 @@ class Domecile(models.Model):
 
 
 class Contact(models.Model):
+    pd = models.CharField(max_length=5)
     ero_number = models.IntegerField()
     title = models.CharField(max_length=10)
     first_name = models.CharField(max_length=100)
@@ -50,6 +51,10 @@ class Contact(models.Model):
     surname = models.CharField(max_length=100)
     suffix = models.CharField(max_length=10)
     domecile = models.ForeignKey(Domecile)
+    date_of_attainment = models.DateField(blank=True, null=True)
+    franchise_flag = models.CharField(max_length=5)
+    email = models.EmailField(max_length=255, blank=True)
+    personal_phone = models.CharField(max_length=20, blank=True)
     opt_out = models.BooleanField(default=False)
 
     def __unicode__(self):
@@ -114,6 +119,8 @@ region_mapping = {
 
 
 class Region(models.Model):
+    # Data based on the boundary lines from OS Open Data
+    # https://www.ordnancesurvey.co.uk/opendatadownload/products.html
     name = models.CharField(max_length=60)
     area_code = models.CharField(max_length=3)
     descriptio = models.CharField(max_length=50)
