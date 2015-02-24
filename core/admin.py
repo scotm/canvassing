@@ -16,12 +16,13 @@ class DomecileAdmin(admin.ModelAdmin):
 
 class WardAdmin(admin.OSMGeoAdmin):
     search_fields = ['ward_name']
+    list_filter = ['local_authority_name']
 
 class RegionAdmin(admin.OSMGeoAdmin):
     search_fields = ['name']
+    list_filter = ['descriptio']
 
 # Register your models here.
-
 admin.site.register(Domecile, DomecileAdmin)
 admin.site.register(ElectoralRegistrationOffice)
 admin.site.register(Contact)
