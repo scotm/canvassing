@@ -61,11 +61,6 @@ class Contact(models.Model):
         return " ".join([getattr(self, x) for x in ["first_name", "initials", "surname", "suffix"] if getattr(self, x)])
 
 
-class Conversation(models.Model):
-    person = models.ForeignKey(Contact)
-    notes = models.TextField()
-
-
 ward_mapping = {
     'ward_code': 'WD14CD',
     'ward_name': 'WD14NM',
