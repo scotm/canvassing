@@ -1,6 +1,8 @@
+from django.contrib.gis.db import models
 from django.db import models
 
 from campaigns.models import Campaign
+from core.models import Contact
 
 
 class CanvassQuestion(models.Model):
@@ -39,3 +41,8 @@ class CanvassLongAnswer(CanvassResponse):
 class CanvassQuestionaire(models.Model):
     campaign = models.ForeignKey(Campaign)
     questions = models.ManyToManyField(CanvassQuestion)
+
+
+class Conversation(models.Model):
+    person = models.ForeignKey(Contact)
+    notes = models.TextField()
