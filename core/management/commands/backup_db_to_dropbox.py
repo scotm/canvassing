@@ -21,6 +21,9 @@ class Command(BaseCommand):
         filename = 'canvassing_db_%s.pgsql' % now
         with open(filename, 'wb') as myfile:
             call(["pg_dump", db_name], stdout=myfile)
+        print "Dump complete - compressing."
+        call(["bzip2", filename])
+        filename += ".bz2"
         print "Database successfully dumped. Uploading to Dropbox."
         with open(filename) as myfile:
             try:
