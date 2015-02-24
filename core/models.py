@@ -1,5 +1,4 @@
 from django.contrib.gis.db import models
-# from django.db import models
 
 from postcode_locator.models import PostcodeMapping
 
@@ -84,13 +83,13 @@ class Ward(models.Model):
     objects = models.GeoManager()
 
     def __unicode__(self):
-        return self.wd14_name
+        return "%s: %s - %s" % (self.ward_code, self.ward_name, self.local_authority_name)
 
     @staticmethod
     def fill_up_db(shapefile, verbose=False):
         from django.contrib.gis.utils import LayerMapping
 
-        lm = LayerMapping(Region, shapefile, ward_mapping, transform=True, encoding='iso-8859-1')
+        lm = LayerMapping(Ward, shapefile, ward_mapping, transform=True, encoding='iso-8859-1')
         lm.save(strict=True, verbose=verbose)
 
 region_mapping = {
@@ -149,6 +148,9 @@ class Region(models.Model):
         print "Deleting Welsh bits"
         Region.objects.filter(descriptio__icontains='Welsh Assembly').delete()
         print "Regions imported"
+        for i in Region.objects.all():
+            i.name = i.name.replace(" P Const",'').replace(" PER",'').replace(" Co Const",'').replace(" Burgh Const",'')
+            i.save(update_fields=['name'])
 
     @staticmethod
     def clean_up_highlands():
