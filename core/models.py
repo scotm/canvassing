@@ -29,7 +29,7 @@ class Domecile(models.Model):
     address_9 = models.CharField(max_length=60)
     phone_number = models.CharField(max_length=15, blank=True)
     postcode = models.CharField(max_length=10)
-    postcode_point = models.ForeignKey(PostcodeMapping)
+    postcode_point = models.ForeignKey(PostcodeMapping, null=True)
 
     def __unicode__(self):
         return ", ".join(getattr(self, x) for x in
@@ -92,6 +92,7 @@ class Ward(models.Model):
         lm = LayerMapping(Ward, shapefile, ward_mapping, transform=True, encoding='iso-8859-1')
         lm.save(strict=True, verbose=verbose)
 
+
 region_mapping = {
     'name': 'NAME',
     'area_code': 'AREA_CODE',
@@ -149,14 +150,15 @@ class Region(models.Model):
         Region.objects.filter(descriptio__icontains='Welsh Assembly').delete()
         print "Regions imported"
         for i in Region.objects.all():
-            i.name = i.name.replace(" P Const",'').replace(" PER",'').replace(" Co Const",'').replace(" Burgh Const",'')
+            i.name = i.name.replace(" P Const", '').replace(" PER", '').replace(" Co Const", '').replace(" Burgh Const",
+                                                                                                         '')
             i.save(update_fields=['name'])
 
     @staticmethod
     def clean_up_highlands():
         # The Highlands and Islands electoral region is a massive pain in the arse.
         # Many, many pieces, small islands and areas.
-        highlands = Region.objects.filter(name__icontains='Highlands and Islands PER')
+        highlands = Region.objects.filter(name='Highlands and Islands')
 
         # Prune out the islands without postcode points.
         for i, region in enumerate(highlands[:]):
@@ -166,9 +168,9 @@ class Region(models.Model):
             else:
                 print "Not deleting %d" % i
 
-        highlands = Region.objects.filter(name__icontains='Highlands and Islands PER').values_list('geom', flat=True)
-        highlands = sorted(highlands, key=lambda x: len(x[0][0]), reverse=True) # Sort them, so
-        keep_separate = highlands.pop(0) # This one is huge, and will slow down processing of the rest.
+        highlands = Region.objects.filter(name='Highlands and Islands').values_list('geom', flat=True)
+        highlands = sorted(highlands, key=lambda x: len(x[0][0]), reverse=True)  # Sort them, so
+        keep_separate = highlands.pop(0)  # This one is huge, and will slow down processing of the rest.
 
         # Process pairs of geometry, join them together and repeat.
         while True:
@@ -176,7 +178,7 @@ class Region(models.Model):
             while highlands:
                 if len(highlands) == 0:
                     break
-                if len(highlands) == 1: # If there's only one left, just add it to the next run
+                if len(highlands) == 1:  # If there's only one left, just add it to the next run
                     new_highlands += highlands.pop()
                     break
                 geom1, geom2 = highlands.pop(), highlands.pop()
@@ -185,10 +187,17 @@ class Region(models.Model):
                 print highlands, new_highlands
             highlands = new_highlands
             print len(highlands)
-            if len(highlands) == 1: # If there's only one left, we're done.
+            if len(highlands) == 1:  # If there's only one left, we're done.
                 break
             print "outer iteration done"
 
-        highlands = highlands[0].union(keep_separate) # Now join the huge one to the other ones
+        highlands = highlands[0].union(keep_separate)  # Now join the huge one to the other ones
+        # Simplify the region significantly.
+        highlands.simplify(0.0005, preserve_topology=True)
 
-        Region(name='Highlands and Islands COMPLETE', descriptio='Scottish Parliament Electoral Region', hectares='4050000', geom=highlands)
+        r = Region(name='Highlands and Islands COMPLETE', descriptio='Scottish Parliament Electoral Region',
+               hectares='4050000', geom=highlands, number=0.0, number0=0.0, polygon_id=0.0, unit_id=0.0, code='',
+               area=0.0, type_code='', descript0='', type_cod0='', descript1='')
+        r.save()
+
+
