@@ -53,6 +53,7 @@ class Command(BaseCommand):
             print "done - %d records read" % len(data)
 
         records_done = 0
+        temp_list = []
         for grouper, my_group in groupby(data, key=groupby_key):
             my_group = list(my_group)
             domecile_dict = split_dict(my_group[0], domecile_elements)
@@ -76,9 +77,11 @@ class Command(BaseCommand):
                 if not contact_obj:
                     contact_obj = Contact(**contact_dict)
                     contact_obj.domecile = domecile_obj
-                    contact_obj.save()
-                    if records_done % 50 == 0:
+                    temp_list.append(contact_obj)
+                    if records_done % 1000 == 0:
                         print "%d records done - last one %s, %s" % (records_done, contact_obj, domecile_obj)
+                        Contact.objects.bulk_create(temp_list)
+                        temp_list = []
 
 
 
