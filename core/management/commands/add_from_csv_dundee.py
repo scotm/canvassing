@@ -49,7 +49,7 @@ class Command(BaseCommand):
 
     def __init__(self):
         super(Command, self).__init__()
-        self.electoral_registration_office = ElectoralRegistrationOffice.objects.get(name='Dundee')
+        self.ero = ElectoralRegistrationOffice.objects.get(name='Dundee')
 
     def add_arguments(self, parser):
         parser.add_argument('filename', nargs=1, type=unicode)
@@ -59,27 +59,28 @@ class Command(BaseCommand):
         filename = args[0]
         with open(filename) as myfile:
             reader = csv.DictReader(myfile)
-            data = list(reader)
-
-        for line in data:
-            line = transform_dict(line, rename_dict)
-            domecile_dict = split_dict(line, domecile_elements)
-            domecile_dict['electoral_registration_office'] = self.electoral_registration_office
-            domecile_obj = Domecile.objects.filter(**domecile_dict).first()
-            if not domecile_obj:
-                domecile_obj = Domecile.objects.create(**domecile_dict)
-                domecile_obj.save()
-            contact_dict = split_dict(line, contact_elements)
-            if contact_dict['date_of_attainment']:
-                this_date = contact_dict['date_of_attainment'].split('/')
-                contact_dict['date_of_attainment'] = this_date[2]+"-"+this_date[1]+"-"+this_date[0]
-            else:
-                contact_dict['date_of_attainment'] = None
-            contact_obj = Contact.objects.filter(ero_number=contact_dict['ero_number'],domecile__electoral_registration_office=self.electoral_registration_office).first()
-            if not contact_obj:
-                contact_obj = Contact(**contact_dict)
-            contact_obj.domecile = domecile_obj
-            contact_obj.save()
+            for line in reader:
+                line = transform_dict(line, rename_dict)
+                domecile_dict = split_dict(line, domecile_elements)
+                domecile_dict['electoral_registration_office'] = self.ero
+                domecile_obj = Domecile.objects.filter(**domecile_dict).first()
+                if not domecile_obj:
+                    domecile_obj = Domecile.objects.create(**domecile_dict)
+                    domecile_obj.save()
+                contact_dict = split_dict(line, contact_elements)
+                if contact_dict['date_of_attainment']:
+                    this_date = contact_dict['date_of_attainment'].split('/')
+                    contact_dict['date_of_attainment'] = this_date[2] + "-" + this_date[1] + "-" + this_date[0]
+                else:
+                    contact_dict['date_of_attainment'] = None
+                contact_obj = Contact.objects.filter(ero_number=contact_dict['ero_number'],
+                                                     domecile__electoral_registration_office=self.ero,
+                                                     pd=contact_dict['pd']).first()
+                if not contact_obj:
+                    contact_obj = Contact(**contact_dict)
+                contact_obj.domecile = domecile_obj
+                contact_obj.save()
+                print "Saving %s" % contact_obj
 
 
 
