@@ -22,12 +22,16 @@
         var data = {{ object.geom.json | safe}};
         var accessToken = 'pk.eyJ1Ijoic2NvdG0iLCJhIjoiMGh1dWtYYyJ9.1DmL5VwbNVjbbH3thY2qAw';
         // Replace 'examples.map-i87786ca' with your map id.
-        var mapboxTiles = L.tileLayer('https://{s}.tiles.mapbox.com/v4/scotm.lad5iljo/{z}/{x}/{y}.png?access_token=' + accessToken, {
+        var mapboxTiles = L.tileLayer('	http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg?', {
             attribution: '<a href="http://www.mapbox.com/about/maps/" target="_blank">Terms &amp; Feedback</a>'
         });
         var map = L.map('map')
                 .addLayer(mapboxTiles)
                 .setView([{{ object.centre_point.0 }}, {{ object.centre_point.1}}], 14);
         L.geoJson(data, {}).addTo(map);
+        map.on('zoomend', function () {
+            console.log("Zoom End! " + map.getZoom() + map.getBounds());
+        });
+
     </script>
 {% endblock %}
