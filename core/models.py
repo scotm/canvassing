@@ -28,7 +28,7 @@ class Domecile(models.Model):
     address_8 = models.CharField(max_length=60)
     address_9 = models.CharField(max_length=60)
     phone_number = models.CharField(max_length=15, blank=True)
-    postcode = models.CharField(max_length=10)
+    postcode = models.CharField(max_length=10, db_index=True)
     postcode_point = models.ForeignKey(PostcodeMapping, null=True)
 
     def __unicode__(self):
