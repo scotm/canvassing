@@ -99,6 +99,11 @@ class Ward(models.Model):
     def get_absolute_url(self):
         return reverse('ward_view', args=[self.pk])
 
+    def centre_point(self):
+        centroid = self.geom.centroid
+        return centroid.y, centroid.x
+
+
 
 region_mapping = {
     'name': 'NAME',
