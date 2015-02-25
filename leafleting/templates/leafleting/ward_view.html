@@ -1,4 +1,33 @@
 {% extends "base.html" %}
+{% block extrahead %}
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
+    <style>
+        #map {
+            height: 500px;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
-    <h1>{{ object.local_authority_name }}: {{ object.ward_name }}</h1>
+    <div class="large-12 columns">
+        <div class="row">
+            <h1>{{ object.local_authority_name }}: {{ object.ward_name }}</h1>
+
+
+            <div id="map"></div>
+        </div>
+    </div>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <script>
+        var data = {{ object.geom.json | safe}};
+        var accessToken = 'pk.eyJ1Ijoic2NvdG0iLCJhIjoiMGh1dWtYYyJ9.1DmL5VwbNVjbbH3thY2qAw';
+        // Replace 'examples.map-i87786ca' with your map id.
+        var mapboxTiles = L.tileLayer('https://{s}.tiles.mapbox.com/v4/scotm.lad5iljo/{z}/{x}/{y}.png?access_token=' + accessToken, {
+            attribution: '<a href="http://www.mapbox.com/about/maps/" target="_blank">Terms &amp; Feedback</a>'
+        });
+        var map = L.map('map')
+                .addLayer(mapboxTiles)
+                .setView([{{ object.centre_point.0 }}, {{ object.centre_point.1}}], 14);
+        L.geoJson(data, {}).addTo(map);
+    </script>
 {% endblock %}
