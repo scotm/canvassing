@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from django.core.urlresolvers import reverse
 
 from postcode_locator.models import PostcodeMapping
 
@@ -82,6 +83,9 @@ class Ward(models.Model):
     geom = models.MultiPolygonField(srid=4326)
     objects = models.GeoManager()
 
+    class Meta:
+        ordering = ('local_authority_name', 'ward_name',)
+
     def __unicode__(self):
         return "%s: %s - %s" % (self.ward_code, self.ward_name, self.local_authority_name)
 
@@ -91,6 +95,9 @@ class Ward(models.Model):
 
         lm = LayerMapping(Ward, shapefile, ward_mapping, transform=True, encoding='iso-8859-1')
         lm.save(strict=True, verbose=verbose)
+
+    def get_absolute_url(self):
+        return reverse('ward_view', args=[self.pk])
 
 
 region_mapping = {
@@ -196,8 +203,8 @@ class Region(models.Model):
         highlands.simplify(0.0005, preserve_topology=True)
 
         r = Region(name='Highlands and Islands COMPLETE', descriptio='Scottish Parliament Electoral Region',
-               hectares='4050000', geom=highlands, number=0.0, number0=0.0, polygon_id=0.0, unit_id=0.0, code='',
-               area=0.0, type_code='', descript0='', type_cod0='', descript1='')
+                   hectares='4050000', geom=highlands, number=0.0, number0=0.0, polygon_id=0.0, unit_id=0.0, code='',
+                   area=0.0, type_code='', descript0='', type_cod0='', descript1='')
         r.save()
 
 
