@@ -1,4 +1,4 @@
-<script>
+{% load static %}<script>
     /**
      * Created by scotm on 26/02/15.
      */
@@ -7,10 +7,41 @@
     var markers = [];
     var selected_markers = [];
     var selected_address_count = 0;
+    var selected_postcodes = [];
+    var red_icon = L.icon({
+        iconUrl: '{% static "images/marker-set-red.png" %}',
+        shadowUrl: '{% static "images/marker-shadow.png" %}'
+    });
+
+
+    // Makes the map center itself on a given postcode
+    $('#postcode_form').on("keyup keypress", function (e) {
+        var code = e.keyCode || e.which;
+        if (code == 13) {
+            console.log(e.type)
+            e.preventDefault();
+            if (e.type == 'keypress') {
+                $.ajax({
+                            url: '/postcode/map',
+                            cache: false,
+                            data: {'postcode': $('#postcode_input').val()},
+                            success: function (data, textStatus, jqXHR) {
+                                if (data['data']) {
+                                    console.log(data['data'])
+                                    map.setView([data['data'][1], data['data'][0]], 18)
+                                    redrawMarkers()
+                                }
+                            }
+                        }
+                );
+            }
+        }
+    });
 
     var mapboxTiles = L.tileLayer('	http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg?', {
         attribution: '© OpenStreetMap contributors - <a href="http://www.opendatacommons.org/licenses/odbl">Terms</a>'
     });
+
     var map = L.map('map')
             .addLayer(mapboxTiles)
             .setView([{{ object.centre_point.0 }}, {{ object.centre_point.1}}], 14);
@@ -18,6 +49,7 @@
 
     function toggle_to_table(e) {
         //alert(this.options.title)
+        this.setIcon(red_icon);
         $.ajax({
                     url: '/ajax/get_addresses',
                     cache: false,
@@ -33,7 +65,7 @@
                                 $(this).append(tds);
                             }
                             selected_address_count = selected_address_count + data['data'].length
-                            $('#count_addresses').html(selected_address_count)
+                            $('#count_addresses').html(selected_address_count);
                         });
 
                     }
@@ -70,7 +102,6 @@
                 map.removeLayer(entry)
             });
         }
-
     }
 
     // Add the event handlers

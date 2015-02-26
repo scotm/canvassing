@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load static %}
 {% block extrahead %}
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
+    <link rel="stylesheet" href="{% static 'leaflet.css' %}"/>
     <style>
         #map {
             height: 500px;
@@ -15,6 +16,15 @@
 
             <p>Zoom the map, and pick off the postcodes you'd like to add to this run.</p>
 
+            <form id="postcode_form">
+                <div class="row">
+                    <div class="large-12 columns">
+                        <label>Postcode
+                            <input type="text" placeholder="Put a postcode in here - and the map will go there" id="postcode_input"/>
+                        </label>
+                    </div>
+                </div>
+            </form>
             <div id="map"></div>
             <p>There are <span id="count_addresses">0</span> addresses on this run so far.</p>
             <table id="postcodes_table">
@@ -30,6 +40,6 @@
 {% endblock %}
 
 {% block before_body_close %}
-    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <script src="{% static 'leaflet.js' %}"></script>
     {% include "js/map_code.html" %}
 {% endblock %}
