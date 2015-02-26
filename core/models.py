@@ -41,6 +41,15 @@ class Domecile(models.Model):
         self.postcode_point = PostcodeMapping.match_postcode(self.postcode, raise_exceptions=False)
         super(Domecile, self).save(*args, **kwargs)
 
+    @staticmethod
+    def get_domeciles(northeast, southwest, region=None):
+        from django.contrib.gis.geos import Polygon
+        # Construct a bounding box
+        # http://stackoverflow.com/questions/9466043/geodjango-within-a-ne-sw-box
+        geom = Polygon.from_bbox((southwest[0], northeast[1], southwest[1], northeast[0]))
+        queryset = Domecile.objects.filter(geom__contained=geom)
+
+
 
 class Contact(models.Model):
     pd = models.CharField(max_length=5, db_index=True)
@@ -102,6 +111,10 @@ class Ward(models.Model):
     def centre_point(self):
         centroid = self.geom.centroid
         return centroid.y, centroid.x
+
+    def get_simplified_geom_json(self, simplify_factor=0.00003):
+        return self.geom.simplify(simplify_factor).json
+
 
 
 
