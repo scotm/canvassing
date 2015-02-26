@@ -19,7 +19,7 @@
     </div>
     <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
     <script>
-        var data = {{ object.geom.json | safe}};
+        var data = {{ object.get_simplified_geom_json | safe}};
         var accessToken = 'pk.eyJ1Ijoic2NvdG0iLCJhIjoiMGh1dWtYYyJ9.1DmL5VwbNVjbbH3thY2qAw';
         // Replace 'examples.map-i87786ca' with your map id.
         var mapboxTiles = L.tileLayer('	http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg?', {
@@ -31,6 +31,9 @@
         L.geoJson(data, {}).addTo(map);
         map.on('zoomend', function () {
             console.log("Zoom End! " + map.getZoom() + map.getBounds());
+            if (map.getZoom() > 16){
+
+            }
         });
 
     </script>
