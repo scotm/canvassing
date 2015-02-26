@@ -1,0 +1,80 @@
+<script>
+    /**
+     * Created by scotm on 26/02/15.
+     */
+    var data = {{ object.get_simplified_geom_json | safe}};
+    var points = [];
+    var markers = [];
+    var selected_markers = [];
+    var selected_address_count = 0;
+
+    var mapboxTiles = L.tileLayer('	http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg?', {
+        attribution: '© OpenStreetMap contributors - <a href="http://www.opendatacommons.org/licenses/odbl">Terms</a>'
+    });
+    var map = L.map('map')
+            .addLayer(mapboxTiles)
+            .setView([{{ object.centre_point.0 }}, {{ object.centre_point.1}}], 14);
+    L.geoJson(data, {}).addTo(map);
+
+    function toggle_to_table(e) {
+        //alert(this.options.title)
+        $.ajax({
+                    url: '/ajax/get_addresses',
+                    cache: false,
+                    data: {'postcode': this.options.title},
+                    success: function (data, textStatus, jqXHR) {
+                        $('#postcodes_table').each(function () {
+                            var tds = '<tr><td>' + data['postcode'] + '</td><td>';
+                            tds += data['data'].join('<br/>');
+                            tds += '</tr>';
+                            if ($('tbody', this).length > 0) {
+                                $('tbody', this).append(tds);
+                            } else {
+                                $(this).append(tds);
+                            }
+                            selected_address_count = selected_address_count + data['data'].length
+                            $('#count_addresses').html(selected_address_count)
+                        });
+
+                    }
+                }
+        );
+    }
+
+    function redrawMarkers() {
+        if (map.getZoom() >= 17) {
+            m = map.getBounds();
+            $.ajax({
+                        url: '/ajax/get_domeciles',
+                        cache: false,
+                        data: {'BBox': m.toBBoxString(), '{% block object_type %}region{% endblock %}': {{object.pk}}},
+                        success: function (data, textStatus, jqXHR) {
+                            points = data['data'];
+                            markers.forEach(function (entry) {
+                                map.removeLayer(entry)
+                            });
+
+                            points.forEach(function (entry) {
+                                var marker = L.marker([entry['point'][1], entry['point'][0]], {'title': entry['postcode']});
+                                marker.on('click', toggle_to_table)
+                                markers.push(marker);
+                                map.addLayer(marker)
+                            });
+
+                        }
+                    }
+            );
+        } else {
+            points = [];
+            markers.forEach(function (entry) {
+                map.removeLayer(entry)
+            });
+        }
+
+    }
+
+    // Add the event handlers
+    map.on('zoomend', redrawMarkers);
+    map.on('dragend', redrawMarkers);
+
+</script>
