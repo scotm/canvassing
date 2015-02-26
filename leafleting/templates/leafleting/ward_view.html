@@ -16,11 +16,20 @@
             <p>Zoom the map, and pick off the postcodes you'd like to add to this run.</p>
 
             <div id="map"></div>
+            <p>There are <span id="count_addresses">0</span> addresses on this run so far.</p>
+            <table id="postcodes_table">
+                <thead>
+                <tr>
+                    <th width="150">Postcode</th>
+                    <th>Addresses</th>
+                </tr>
+            </table>
         </div>
+
     </div>
 {% endblock %}
 
 {% block before_body_close %}
     <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
-    <script>{% include "js/map_code.js" %}</script>
+    {% include "js/map_code.html" %}
 {% endblock %}

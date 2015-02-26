@@ -1,3 +1,5 @@
+from functools import cmp_to_key
+
 from django.views.generic import DetailView, ListView
 from json_views.views import JSONDataView
 
@@ -21,4 +23,39 @@ class DomecileMapView(JSONDataView):
                                                 region=Ward.objects.get(pk=int(region)))
         data = [{'postcode':x.postcode, 'point':x.postcode_point.point} for x in queryset]
         context.update({'data':data})
+        return context
+
+def consume_int(x):
+    sum_total = 0
+    for i in x:
+        if i.isdigit():
+            sum_total = sum_total*10 + int(i)
+        else:
+            break
+    return sum_total
+
+def domecile_cmp(x,y):
+    if x.address_4 < y.address_4:
+        return -1
+    if x.address_4 > y.address_4:
+        return 1
+    a, b = consume_int(x.address_2),consume_int(y.address_2)
+    if a == b:
+        if x.address_2 < y.address_2:
+            return -1
+        if x.address_2 > y.address_2:
+            return 1
+    if a < b:
+        return -1
+    if a > b:
+        return 1
+    return 0
+
+class DomecileAddressView(JSONDataView):
+    def get_context_data(self, **kwargs):
+        context = super(DomecileAddressView, self).get_context_data(**kwargs)
+        postcode = self.request.GET['postcode']
+        queryset = Domecile.objects.filter(postcode=postcode)
+        data = [unicode(y) for y in sorted(queryset, key=cmp_to_key(domecile_cmp))]
+        context.update({'data':data, 'postcode':postcode})
         return context
