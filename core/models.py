@@ -46,8 +46,15 @@ class Domecile(models.Model):
         from django.contrib.gis.geos import Polygon
         # Construct a bounding box
         # http://stackoverflow.com/questions/9466043/geodjango-within-a-ne-sw-box
-        geom = Polygon.from_bbox((southwest[0], northeast[1], southwest[1], northeast[0]))
-        queryset = Domecile.objects.filter(geom__contained=geom)
+        geom = Polygon.from_bbox((southwest[0], southwest[1], northeast[0], northeast[1]))
+        queryset = Domecile.objects.filter(postcode_point__point__contained=geom)
+        if region:
+            queryset = queryset.filter(postcode_point__point__within=region.geom)
+        return queryset
+
+    @staticmethod
+    def get_postcode_points(*args, **kwargs):
+        return Domecile.get_domeciles(*args, **kwargs).distinct('postcode')
 
 
 
