@@ -1,3 +1,4 @@
+{% load static %}
 <script>
     /**
      * Created by scotm on 26/02/15.
@@ -7,58 +8,108 @@
     var markers = [];
     var selected_markers = [];
     var selected_address_count = 0;
+    var selected_postcodes = [];
+    var red_icon = L.icon({
+        iconUrl: '{% static "images/marker-set-red.png" %}',
+        shadowUrl: '{% static "images/marker-shadow.png" %}'
+    });
+    var blue_icon = L.icon({
+        iconUrl: '{% static "images/marker-set.png" %}',
+        shadowUrl: '{% static "images/marker-shadow.png" %}'
+    });
+
+    // Makes the map center itself on a given postcode
+    $('#postcode_form').on("keyup keypress", function (e) {
+        var code = e.keyCode || e.which;
+        if (code == 13) {
+            e.preventDefault();
+            if (e.type == 'keypress') {
+                $.ajax({
+                            url: '{% url "postcode_point" %}',
+                            cache: false,
+                            data: {'postcode': $('#postcode_input').val()},
+                            success: function (data) {
+                                if (data['data']) {
+                                    map.setView([data['data'][1], data['data'][0]], 18);
+                                    redrawMarkers();
+                                }
+                            }
+                        }
+                );
+            }
+        }
+    });
 
     var mapboxTiles = L.tileLayer('	http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg?', {
         attribution: '© OpenStreetMap contributors - <a href="http://www.opendatacommons.org/licenses/odbl">Terms</a>'
     });
+
     var map = L.map('map')
             .addLayer(mapboxTiles)
             .setView([{{ object.centre_point.0 }}, {{ object.centre_point.1}}], 14);
     L.geoJson(data, {}).addTo(map);
 
-    function toggle_to_table(e) {
+    function toggle_to_table() {
         //alert(this.options.title)
+        if ($.inArray(this.options.title, selected_postcodes) == -1) {
+            this.setIcon(red_icon);
+        } else {
+            this.setIcon(blue_icon);
+        }
         $.ajax({
-                    url: '/ajax/get_addresses',
+                    url: '{% url "get_addresses" %}',
                     cache: false,
                     data: {'postcode': this.options.title},
-                    success: function (data, textStatus, jqXHR) {
-                        $('#postcodes_table').each(function () {
-                            var tds = '<tr><td>' + data['postcode'] + '</td><td>';
-                            tds += data['data'].join('<br/>');
-                            tds += '</tr>';
-                            if ($('tbody', this).length > 0) {
-                                $('tbody', this).append(tds);
-                            } else {
-                                $(this).append(tds);
-                            }
-                            selected_address_count = selected_address_count + data['data'].length
-                            $('#count_addresses').html(selected_address_count)
-                        });
-
+                    success: function (data) {
+                        var index_of_postcode = $.inArray(data['postcode'], selected_postcodes);
+                        if (index_of_postcode == -1) {
+                            $('#postcodes_table').each(function () {
+                                var tds = '<tr><td>' + data['postcode'] + '</td><td>';
+                                tds += data['data'].join('<br/>');
+                                tds += '</tr>';
+                                if ($('tbody', this).length > 0) {
+                                    $('tbody', this).append(tds);
+                                } else {
+                                    $(this).append(tds);
+                                }
+                                selected_address_count = selected_address_count + data['data'].length;
+                                $('#count_addresses').html(selected_address_count);
+                                selected_postcodes.push(data['postcode']);
+                            });
+                        } else {
+                            var p = $('#postcodes_table').find('tr td').filter(function () {
+                                return $(this).text() == data['postcode'];
+                            }).closest("tr");
+                            p.remove();
+                            selected_postcodes.splice(index_of_postcode, 1);
+                        }
                     }
                 }
         );
     }
 
     function redrawMarkers() {
-        if (map.getZoom() >= 17) {
-            m = map.getBounds();
+        if (map.getZoom() >= 16) {
+            var m = map.getBounds();
             $.ajax({
-                        url: '/ajax/get_domeciles',
+                        url: '{% url "get_domeciles" %}',
                         cache: false,
                         data: {'BBox': m.toBBoxString(), '{% block object_type %}region{% endblock %}': {{object.pk}}},
-                        success: function (data, textStatus, jqXHR) {
+                        success: function (data) {
                             points = data['data'];
                             markers.forEach(function (entry) {
                                 map.removeLayer(entry)
                             });
-
                             points.forEach(function (entry) {
                                 var marker = L.marker([entry['point'][1], entry['point'][0]], {'title': entry['postcode']});
-                                marker.on('click', toggle_to_table)
+                                if ($.inArray(entry['postcode'], selected_postcodes) == -1) {
+                                    marker.setIcon(blue_icon);
+                                } else {
+                                    marker.setIcon(red_icon);
+                                }
+                                marker.on('click', toggle_to_table);
                                 markers.push(marker);
-                                map.addLayer(marker)
+                                map.addLayer(marker);
                             });
 
                         }
@@ -70,7 +121,6 @@
                 map.removeLayer(entry)
             });
         }
-
     }
 
     // Add the event handlers
