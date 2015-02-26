@@ -1,5 +1,9 @@
+{% load static %}
 <div class="row">
     <div class="large-12 columns">
+        <div class="nav-bar left">
+            <img src='{% static "images/comrade-header.svg" %}'/>
+        </div>
         <div class="nav-bar right">
             <ul class="button-group">
                 <li><a href="#" class="button radius">Canvass</a></li>
@@ -7,7 +11,6 @@
                 <li><a href="#" class="button radius">Reports</a></li>
             </ul>
         </div>
-        <h1><small>COMRADE: {% block page_subtitle %}Let's see what the voters think.{% endblock %}</small></h1>
         <hr/>
     </div>
 </div>
