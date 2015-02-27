@@ -53,9 +53,10 @@ def domecile_cmp(x,y):
 
 class DomecileAddressView(JSONDataView):
     def get_context_data(self, **kwargs):
+        from django.db.models import Count
         context = super(DomecileAddressView, self).get_context_data(**kwargs)
         postcode = self.request.GET['postcode']
-        queryset = Domecile.objects.filter(postcode=postcode)
-        data = [unicode(y) for y in sorted(queryset, key=cmp_to_key(domecile_cmp))]
+        queryset = Domecile.objects.filter(postcode=postcode).annotate(num_contacts=Count('contact'))
+        data = [unicode(y)+" (%d)" % y.num_contacts for y in sorted(queryset, key=cmp_to_key(domecile_cmp))]
         context.update({'data':data, 'postcode':postcode})
         return context
