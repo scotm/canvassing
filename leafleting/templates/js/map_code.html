@@ -4,9 +4,7 @@
      * Created by scotm on 26/02/15.
      */
     var data = {{ object.get_simplified_geom_json | safe}};
-    var points = [];
     var markers = [];
-    var selected_markers = [];
     var selected_address_count = 0;
     var selected_postcodes = [];
     var red_icon = L.icon({
@@ -22,14 +20,17 @@
     $('#postcode_form').on("keyup keypress", function (e) {
         var code = e.keyCode || e.which;
         if (code == 13) {
+            // Suppress form input actions
             e.preventDefault();
             if (e.type == 'keypress') {
+                // Get the postcode point with AJAX.
                 $.ajax({
                             url: '{% url "postcode_point" %}',
                             cache: false,
                             data: {'postcode': $('#postcode_input').val()},
                             success: function (data) {
                                 if (data['data']) {
+                                    // Assign the map view, and redraw the layer
                                     map.setView([data['data'][1], data['data'][0]], 18);
                                     redrawMarkers();
                                 }
@@ -47,45 +48,54 @@
     var map = L.map('map')
             .addLayer(mapboxTiles)
             .setView([{{ object.centre_point.0 }}, {{ object.centre_point.1}}], 14);
+
+    // Draw a JSON polygon over the map. Piece of piss.
     L.geoJson(data, {}).addTo(map);
 
-    function toggle_to_table() {
-        //alert(this.options.title)
+    // Called when a marker is clicked.
+    // If it's not been selected, make it red, and add to the report.
+    // If it's already selected, make it blue and remove from the report.
+    function marker_click() {
+        // Has this already been selected?
         if ($.inArray(this.options.title, selected_postcodes) == -1) {
             this.setIcon(red_icon);
-        } else {
-            this.setIcon(blue_icon);
-        }
-        $.ajax({
-                    url: '{% url "get_addresses" %}',
-                    cache: false,
-                    data: {'postcode': this.options.title},
-                    success: function (data) {
-                        var index_of_postcode = $.inArray(data['postcode'], selected_postcodes);
-                        if (index_of_postcode == -1) {
-                            $('#postcodes_table').each(function () {
-                                var tds = '<tr><td>' + data['postcode'] + '</td><td>';
-                                tds += data['data'].join('<br/>');
-                                tds += '</tr>';
-                                if ($('tbody', this).length > 0) {
-                                    $('tbody', this).append(tds);
-                                } else {
-                                    $(this).append(tds);
-                                }
-                                selected_address_count = selected_address_count + data['data'].length;
-                                $('#count_addresses').html(selected_address_count);
-                                selected_postcodes.push(data['postcode']);
-                            });
-                        } else {
-                            var p = $('#postcodes_table').find('tr td').filter(function () {
-                                return $(this).text() == data['postcode'];
-                            }).closest("tr");
-                            p.remove();
-                            selected_postcodes.splice(index_of_postcode, 1);
+            $.ajax({
+                        url: '{% url "get_addresses" %}',
+                        cache: false,
+                        data: {'postcode': this.options.title},
+                        success: function (data) {
+                            var index_of_postcode = $.inArray(data['postcode'], selected_postcodes);
+                            if (index_of_postcode == -1) {
+                                // Add the row to the table.
+                                $('#postcodes_table').each(function () {
+                                    var tds = '<tr><td>' + data['postcode'] + '</td><td>' + data['data'].join('<br/>') + '</tr>';
+                                    if ($('tbody', this).length > 0) {
+                                        $('tbody', this).append(tds);
+                                    } else {
+                                        $(this).append(tds);
+                                    }
+                                    selected_address_count = selected_address_count + data['data'].length;
+                                    selected_postcodes.push(data['postcode']);
+                                });
+                            }
+                            // Update the displayed count of addresses
+                            $('#count_addresses').html(selected_address_count);
                         }
                     }
-                }
-        );
+            );
+        } else {
+            this.setIcon(blue_icon);
+            postcode = this.options.title;
+            // Remove the row from the table
+            var p = $('#postcodes_table').find('tr td').filter(function () {
+                return $(this).text() == postcode;
+            }).closest("tr");
+            // Set the counter correctly.
+            selected_address_count = selected_address_count - p[0].lastChild.innerHTML.split('<br>').length;
+            p.remove();
+            selected_postcodes.splice($.inArray(this.options.title, selected_postcodes), 1);
+            $('#count_addresses').html(selected_address_count);
+        }
     }
 
     function redrawMarkers() {
@@ -96,18 +106,17 @@
                         cache: false,
                         data: {'BBox': m.toBBoxString(), '{% block object_type %}region{% endblock %}': {{object.pk}}},
                         success: function (data) {
-                            points = data['data'];
                             markers.forEach(function (entry) {
                                 map.removeLayer(entry)
                             });
-                            points.forEach(function (entry) {
+                            data['data'].forEach(function (entry) {
                                 var marker = L.marker([entry['point'][1], entry['point'][0]], {'title': entry['postcode']});
                                 if ($.inArray(entry['postcode'], selected_postcodes) == -1) {
                                     marker.setIcon(blue_icon);
                                 } else {
                                     marker.setIcon(red_icon);
                                 }
-                                marker.on('click', toggle_to_table);
+                                marker.on('click', marker_click);
                                 markers.push(marker);
                                 map.addLayer(marker);
                             });
@@ -116,7 +125,6 @@
                     }
             );
         } else {
-            points = [];
             markers.forEach(function (entry) {
                 map.removeLayer(entry)
             });
