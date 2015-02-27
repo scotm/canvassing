@@ -35,21 +35,12 @@ def consume_int(x):
     return sum_total
 
 def domecile_cmp(x,y):
-    if x.address_4 < y.address_4:
-        return -1
-    if x.address_4 > y.address_4:
-        return 1
+    if x.address_4 != y.address_4:
+        return cmp(x.address_4, y.address_4)
     a, b = consume_int(x.address_2),consume_int(y.address_2)
     if a == b:
-        if x.address_2 < y.address_2:
-            return -1
-        if x.address_2 > y.address_2:
-            return 1
-    if a < b:
-        return -1
-    if a > b:
-        return 1
-    return 0
+        return cmp(x.address_4, y.address_4)
+    return cmp(a, b)
 
 class DomecileAddressView(JSONDataView):
     def get_context_data(self, **kwargs):
