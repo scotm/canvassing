@@ -2,11 +2,6 @@
 {% load static %}
 {% block extrahead %}
     <link rel="stylesheet" href="{% static 'leaflet.css' %}"/>
-    <style>
-        #map {
-            height: 500px;
-        }
-    </style>
 {% endblock %}
 
 {% block content %}
@@ -56,6 +51,5 @@
 {% endblock %}
 
 {% block before_body_close %}
-    <script src="{% static 'leaflet.js' %}"></script>
     {% include "js/map_code.html" %}
 {% endblock %}
