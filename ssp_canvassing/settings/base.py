@@ -53,6 +53,7 @@ INSTALLED_APPS = (
     'polling',
     'OpenStreetMap',
     'leafleting',
+    'reporting',
 )
 
 MIDDLEWARE_CLASSES = (

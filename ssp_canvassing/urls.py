@@ -15,6 +15,7 @@ urlpatterns = patterns('',
                        url(r'^contact/', include('core.urls')),
                        url(r'^ward/', include('leafleting.urls')),
                        url(r'^postcode/', include('postcode_locator.urls')),
+                       url(r'reports/', include('reporting.urls')),
                        url(r'^ajax/get_domeciles$', DomecileMapView.as_view(), name='get_domeciles'),
                        url(r'^ajax/get_addresses$', DomecileAddressView.as_view(), name='get_addresses')
                        # url(r'^ward/(?P<slug>[a-z\-_]+)', WardView.as_view()),
