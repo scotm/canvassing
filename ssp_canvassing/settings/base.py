@@ -23,9 +23,9 @@ ADMINS = (
 
 # SECURITY WARNING: keep the secret key used in production secret!
 try:
-    from secrets import SECRET_KEY
+    from .secrets import SECRET_KEY
 except ImportError:
-    print "WARNING: Please create a ssp_canvassing/settings/secrets.py file and add a SECRET_KEY"
+    print("WARNING: Please create a ssp_canvassing/settings/secrets.py file and add a SECRET_KEY")
     SECRET_KEY = 'w735l4bkg)9k_3!48it^c&f&&l)7+5fp)(768vppge!f1va)_('
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -75,7 +75,7 @@ WSGI_APPLICATION = 'ssp_canvassing.wsgi.application'
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
 try:
-    from secrets import DATABASES
+    from .secrets import DATABASES
 except ImportError:
     DATABASES = {
         'default': {
