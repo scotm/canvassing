@@ -12,9 +12,9 @@ from __future__ import print_function
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 from unipath import Path
+
 BASE_DIR = Path(os.path.dirname(__file__)).parent.parent
 
-#BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 ADMINS = (
 )
