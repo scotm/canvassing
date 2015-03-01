@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.contrib.gis.db import models
 from django.core.urlresolvers import reverse
 
@@ -180,7 +181,7 @@ class Region(models.Model):
         lm.save(strict=True, verbose=verbose)
         print "Deleting Welsh bits"
         Region.objects.filter(descriptio__icontains='Welsh Assembly').delete()
-        print "Regions imported"
+        print("Regions imported")
         for i in Region.objects.all():
             i.name = i.name.replace(" P Const", '').replace(" PER", '').replace(" Co Const", '').replace(" Burgh Const",
                                                                                                          '')
@@ -188,6 +189,7 @@ class Region(models.Model):
 
     @staticmethod
     def clean_up_highlands():
+        print("Cleaning up the Highlands and Islands electoral region")
         # The Highlands and Islands electoral region is a massive pain in the arse.
         # Many, many pieces, small islands and areas.
         highlands = Region.objects.filter(name='Highlands and Islands')
@@ -199,7 +201,9 @@ class Region(models.Model):
                 region.delete()
             else:
                 print "Not deleting %d" % i
+        print("Deleted those without postcodes")
 
+        print("Unifying Highlands & Islands geometry...")
         highlands = Region.objects.filter(name='Highlands and Islands').values_list('geom', flat=True)
         highlands = sorted(highlands, key=lambda x: len(x[0][0]), reverse=True)  # Sort them, so
         keep_separate = highlands.pop(0)  # This one is huge, and will slow down processing of the rest.
@@ -215,17 +219,14 @@ class Region(models.Model):
                     break
                 geom1, geom2 = highlands.pop(), highlands.pop()
                 new_highlands.append(geom1.union(geom2))
-                print len(new_highlands)
-                print highlands, new_highlands
             highlands = new_highlands
-            print len(highlands)
             if len(highlands) == 1:  # If there's only one left, we're done.
                 break
-            print "outer iteration done"
 
         highlands = highlands[0].union(keep_separate)  # Now join the huge one to the other ones
         # Simplify the region significantly.
         highlands.simplify(0.0005, preserve_topology=True)
+        print("done")
 
         r = Region(name='Highlands and Islands COMPLETE', descriptio='Scottish Parliament Electoral Region',
                    hectares='4050000', geom=highlands, number=0.0, number0=0.0, polygon_id=0.0, unit_id=0.0, code='',
