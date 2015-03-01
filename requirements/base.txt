@@ -6,3 +6,4 @@ psycopg2
 six
 sqlparse
 django-generic-json-views
+Unipath
