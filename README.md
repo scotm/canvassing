@@ -6,9 +6,10 @@ To use this, you'll need quite a lot of additional software.
 
 #Installation
 
-## Database
+## PostgreSQL Database
 
-It relies on a recent PostgreSQL server, complete with PostGIS extension
+It uses a recent PostgreSQL server, complete with PostGIS extension. Or SQLite, with the SpatiaLite extension.
+I work with PostgreSQL. Install it.
 
 ```
 sudo apt-get install postgresql-server-9.x-all postgresql-9.x-postgis-2.1 
@@ -34,9 +35,9 @@ This will install the postgis extensions you will need to use COMRADE.
 
 ## Virtualenv
 
-I tend to use virtualenvwrapper, but you can set it up as you see fit.
+I use virtualenvwrapper, but you can set up your environment or server as you see fit.
 
-Enter your virtualenv, change to the project directory and use pip to install the python requirements
+Enter your virtualenv, change to the project directory and use pip to install the python requirements.
 
 ```
 pip install -r requirements/local.txt
@@ -72,6 +73,10 @@ Install the dependencies (there's a package.json included):
 ```
 npm install
 ```
+
+And then type:
+
+grunt
 
 ## Other data requirements
 
