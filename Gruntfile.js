@@ -52,7 +52,7 @@ module.exports = function (grunt) {
 
         watch: {
             src: {
-                files: ['lib/*.js',  '!lib/dontwatch.js'],
+                files: ['lib/*.js', '!lib/dontwatch.js'],
                 tasks: ['javascript']
             },
             sass: {
@@ -80,7 +80,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
 
     // 3. Where we tell Grunt what to do when we type "grunt" into the terminal.
-    grunt.registerTask('default', ['concat', 'uglify', 'imagemin', 'sass', 'watch']);
+    grunt.registerTask('default', ['concat', 'uglify', 'sass']);
+    grunt.registerTask('images', ['imagemin']);
+    grunt.registerTask('watch-changes', ['concat', 'uglify', 'imagemin', 'sass', 'watch']);
     grunt.registerTask('js', ['concat', 'uglify']);
     grunt.registerTask('css', ['sass']);
+    grunt.registerTask('all', ['concat', 'uglify', 'sass', 'imagemin']);
 };
