@@ -45,12 +45,12 @@
         attribution: '© OpenStreetMap contributors - <a href="http://www.opendatacommons.org/licenses/odbl">Terms</a>'
     });
 
-    var map = L.map('map')
-            .addLayer(mapboxTiles)
-            .setView([{{ object.centre_point.0 }}, {{ object.centre_point.1}}], 14);
-
-    // Draw a JSON polygon over the map. Piece of piss.
-    L.geoJson(data, {}).addTo(map);
+    // Draw a JSON polygon over the map. Piece of cake.
+    var geojson = L.geoJson(data, {});
+    var map = L.map('map').addLayer(mapboxTiles);
+    geojson.addTo(map);
+    //map.setView([{{ object.centre_point.0 }}, {{ object.centre_point.1}}], 14);
+    map.fitBounds(geojson);
 
     // Called when a marker is clicked.
     // If it's not been selected, make it red, and add to the report.
