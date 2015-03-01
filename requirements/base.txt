@@ -5,5 +5,4 @@ ipython
 psycopg2
 six
 sqlparse
-wsgiref
 django-generic-json-views
