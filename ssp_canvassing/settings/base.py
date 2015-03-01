@@ -25,7 +25,7 @@ ADMINS = (
 try:
     from .secrets import SECRET_KEY
 except ImportError:
-    print "WARNING: Please create a ssp_canvassing/settings/secrets.py file and add a SECRET_KEY"
+    print("WARNING: Please create a ssp_canvassing/settings/secrets.py file and add a SECRET_KEY")
     SECRET_KEY = 'w735l4bkg)9k_3!48it^c&f&&l)7+5fp)(768vppge!f1va)_('
 
 # SECURITY WARNING: don't run with debug turned on in production!
