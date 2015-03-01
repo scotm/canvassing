@@ -1,3 +1,4 @@
+# coding=utf-8
 from __future__ import print_function
 from django.contrib.gis.db import models
 from django.core.urlresolvers import reverse
@@ -89,7 +90,7 @@ ward_mapping = {
 
 class Ward(models.Model):
     # Based on the ward shape files available from:
-    # https://geoportal.statistics.gov.uk/geoportal/catalog/content/filelist.page
+    # https://geoportal.statistics.gov.uk/Docs/Boundaries/Wards_(GB)_2014_Boundaries_(Full_Extent).zip
 
     ward_code = models.CharField(max_length=9)
     ward_name = models.CharField(max_length=56)
@@ -111,6 +112,9 @@ class Ward(models.Model):
 
         lm = LayerMapping(Ward, shapefile, ward_mapping, transform=True, encoding='iso-8859-1')
         lm.save(strict=True, verbose=verbose)
+
+        # Remove the non-Scottish wards
+        Ward.objects.exclude(local_authority_code__startswith="S").delete()
 
     def get_absolute_url(self):
         return reverse('ward_view', args=[self.pk])
@@ -144,7 +148,7 @@ region_mapping = {
 
 
 class Region(models.Model):
-    # Data based on the boundary lines from OS Open Data
+    # Data based on the Boundary-Line™ program from OS Open Data
     # https://www.ordnancesurvey.co.uk/opendatadownload/products.html
     name = models.CharField(max_length=60)
     area_code = models.CharField(max_length=3)
