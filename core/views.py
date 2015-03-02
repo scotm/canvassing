@@ -39,7 +39,7 @@ def domecile_cmp(x,y):
         return cmp(x.address_4, y.address_4)
     a, b = consume_int(x.address_2),consume_int(y.address_2)
     if a == b:
-        return cmp(x.address_4, y.address_4)
+        return cmp(x.address_2, y.address_2)
     return cmp(a, b)
 
 class DomecileAddressView(JSONDataView):
