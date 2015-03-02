@@ -3,6 +3,7 @@ from __future__ import print_function
 
 from django.contrib.gis.db import models
 from django.core.urlresolvers import reverse
+from django.contrib.gis.geos import Polygon
 
 from postcode_locator.models import PostcodeMapping
 
@@ -46,11 +47,12 @@ class Domecile(models.Model):
 
     @staticmethod
     def get_domeciles(northeast, southwest, region=None):
-        from django.contrib.gis.geos import Polygon
+        from leafleting.models import LeafletRun
         # Construct a bounding box
         # http://stackoverflow.com/questions/9466043/geodjango-within-a-ne-sw-box
         geom = Polygon.from_bbox((southwest[0], southwest[1], northeast[0], northeast[1]))
-        queryset = Domecile.objects.filter(postcode_point__point__contained=geom)
+        queryset = Domecile.objects.filter(postcode_point__point__contained=geom).exclude(
+            postcode_point__in=LeafletRun.objects.all().values_list('postcode_points', flat=True))
         if region:
             queryset = queryset.filter(postcode_point__point__within=region.geom)
         return queryset
