@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 from core.models import Domecile
+from campaigns.models import Campaign
 
 
 class LeafletRun(models.Model):

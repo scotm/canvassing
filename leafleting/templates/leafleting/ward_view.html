@@ -25,6 +25,25 @@
                 </div>
             </form>
             <div id="map"></div>
+            <hr>
+            <form id="run_information">
+                <div class="large-12 columns">
+                    <div class="row">
+                        <div class="large-12 columns">
+                            <label>A name for this run:
+                                <input type="text" placeholder="Give this run a memorable title."
+                                       id="run_name"/>
+                            </label>
+                        </div>
+                    </div>
+                    <label>Notes on this run:
+                        <textarea
+                                placeholder="Notes - are there tenements, big driveways, urban area, buzzers? Write these here."
+                                id="run_notes"></textarea>
+                    </label>
+                    <button id="save_run">Save Run</button>
+                </div>
+            </form>
             <p>There are <span id="count_addresses">0</span> addresses on this run so far.</p>
             <table id="postcodes_table">
                 <thead>
@@ -33,26 +52,40 @@
                     <th>Addresses</th>
                 </tr>
             </table>
-            <form id="run_information">
-                <div class="large-12 columns">
-                    <div class="row">
-                        <div class="large-12 columns">
-                            <label>Postcode
-                                <input type="text" placeholder="Put a postcode in here - and the map will go there"
-                                       id="postcode_input"/>
-                            </label>
-                        </div>
-                    </div>
-                    <label>Notes on this run
-                        <textarea placeholder="Notes"></textarea>
-                    </label>
-                </div>
-            </form>
         </div>
-
+        <div id="myModal" class="reveal-modal" data-reveal></div>
     </div>
 {% endblock %}
 
 {% block before_body_close %}
     {% include "js/map_code.html" %}
+    <script>
+        $("#save_run").click(function (e) {
+            e.preventDefault();
+            var error_messages = [];
+            var run_name = $("#run_name").val();
+            var run_notes = $("#run_notes").val();
+            if (run_name === '') {
+                error_messages.push('You must give this run a name.');
+            }
+            if (selected_postcodes.length == 0) {
+                error_messages.push("You must add some postcodes for this run.");
+            }
+            if (error_messages.length > 0) {
+                displayModal("<h2>Errors:</h2>" + error_messages.join("<br />"));
+                error_messages = [];
+            }
+            $.ajax({
+                url: '{% url 'leaflet_run_create' %}',
+                cache: false,
+                type:'GET',
+                data: {'run_name': run_name, 'selected_postcodes[]': selected_postcodes, 'run_notes': run_notes},
+                success: function (data) {
+                    displayModal("<h2>Success</h2><p>The run was stored successfully</p>");
+                    redrawMarkers();
+                    resetPage();
+                }
+            });
+        });
+    </script>
 {% endblock %}

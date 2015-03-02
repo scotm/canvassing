@@ -78,7 +78,7 @@
                                 });
                             }
                             // Update the displayed count of addresses
-                            $('#count_addresses').html(selected_address_count);
+                            updateAddressCount();
                         }
                     }
             );
@@ -93,12 +93,16 @@
             selected_address_count = selected_address_count - p[0].lastChild.innerHTML.split('<br>').length;
             p.remove();
             selected_postcodes.splice($.inArray(this.options.title, selected_postcodes), 1);
-            $('#count_addresses').html(selected_address_count);
+            updateAddressCount();
         }
     }
 
     function resetView() {
         map.fitBounds(geojson);
+    }
+
+    function updateAddressCount(){
+        $('#count_addresses').html(selected_address_count);
     }
 
     function resetPage() {
