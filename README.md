@@ -82,8 +82,12 @@ grunt
 
 There are other data requirements.
 
-Visit the [Ordnance Survey OpenData](https://www.ordnancesurvey.co.uk/opendatadownload/products.html) site and obtain the Code-Point® Open package.
-This contains latitude and longitude data for every postcode in the country.
+Visit the [Ordnance Survey OpenData](https://www.ordnancesurvey.co.uk/opendatadownload/products.html) site and obtain the following packages:
+
+* Code-Point® Open - This contains latitude and longitude data for every postcode in the country.
+* Boundary-Line™ - This contains the boundaries for Scottish constituencies and regions, and Westminster constituencies
+* 
+
 
 The postcode_locator "fill_up_db" script expects a CSV file with the fields "postcode","latitude" and "longitude". Save that as "postcodes.csv", and run the following:
 
