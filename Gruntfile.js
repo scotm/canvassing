@@ -13,7 +13,8 @@ module.exports = function (grunt) {
                     'bower_components/fastclick/lib/fastclick.js',
                     'bower_components/modernizr/modernizr.js',
                     'bower_components/foundation/js/foundation.js',
-                    'bower_components/leaflet/dist/leaflet-src.js'
+                    'bower_components/leaflet/dist/leaflet-src.js',
+                    'js/accordion_mods.js'
                 ],
                 dest: 'js/production.js'
             }
