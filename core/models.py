@@ -130,7 +130,7 @@ class Ward(models.Model):
 region_mapping = {
     'name': 'NAME',
     'area_code': 'AREA_CODE',
-    'descriptio': 'DESCRIPTIO',
+    'description': 'DESCRIPTIO',
     'file_name': 'FILE_NAME',
     'number': 'NUMBER',
     'number0': 'NUMBER0',
@@ -152,7 +152,7 @@ class Region(models.Model):
     # https://www.ordnancesurvey.co.uk/opendatadownload/products.html
     name = models.CharField(max_length=60)
     area_code = models.CharField(max_length=3)
-    descriptio = models.CharField(max_length=50)
+    description = models.CharField(max_length=50)
     file_name = models.CharField(max_length=50)
     number = models.FloatField()
     number0 = models.FloatField()
@@ -172,7 +172,7 @@ class Region(models.Model):
         ordering = ('name',)
 
     def __unicode__(self):
-        return "%s: %s" % (self.name, self.descriptio)
+        return "%s: %s" % (self.name, self.description)
 
     @staticmethod
     def fill_up_db(shapefile, verbose=False):
@@ -231,7 +231,7 @@ class Region(models.Model):
         simplified_highlands = highlands.simplify(0.0005, preserve_topology=True)
 
         # And save it.
-        r = Region(name='Highlands and Islands SIMPLIFIED', descriptio='Scottish Parliament Electoral Region',
+        r = Region(name='Highlands and Islands SIMPLIFIED', description='Scottish Parliament Electoral Region',
                    hectares='4050000', geom=simplified_highlands, number=0.0, number0=0.0, polygon_id=0.0, unit_id=0.0,
                    code='',
                    area=0.0, type_code='', descript0='', type_cod0='', descript1='')

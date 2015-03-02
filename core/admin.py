@@ -20,7 +20,7 @@ class WardAdmin(admin.OSMGeoAdmin):
 
 class RegionAdmin(admin.OSMGeoAdmin):
     search_fields = ['name']
-    list_filter = ['descriptio']
+    list_filter = ['description']
 
 # Register your models here.
 admin.site.register(Domecile, DomecileAdmin)
