@@ -1,5 +1,5 @@
 from django.contrib.gis import admin
-from models import ElectoralRegistrationOffice, Contact, Domecile, Ward, Region
+from core.models import ElectoralRegistrationOffice, Contact, Domecile, Ward, Region
 
 
 class DomecileAdmin(admin.ModelAdmin):

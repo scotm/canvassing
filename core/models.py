@@ -1,5 +1,6 @@
 # coding=utf-8
 from __future__ import print_function
+
 from django.contrib.gis.db import models
 from django.core.urlresolvers import reverse
 
@@ -113,7 +114,7 @@ class Ward(models.Model):
         lm = LayerMapping(Ward, shapefile, ward_mapping, transform=True, encoding='iso-8859-1')
         lm.save(strict=True, verbose=verbose)
 
-        # Remove the non-Scottish wards
+        print("Removing the non-Scottish wards")
         Ward.objects.exclude(local_authority_code__startswith="S").delete()
 
     def get_absolute_url(self):
@@ -182,8 +183,8 @@ class Region(models.Model):
         lm.save(strict=True, verbose=verbose)
         print("Regions imported")
         for i in Region.objects.all():
-            i.name = i.name.replace(" P Const", '').replace(" PER", '').replace(" Co Const", '').replace(" Burgh Const",
-                                                                                                         '')
+            i.name = i.name.replace(" P Const", '').replace(" PER", '') \
+                .replace(" Co Const", '').replace(" Burgh Const", '')
             i.save(update_fields=['name'])
 
     @staticmethod
@@ -198,7 +199,7 @@ class Region(models.Model):
 
         # Prune out the islands without postcode points.
         no_postcode_pks = [region.pk for region in highlands_regions if
-                                not PostcodeMapping.objects.filter(point__within=region.geom).exists()]
+                           not PostcodeMapping.objects.filter(point__within=region.geom).exists()]
         Region.objects.filter(pk__in=no_postcode_pks).delete()
         print("Deleted those without postcodes")
 
@@ -233,8 +234,7 @@ class Region(models.Model):
         # And save it.
         r = Region(name='Highlands and Islands SIMPLIFIED', description='Scottish Parliament Electoral Region',
                    hectares='4050000', geom=simplified_highlands, number=0.0, number0=0.0, polygon_id=0.0, unit_id=0.0,
-                   code='',
-                   area=0.0, type_code='', descript0='', type_cod0='', descript1='')
+                   code='S', area=0.0, type_code='', descript0='', type_cod0='', descript1='')
         r.save()
 
         # Nuke the residue - We've already got a decent geom of it.
