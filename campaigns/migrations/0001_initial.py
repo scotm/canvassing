@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=100)),
-                ('parent_campaign', models.ForeignKey(to='campaigns.Campaign', null=True)),
+                ('parent_campaign', models.ForeignKey(to='campaigns.Campaign', null=True, blank=True)),
             ],
             options={
             },
