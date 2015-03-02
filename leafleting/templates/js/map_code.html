@@ -49,7 +49,6 @@
     var geojson = L.geoJson(data, {});
     var map = L.map('map').addLayer(mapboxTiles);
     geojson.addTo(map);
-    //map.setView([{{ object.centre_point.0 }}, {{ object.centre_point.1}}], 14);
     resetView();
 
     // Called when a marker is clicked.
@@ -102,6 +101,23 @@
         map.fitBounds(geojson);
     }
 
+    function resetPage() {
+        selected_postcodes = [];
+        selected_address_count = 0;
+        $('#postcodes_table').find('tr td').each(function () {
+            this.remove();
+        });
+        $("#run_name").val('');
+        $("#run_notes").val('');
+    }
+
+    function displayModal(html) {
+        modal = $('#myModal');
+        modal.html(html);
+        modal.foundation('reveal', 'open');
+
+    }
+
     function redrawMarkers() {
         if (map.getZoom() >= 16) {
             var m = map.getBounds();
@@ -138,7 +154,7 @@
     // Add the event handlers
     map.on('zoomend', redrawMarkers);
     map.on('dragend', redrawMarkers);
-    $("#resetView").click(function(){
+    $("#resetView").click(function () {
         resetView();
     });
 
