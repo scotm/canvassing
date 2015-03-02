@@ -4,7 +4,8 @@ __author__ = 'scotm'
 
 from django.core.management import BaseCommand
 
-from core.models import Region
+from core.models import Ward
+
 
 class Command(BaseCommand):
     help = 'Fills up the DB with regional data'
@@ -15,6 +16,4 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         print(args, options)
         for filename in args:
-            Region.fill_up_db(filename, verbose=True)
-
-        Region.clean_up()
+            Ward.fill_up_db(filename, verbose=True)
