@@ -50,7 +50,7 @@
     var map = L.map('map').addLayer(mapboxTiles);
     geojson.addTo(map);
     //map.setView([{{ object.centre_point.0 }}, {{ object.centre_point.1}}], 14);
-    map.fitBounds(geojson);
+    resetView();
 
     // Called when a marker is clicked.
     // If it's not been selected, make it red, and add to the report.
@@ -98,6 +98,10 @@
         }
     }
 
+    function resetView() {
+        map.fitBounds(geojson);
+    }
+
     function redrawMarkers() {
         if (map.getZoom() >= 16) {
             var m = map.getBounds();
@@ -134,5 +138,8 @@
     // Add the event handlers
     map.on('zoomend', redrawMarkers);
     map.on('dragend', redrawMarkers);
+    $("#resetView").click(function(){
+        resetView();
+    });
 
 </script>
