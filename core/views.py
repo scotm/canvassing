@@ -12,6 +12,7 @@ class ContactView(DetailView):
 
 class ContactListView(ListView):
     model = Contact
+    paginate_by = 100
 
 
 class DomecileMapView(JSONDataView):
@@ -51,3 +52,4 @@ class DomecileAddressView(JSONDataView):
         data = [unicode(y)+" (%d)" % y.num_contacts for y in sorted(queryset, key=cmp_to_key(domecile_cmp))]
         context.update({'data':data, 'postcode':postcode})
         return context
+

@@ -8,6 +8,10 @@ from django.contrib.gis.geos import Polygon
 from postcode_locator.models import PostcodeMapping
 
 
+class PoliticalParty(models.Model):
+    name = models.CharField(max_length=50)
+
+
 class ElectoralRegistrationOffice(models.Model):
     name = models.CharField(max_length=100, unique=True)
     short_name = models.CharField(max_length=20)
@@ -76,9 +80,21 @@ class Contact(models.Model):
     email = models.EmailField(max_length=255, blank=True)
     personal_phone = models.CharField(max_length=20, blank=True)
     opt_out = models.BooleanField(default=False)
+    westminster_preference = models.ForeignKey(PoliticalParty, blank=True, null=True, related_name='westminster')
+    holyrood_preference_constituency = models.ForeignKey(PoliticalParty, blank=True, null=True,
+                                                         related_name='holyrood_constituency')
+    holyrood_preference_region = models.ForeignKey(PoliticalParty, blank=True, null=True,
+                                                   related_name='holyrood_region')
+    council_preference = models.ForeignKey(PoliticalParty, blank=True, null=True, related_name='council')
+    european_preference = models.ForeignKey(PoliticalParty, blank=True, null=True, related_name='european')
 
     def __unicode__(self):
         return " ".join([getattr(self, x) for x in ["first_name", "initials", "surname", "suffix"] if getattr(self, x)])
+
+    def get_address(self):
+        return [getattr(self.domecile, x) for x in
+                ['address_1', 'address_2', 'address_3', 'address_4', 'address_5', 'address_6', 'address_7', 'address_8',
+                 'address_9', ] if getattr(self.domecile, x)]
 
 
 ward_mapping = {

@@ -1,5 +1,18 @@
 {% extends "base.html" %}
 {% block page_title %}{{ object.first_name }} {{ object.surname }}{% endblock %}
 {% block content %}
-    <h1>{{ object.first_name }} {{ object.surname }}</h1>
+    <div class="large-12 columns">
+        <div class="row">
+            <h1>{{ object.first_name }} {{ object.surname }}</h1>
+            {% if object.domecile.address_1 %}
+                {{ object.domecile.address_1 }}, <br/>
+            {% endif %}
+            {{ object.domecile.address_2 }}{{ object.domecile.address_3 }} {{ object.domecile.address_4 }}<br/>
+            {{ object.domecile.address_5 }} {{ object.domecile.address_6 }} {{ object.domecile.address_7 }}
+            {{ object.domecile.address_8 }} {{ object.domecile.address_9 }}
+            {% if object.domecile.postcode %}
+                <br/>{{ object.domecile.postcode }}
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}
