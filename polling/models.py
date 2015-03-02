@@ -2,7 +2,7 @@ from django.db import models
 
 from campaigns.models import Campaign
 from core.models import Contact
-from leafleting.models import CanvassRun
+from leafleting.models import CanvassRun, LeafletRun
 
 
 class CanvassQuestion(models.Model):
@@ -61,10 +61,4 @@ class CanvassQuestionaire(models.Model):
 class Conversation(models.Model):
     person = models.ForeignKey(Contact)
     notes = models.TextField()
-
-
-class PrintableCanvassingRun(models.Model):
-    run_code = models.CharField(max_length=15)
-    questionnaire = models.ForeignKey(CanvassQuestionaire)
-    canvass_run = models.ForeignKey(CanvassRun)
 
