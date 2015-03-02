@@ -11,7 +11,9 @@ module.exports = function (grunt) {
                     'bower_components/jquery-placeholder/jquery.placeholder.js',
                     'bower_components/jquery.cookie/jquery.cookie.js',
                     'bower_components/fastclick/lib/fastclick.js',
-                    'bower_components/foundation/js/foundation.js'
+                    'bower_components/modernizr/modernizr.js',
+                    'bower_components/foundation/js/foundation.js',
+                    'bower_components/leaflet/dist/leaflet-src.js'
                 ],
                 dest: 'js/production.js'
             }
@@ -38,7 +40,8 @@ module.exports = function (grunt) {
         sass: {
             options: {
                 sourceMap: true,
-                includePaths: ['bower_components/foundation/scss']
+                includePaths: ['bower_components/foundation/scss', 'static']
+                //outputStyle: 'compressed'
             },
             dist: {
                 files: {
@@ -49,11 +52,11 @@ module.exports = function (grunt) {
 
         watch: {
             src: {
-                files: ['lib/*.js',  '!lib/dontwatch.js'],
+                files: ['lib/*.js', '!lib/dontwatch.js'],
                 tasks: ['javascript']
             },
             sass: {
-                files: ['scss/**.scss',],
+                files: ['scss/**.scss'],
                 tasks: ['sass'],
                 options: {
                     livereload: true
@@ -69,15 +72,18 @@ module.exports = function (grunt) {
     });
 
 
-    // 3. Where we tell Grunt we plan to use this plug-in.
+    // 2. Where we tell Grunt we plan to use this plug-in.
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-imagemin');
     grunt.loadNpmTasks('grunt-sass');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
-    // 4. Where we tell Grunt what to do when we type "grunt" into the terminal.
-    grunt.registerTask('default', ['concat', 'uglify', 'imagemin', 'sass', 'watch']);
-    grunt.registerTask('javascript', ['concat', 'uglify']);
-    grunt.registerTask('styles', ['sass']);
+    // 3. Where we tell Grunt what to do when we type "grunt" into the terminal.
+    grunt.registerTask('default', ['concat', 'uglify', 'sass']);
+    grunt.registerTask('images', ['imagemin']);
+    grunt.registerTask('watch-changes', ['concat', 'uglify', 'imagemin', 'sass', 'watch']);
+    grunt.registerTask('js', ['concat', 'uglify']);
+    grunt.registerTask('css', ['sass']);
+    grunt.registerTask('all', ['concat', 'uglify', 'sass', 'imagemin']);
 };

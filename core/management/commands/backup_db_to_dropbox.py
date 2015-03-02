@@ -1,3 +1,4 @@
+from __future__ import print_function
 __author__ = 'scotm'
 import bz2
 from subprocess import call
@@ -21,18 +22,18 @@ class Command(BaseCommand):
         filename = 'canvassing_db_%s.pgsql' % now
         with open(filename, 'wb') as myfile:
             call(["pg_dump", db_name], stdout=myfile)
-        print "Dump complete - compressing."
+        print("Dump complete - compressing.")
         call(["bzip2", filename])
         filename += ".bz2"
-        print "Database successfully dumped. Uploading to Dropbox."
+        print("Database successfully dumped. Uploading to Dropbox.")
         with open(filename) as myfile:
             try:
                 client.file_create_folder(now)
-                print "Creating folder"
+                print("Creating folder")
             except dropbox.rest.ErrorResponse as e:
                 if e.status != 403:
                     raise
-            print "Uploading backup file: %s ..." % filename,
+            print("Uploading backup file: %s ..." % filename)
             response = client.put_file("%s" % (filename), myfile)
-            print " done. %s" % response['size']
+            print(" done. %s" % response['size'])
         os.unlink(filename)

@@ -1,5 +1,5 @@
 from django.contrib.gis import admin
-from models import ElectoralRegistrationOffice, Contact, Domecile, Ward, Region
+from core.models import ElectoralRegistrationOffice, Contact, Domecile, Ward, Region
 
 
 class DomecileAdmin(admin.ModelAdmin):
@@ -20,7 +20,7 @@ class WardAdmin(admin.OSMGeoAdmin):
 
 class RegionAdmin(admin.OSMGeoAdmin):
     search_fields = ['name']
-    list_filter = ['descriptio']
+    list_filter = ['description']
 
 # Register your models here.
 admin.site.register(Domecile, DomecileAdmin)

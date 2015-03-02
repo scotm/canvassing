@@ -5,4 +5,5 @@ ipython
 psycopg2
 six
 sqlparse
-wsgiref
+git+https://github.com/scotm/django-generic-json-views.git
+Unipath

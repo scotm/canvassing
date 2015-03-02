@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=60)),
                 ('area_code', models.CharField(max_length=3)),
-                ('descriptio', models.CharField(max_length=50)),
+                ('description', models.CharField(max_length=50)),
                 ('file_name', models.CharField(max_length=50)),
                 ('number', models.FloatField()),
                 ('number0', models.FloatField()),

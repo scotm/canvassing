@@ -1,10 +1,12 @@
+from __future__ import print_function
+
 __author__ = 'scotm'
 import csv
 from itertools import groupby
-from datetime import date
 
 from django.core.management import BaseCommand
 
+from datetime import date
 from core.models import Domecile, Contact, ElectoralRegistrationOffice
 
 
@@ -35,10 +37,8 @@ def groupby_key(x):
 
 class Command(BaseCommand):
     help = 'Fills up the DB with elector data'
-
-    def __init__(self):
-        super(Command, self).__init__()
-        self.ero = ElectoralRegistrationOffice.objects.get(name='Dundee')
+    ero_details = {'name': 'Dundee', 'short_name': 'dundee', 'address_1': '18 City Square', 'address_2': '',
+                   'address_3': 'Dundee', 'postcode': 'DD1 9XE'}
 
     def add_arguments(self, parser):
         parser.add_argument('filename', nargs=1, type=unicode)
@@ -46,11 +46,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         filename = args[0]
         with open(filename) as myfile:
-            print "Reading electoral data..."
+            print("Reading electoral data...")
             reader = csv.DictReader(myfile)
             data = [transform_dict(x, rename_dict) for x in reader]
             data.sort(key=groupby_key)
-            print "done - %d records read" % len(data)
+            print("done - %d records read" % len(data))
 
         records_done = 0
         temp_list = []
@@ -79,7 +79,7 @@ class Command(BaseCommand):
                     contact_obj.domecile = domecile_obj
                     temp_list.append(contact_obj)
                     if records_done % 1000 == 0:
-                        print "%d records done - last one %s, %s" % (records_done, contact_obj, domecile_obj)
+                        print("%d records done - last one %s, %s" % (records_done, contact_obj, domecile_obj))
                         Contact.objects.bulk_create(temp_list)
                         temp_list = []
 

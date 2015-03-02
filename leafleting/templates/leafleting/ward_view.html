@@ -2,11 +2,6 @@
 {% load static %}
 {% block extrahead %}
     <link rel="stylesheet" href="{% static 'leaflet.css' %}"/>
-    <style>
-        #map {
-            height: 500px;
-        }
-    </style>
 {% endblock %}
 
 {% block content %}
@@ -18,11 +13,14 @@
 
             <form id="postcode_form">
                 <div class="row">
-                    <div class="large-12 columns">
+                    <div class="large-10 columns">
                         <label>Postcode
                             <input type="text" placeholder="Put a postcode in here - and the map will go there"
                                    id="postcode_input"/>
                         </label>
+                    </div>
+                    <div class="large-2 columns">
+                        <button id="resetView">View Ward</button>
                     </div>
                 </div>
             </form>
@@ -56,6 +54,5 @@
 {% endblock %}
 
 {% block before_body_close %}
-    <script src="{% static 'leaflet.js' %}"></script>
     {% include "js/map_code.html" %}
 {% endblock %}

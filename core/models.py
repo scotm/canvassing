@@ -1,3 +1,6 @@
+# coding=utf-8
+from __future__ import print_function
+
 from django.contrib.gis.db import models
 from django.core.urlresolvers import reverse
 
@@ -57,7 +60,6 @@ class Domecile(models.Model):
         return Domecile.get_domeciles(*args, **kwargs).distinct('postcode')
 
 
-
 class Contact(models.Model):
     pd = models.CharField(max_length=5, db_index=True)
     ero_number = models.IntegerField(db_index=True)
@@ -89,7 +91,7 @@ ward_mapping = {
 
 class Ward(models.Model):
     # Based on the ward shape files available from:
-    # https://geoportal.statistics.gov.uk/geoportal/catalog/content/filelist.page
+    # https://geoportal.statistics.gov.uk/Docs/Boundaries/Wards_(GB)_2014_Boundaries_(Full_Extent).zip
 
     ward_code = models.CharField(max_length=9)
     ward_name = models.CharField(max_length=56)
@@ -112,6 +114,9 @@ class Ward(models.Model):
         lm = LayerMapping(Ward, shapefile, ward_mapping, transform=True, encoding='iso-8859-1')
         lm.save(strict=True, verbose=verbose)
 
+        print("Removing the non-Scottish wards")
+        Ward.objects.exclude(local_authority_code__startswith="S").delete()
+
     def get_absolute_url(self):
         return reverse('ward_view', args=[self.pk])
 
@@ -123,12 +128,10 @@ class Ward(models.Model):
         return self.geom.simplify(simplify_factor).json
 
 
-
-
 region_mapping = {
     'name': 'NAME',
     'area_code': 'AREA_CODE',
-    'descriptio': 'DESCRIPTIO',
+    'description': 'DESCRIPTIO',
     'file_name': 'FILE_NAME',
     'number': 'NUMBER',
     'number0': 'NUMBER0',
@@ -146,11 +149,11 @@ region_mapping = {
 
 
 class Region(models.Model):
-    # Data based on the boundary lines from OS Open Data
+    # Data based on the Boundary-Line™ program from OS Open Data
     # https://www.ordnancesurvey.co.uk/opendatadownload/products.html
     name = models.CharField(max_length=60)
     area_code = models.CharField(max_length=3)
-    descriptio = models.CharField(max_length=50)
+    description = models.CharField(max_length=50)
     file_name = models.CharField(max_length=50)
     number = models.FloatField()
     number0 = models.FloatField()
@@ -170,7 +173,7 @@ class Region(models.Model):
         ordering = ('name',)
 
     def __unicode__(self):
-        return "%s: %s" % (self.name, self.descriptio)
+        return "%s: %s" % (self.name, self.description)
 
     @staticmethod
     def fill_up_db(shapefile, verbose=False):
@@ -178,28 +181,29 @@ class Region(models.Model):
 
         lm = LayerMapping(Region, shapefile, region_mapping, transform=True, encoding='iso-8859-1')
         lm.save(strict=True, verbose=verbose)
-        print "Deleting Welsh bits"
-        Region.objects.filter(descriptio__icontains='Welsh Assembly').delete()
-        print "Regions imported"
+        print("Regions imported")
         for i in Region.objects.all():
-            i.name = i.name.replace(" P Const", '').replace(" PER", '').replace(" Co Const", '').replace(" Burgh Const",
-                                                                                                         '')
+            i.name = i.name.replace(" P Const", '').replace(" PER", '') \
+                .replace(" Co Const", '').replace(" Burgh Const", '')
             i.save(update_fields=['name'])
 
     @staticmethod
-    def clean_up_highlands():
+    def clean_up():
+        # We're only interested in Scottish constituencies - so delete the rest - their code begins with an "S".
+        Region.objects.exclude(code__startswith="S").delete()
+
+        print("Cleaning up the Highlands and Islands electoral region")
         # The Highlands and Islands electoral region is a massive pain in the arse.
-        # Many, many pieces, small islands and areas.
-        highlands = Region.objects.filter(name='Highlands and Islands')
+        # Many, many pieces, small islands and areas - hardly any of them usable.
+        highlands_regions = Region.objects.filter(name='Highlands and Islands')
 
         # Prune out the islands without postcode points.
-        for i, region in enumerate(highlands[:]):
-            if not PostcodeMapping.objects.filter(point__within=region.geom).exists():
-                print "Deleting %d" % i
-                region.delete()
-            else:
-                print "Not deleting %d" % i
+        no_postcode_pks = [region.pk for region in highlands_regions if
+                           not PostcodeMapping.objects.filter(point__within=region.geom).exists()]
+        Region.objects.filter(pk__in=no_postcode_pks).delete()
+        print("Deleted those without postcodes")
 
+        print("Unifying Highlands & Islands geometry...")
         highlands = Region.objects.filter(name='Highlands and Islands').values_list('geom', flat=True)
         highlands = sorted(highlands, key=lambda x: len(x[0][0]), reverse=True)  # Sort them, so
         keep_separate = highlands.pop(0)  # This one is huge, and will slow down processing of the rest.
@@ -215,21 +219,26 @@ class Region(models.Model):
                     break
                 geom1, geom2 = highlands.pop(), highlands.pop()
                 new_highlands.append(geom1.union(geom2))
-                print len(new_highlands)
-                print highlands, new_highlands
             highlands = new_highlands
-            print len(highlands)
             if len(highlands) == 1:  # If there's only one left, we're done.
                 break
-            print "outer iteration done"
 
         highlands = highlands[0].union(keep_separate)  # Now join the huge one to the other ones
-        # Simplify the region significantly.
-        highlands.simplify(0.0005, preserve_topology=True)
+        print("done")
 
-        r = Region(name='Highlands and Islands COMPLETE', descriptio='Scottish Parliament Electoral Region',
-                   hectares='4050000', geom=highlands, number=0.0, number0=0.0, polygon_id=0.0, unit_id=0.0, code='',
-                   area=0.0, type_code='', descript0='', type_cod0='', descript1='')
+        # Simplify the region.
+        print("Simplifying the geometry a little, for ease of future computation")
+
+        simplified_highlands = highlands.simplify(0.0005, preserve_topology=True)
+
+        # And save it.
+        r = Region(name='Highlands and Islands SIMPLIFIED', description='Scottish Parliament Electoral Region',
+                   hectares='4050000', geom=simplified_highlands, number=0.0, number0=0.0, polygon_id=0.0, unit_id=0.0,
+                   code='S', area=0.0, type_code='', descript0='', type_cod0='', descript1='')
         r.save()
+
+        # Nuke the residue - We've already got a decent geom of it.
+        Region.objects.filter(name='Highlands and Islands').delete()
+
 
 
