@@ -13,6 +13,14 @@ from __future__ import print_function
 import os
 from unipath import Path
 
+try:
+    import psycopg2
+except ImportError:
+    # Fall back to psycopg2-ctypes
+    from psycopg2cffi import compat
+    compat.register()
+
+
 BASE_DIR = Path(os.path.dirname(__file__)).parent.parent
 
 
