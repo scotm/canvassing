@@ -2,7 +2,6 @@ from django.db import models
 
 # Create your models here.
 from core.models import Domecile
-from campaigns.models import Campaign
 
 
 class LeafletRun(models.Model):
@@ -13,3 +12,6 @@ class LeafletRun(models.Model):
     def count(self):
         return Domecile.objects.filter(postcode_point__in=self.postcode_points.all()).count()
 
+
+class CanvassRun(LeafletRun):
+    pass

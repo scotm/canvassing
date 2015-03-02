@@ -17,10 +17,24 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=50)),
                 ('notes', models.TextField()),
-                ('postcode_points', models.ManyToManyField(to='postcode_locator.PostcodeMapping')),
             ],
             options={
             },
             bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='CanvassRun',
+            fields=[
+                ('leafletrun_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='leafleting.LeafletRun')),
+            ],
+            options={
+            },
+            bases=('leafleting.leafletrun',),
+        ),
+        migrations.AddField(
+            model_name='leafletrun',
+            name='postcode_points',
+            field=models.ManyToManyField(to='postcode_locator.PostcodeMapping'),
+            preserve_default=True,
         ),
     ]

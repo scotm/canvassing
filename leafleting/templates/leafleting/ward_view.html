@@ -7,7 +7,8 @@
 {% block content %}
     <div class="large-12 columns">
         <div class="row">
-            <h1>{{ object.local_authority_name }}: {{ object.ward_name }}</h1>
+            <h1>{% block purpose %}Leafleting{% endblock %}</h1>
+            <h2>{{ object.local_authority_name }}: {{ object.ward_name }}</h2>
 
             <p>Zoom the map, and pick off the postcodes you'd like to add to this run.</p>
 
