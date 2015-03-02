@@ -40,6 +40,13 @@ class Command(BaseCommand):
     ero_details = {'name': 'Dundee', 'short_name': 'dundee', 'address_1': '18 City Square', 'address_2': '',
                    'address_3': 'Dundee', 'postcode': 'DD1 9XE'}
 
+    def __init__(self):
+        super(Command, self).__init__()
+        self.ero = ElectoralRegistrationOffice.objects.filter(name='Dundee').first()
+        if not self.ero:
+            self.ero = ElectoralRegistrationOffice(**self.ero_details)
+            self.ero.save()
+
     def add_arguments(self, parser):
         parser.add_argument('filename', nargs=1, type=unicode)
 
@@ -82,8 +89,3 @@ class Command(BaseCommand):
                         print("%d records done - last one %s, %s" % (records_done, contact_obj, domecile_obj))
                         Contact.objects.bulk_create(temp_list)
                         temp_list = []
-
-
-
-
-
