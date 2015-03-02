@@ -35,15 +35,4 @@ class Migration(migrations.Migration):
             },
             bases=(models.Model,),
         ),
-        migrations.CreateModel(
-            name='LeafletDrop',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('households', models.ManyToManyField(to='core.Domecile')),
-                ('leaflet', models.ForeignKey(to='campaigns.DownloadFile')),
-            ],
-            options={
-            },
-            bases=(models.Model,),
-        ),
     ]
