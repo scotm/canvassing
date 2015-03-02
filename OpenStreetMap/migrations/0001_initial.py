@@ -85,7 +85,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'planet_osm_line',
-                'managed': False,
             },
             bases=(models.Model,),
         ),
@@ -165,7 +164,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'planet_osm_point',
-                'managed': False,
             },
             bases=(models.Model,),
         ),
@@ -244,7 +242,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'planet_osm_polygon',
-                'managed': False,
             },
             bases=(models.Model,),
         ),
@@ -323,7 +320,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'planet_osm_roads',
-                'managed': False,
             },
             bases=(models.Model,),
         ),
