@@ -1,9 +1,13 @@
 from django.contrib.auth import authenticate
+from functools import cmp_to_key
+from django.contrib.auth import authenticate, logout
 from django.contrib.auth import login
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from braces.views import LoginRequiredMixin, PermissionRequiredMixin, GroupRequiredMixin
+
 from django.views.generic import DetailView, ListView, TemplateView
 from json_views.views import JSONDataView
 
@@ -25,16 +29,16 @@ def logout_user(request):
     return HttpResponseRedirect('/')
 
 
-class ContactView(DetailView):
+class ContactView(LoginRequiredMixin, DetailView):
     model = Contact
 
 
-class ContactListView(ListView):
+class ContactListView(LoginRequiredMixin, ListView):
     model = Contact
     paginate_by = 100
 
 
-class DomecileMapView(JSONDataView):
+class DomecileMapView(LoginRequiredMixin, JSONDataView):
     def get_context_data(self, **kwargs):
         context = super(DomecileMapView, self).get_context_data(**kwargs)
         region = self.request.GET['region']
@@ -46,7 +50,7 @@ class DomecileMapView(JSONDataView):
         return context
 
 
-class DomecileAddressView(JSONDataView):
+class DomecileAddressView(LoginRequiredMixin, JSONDataView):
     def get_context_data(self, **kwargs):
         context = super(DomecileAddressView, self).get_context_data(**kwargs)
         postcode = self.request.GET['postcode']
@@ -55,20 +59,20 @@ class DomecileAddressView(JSONDataView):
         return context
 
 
-class WardListView(ListView):
+class WardListView(LoginRequiredMixin, ListView):
     model = Ward
 
     def get_queryset(self):
         return super(WardListView, self).get_queryset()
 
 
-class WardView(DetailView):
+class WardView(LoginRequiredMixin, DetailView):
     model = Ward
 
     def get_context_data(self, **kwargs):
         return super(WardView, self).get_context_data(**kwargs)
 
-class HomepageView(TemplateView):
+class HomepageView(LoginRequiredMixin, TemplateView):
     template_name='homepage.html'
 
     def get_context_data(self, **kwargs):

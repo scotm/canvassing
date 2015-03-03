@@ -3,27 +3,33 @@
 {% block main_header %}COMRADE{% endblock %}
 {% block summary %}{% endblock %}
 {% block content %}
-    <h1>COMRADE: Please Log In</h1>
-    <div id="login">
-        <form class="form-horizontal" name="LoginForm" action="{% url 'login' %}" method="post">
-            {% csrf_token %}
-            {% if next %}
-                <input type="hidden" name="next" value="{{ next }}"/>
-            {% endif %}
-                <label class="control-label" for="username">Username<input type="text" id="username" name="username" placeholder="Username"></label>
-                <label class="control-label" for="password">Password<input type="password" name="password" id="password" placeholder="Password"></label>
-            <button type="submit" class="btn btn-primary">
-                {% block buttontext %}Submit{% endblock %}
-            </button>
-        </form>
-    </div>
-    <div data-alert class="alert-box warning radius" role="alert">
-        <p>Unauthorised access is prohibited and constitutes an offence under the Computer Misuse Act 1990. It may
-            result in criminal prosecution punishable by up to 6 months imprisonment or fine not exceeding £5000.00, or
-            both, and a claim for civil damages.</p>
+    <div class="large-6 large-offset-3 columns">
+        <h1>Please Log In</h1>
 
-        <p>Authorised users are reminded to keep their User name and password confidential and to contact <a
-                href="mailto:scott.scotm@gmail.com">Scott Macdonald</a> immediately they become aware of any
-            unauthorised user obtaining their User name and password."</p>
+        <div id="login">
+            <form class="form-horizontal" name="LoginForm" action="{% url 'login' %}" method="post">
+                {% csrf_token %}
+                {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}"/>
+                {% endif %}
+                <label class="control-label" for="username">Username<input type="text" id="username" name="username"
+                                                                           placeholder="Username"></label>
+                <label class="control-label" for="password">Password<input type="password" name="password" id="password"
+                                                                           placeholder="Password"></label>
+                <button type="submit" class="btn btn-primary">
+                    {% block buttontext %}Submit{% endblock %}
+                </button>
+            </form>
+        </div>
+        <div data-alert class="alert-box warning radius" role="alert">
+            <p>Unauthorised access is prohibited and constitutes an offence under the Computer Misuse Act 1990. It may
+                result in criminal prosecution punishable by up to 6 months imprisonment or fine not exceeding £5000.00,
+                or
+                both, and a claim for civil damages.</p>
+
+            <p>Authorised users are reminded to keep their User name and password confidential and to contact <a
+                    href="mailto:scott.scotm@gmail.com">Scott Macdonald</a> immediately they become aware of any
+                unauthorised user obtaining their User name and password."</p>
+        </div>
     </div>
 {% endblock %}

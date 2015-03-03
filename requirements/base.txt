@@ -10,3 +10,4 @@ Unipath
 factory-boy
 django-sortedm2m
 jsonfield
+django-braces

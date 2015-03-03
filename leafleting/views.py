@@ -1,12 +1,13 @@
 from __future__ import print_function
 # Create your views here.
+from braces.views import LoginRequiredMixin
 from django.views.generic import ListView
 from json_views.views import JSONDataView
 
 from leafleting.models import LeafletRun, CanvassRun
 from postcode_locator.models import PostcodeMapping
 
-class LeafletRunCreate(JSONDataView):
+class LeafletRunCreate(LoginRequiredMixin, JSONDataView):
     model = LeafletRun
     def get_context_data(self, **kwargs):
         context = super(LeafletRunCreate, self).get_context_data(**kwargs)
@@ -21,11 +22,11 @@ class LeafletRunCreate(JSONDataView):
         context.update({'outcome':'success'})
         return context
 
-class LeafletRunListView(ListView):
+class LeafletRunListView(LoginRequiredMixin, ListView):
     model = LeafletRun
 
 class CanvassRunCreate(LeafletRunCreate):
     model = CanvassRun
 
-class CanvassRunListView(ListView):
+class CanvassRunListView(LoginRequiredMixin, ListView):
     model = CanvassRun
