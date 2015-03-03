@@ -10,6 +10,7 @@ urlpatterns = patterns('',
                        # url(r'^$', 'ssp_canvassing.views.home', name='home'),
                        # url(r'^blog/', include('blog.urls')),
 
+                       url(r'^why_canvass/$', TemplateView.as_view(template_name='why_canvass.html'), name='why_canvass'),
                        url(r'^admin/', include(admin.site.urls)),
                        url(r'^base/', TemplateView.as_view(template_name='base.html')),
                        url(r'^contact/', include('core.urls')),
