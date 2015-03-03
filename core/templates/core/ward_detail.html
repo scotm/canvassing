@@ -6,56 +6,56 @@
 
 {% block content %}
     <div class="large-12 columns">
-        <div class="row">
-            <h1>{% block purpose %}Leafleting{% endblock %}</h1>
-            <h2>{{ object.local_authority_name }}: {{ object.ward_name }}</h2>
+        <h1>{% block purpose %}Leafleting{% endblock %}</h1>
 
-            <p>Zoom the map, and pick off the postcodes you'd like to add to this run.</p>
+        <h2>{{ object.local_authority_name }}: {{ object.ward_name }}</h2>
 
-            <form id="postcode_form">
+        <p>Zoom the map, and pick off the postcodes you'd like to add to this run.</p>
+
+        <form id="postcode_form">
+            <div class="row">
+                <div class="large-9 columns">
+                    <label>Postcode
+                        <input type="text" placeholder="Put a postcode in here - and the map will go there"
+                               id="postcode_input"/>
+                    </label>
+                </div>
+                <div class="large-3 columns text-center">
+                    <button id="resetView">View Entire Ward</button>
+                </div>
+            </div>
+        </form>
+        <div id="map"></div>
+        <hr>
+        <form id="run_information">
+            <div class="large-12 columns">
                 <div class="row">
-                    <div class="large-9 columns">
-                        <label>Postcode
-                            <input type="text" placeholder="Put a postcode in here - and the map will go there"
-                                   id="postcode_input"/>
+                    <div class="large-12 columns">
+                        <label>A name for this run:
+                            <input type="text" placeholder="Give this run a memorable title."
+                                   id="run_name"/>
                         </label>
                     </div>
-                    <div class="large-3 columns text-center">
-                        <button id="resetView">View Entire Ward</button>
-                    </div>
                 </div>
-            </form>
-            <div id="map"></div>
-            <hr>
-            <form id="run_information">
-                <div class="large-12 columns">
-                    <div class="row">
-                        <div class="large-12 columns">
-                            <label>A name for this run:
-                                <input type="text" placeholder="Give this run a memorable title."
-                                       id="run_name"/>
-                            </label>
-                        </div>
-                    </div>
-                    <label>Notes on this run:
+                <label>Notes on this run:
                         <textarea
                                 placeholder="Notes - are there tenements, big driveways, urban area, buzzers? Write these here."
                                 id="run_notes"></textarea>
-                    </label>
-                    <button id="save_run">Save Run</button>
-                </div>
-            </form>
-            <p>There are <span id="count_addresses">0</span> addresses on this run so far.</p>
-            <table id="postcodes_table">
-                <thead>
-                <tr>
-                    <th width="150">Postcode</th>
-                    <th>Addresses</th>
-                </tr>
-            </table>
-        </div>
-        <div id="myModal" class="reveal-modal" data-reveal></div>
+                </label>
+                <button id="save_run">Save Run</button>
+            </div>
+        </form>
+        <p>There are <span id="count_addresses">0</span> addresses on this run so far.</p>
+        <table id="postcodes_table">
+            <thead>
+            <tr>
+                <th width="150">Postcode</th>
+                <th>Addresses</th>
+            </tr>
+        </table>
     </div>
+    <div id="myModal" class="reveal-modal" data-reveal></div>
+
 {% endblock %}
 
 {% block before_body_close %}
@@ -79,7 +79,7 @@
             $.ajax({
                 url: '{% url 'leaflet_run_create' %}',
                 cache: false,
-                type:'GET',
+                type: 'GET',
                 data: {'run_name': run_name, 'selected_postcodes[]': selected_postcodes, 'run_notes': run_notes},
                 success: function (data) {
                     displayModal("<h2>Success</h2><p>The run was stored successfully</p>");

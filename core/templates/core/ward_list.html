@@ -1,36 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="large-12 columns">
-        <div class="row">
-            <div class="large-9 columns">
-                <div class="row">
-                    <h1>Local Authorities in Scotland</h1>
-                    {% regroup object_list by local_authority_name as ward_list %}
-                    <ul class="accordion" data-accordion>
-                        {% for local_authority in ward_list %}
-                            <li class="accordion-navigation">
-                                <a href="#box{{ forloop.counter }}">{{ local_authority.grouper }}</a>
+    <div class="large-9 columns">
+        <h1>Local Authorities in Scotland</h1>
+        {% regroup object_list by local_authority_name as ward_list %}
+        <ul class="accordion" data-accordion>
+            {% for local_authority in ward_list %}
+                <li class="accordion-navigation">
+                    <a href="#box{{ forloop.counter }}">{{ local_authority.grouper }}</a>
 
-                                <div id="box{{ forloop.counter }}" class="content">
-                                    <ul>
-                                        {% for object in local_authority.list %}
-                                            <li><p><a href='{{ object.get_absolute_url }}'>{{ object.ward_name }}</a>
-                                            </p></li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-            <div class="large-3 columns">
-                <div class="row">
-                    <p>Select the local authority area, then the ward you wish to pick from.</p>
-                </div>
-            </div>
-
-        </div>
+                    <div id="box{{ forloop.counter }}" class="content">
+                        <ul>
+                            {% for object in local_authority.list %}
+                                <li><p><a href='{{ object.get_absolute_url }}'>{{ object.ward_name }}</a>
+                                </p></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="large-3 columns">
+        <p>Select the local authority area, then the ward you wish to pick from.</p>
     </div>
 {% endblock %}

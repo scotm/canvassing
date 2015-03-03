@@ -8,12 +8,12 @@
     <link rel="stylesheet" href="{% static "css/main.css" %}"/>
     <link href='http://fonts.googleapis.com/css?family=Roboto:400,700|Roboto+Slab:400,700' rel='stylesheet'
           type='text/css'>
-{% block extrahead %}{% endblock %}
+    {% block extrahead %}{% endblock %}
 </head>
 <body>
 {% include "header.html" %}
-{% block content %}
-    <div class="row">
+<div class="row">
+    {% block content %}
         <div class="large-9 columns" role="content">
             <article>
                 <h3><a href="#">Get out and canvass</a></h3>
@@ -30,13 +30,19 @@
 
                         <p>Boudin aliqua adipisicing rump corned beef. Nulla corned beef sunt ball tip, qui bresaola
                             enim jowl. Capicola short ribs minim salami nulla nostrud pastrami.</p>
-                        <p>Pork drumstick turkey fugiat. Tri-tip elit turducken pork chop in. Swine short ribs meatball irure
-                            bacon nulla pork belly cupidatat meatloaf cow. Nulla corned beef sunt ball tip, qui bresaola enim
-                            jowl. Capicola short ribs minim salami nulla nostrud pastrami. Nulla corned beef sunt ball tip, qui
+
+                        <p>Pork drumstick turkey fugiat. Tri-tip elit turducken pork chop in. Swine short ribs meatball
+                            irure
+                            bacon nulla pork belly cupidatat meatloaf cow. Nulla corned beef sunt ball tip, qui bresaola
+                            enim
+                            jowl. Capicola short ribs minim salami nulla nostrud pastrami. Nulla corned beef sunt ball
+                            tip, qui
                             bresaola enim jowl. Capicola short ribs minim salami nulla nostrud pastrami.</p>
 
-                        <p>Pork drumstick turkey fugiat. Tri-tip elit turducken pork chop in. Swine short ribs meatball irure
-                            bacon nulla pork belly cupidatat meatloaf cow. Nulla corned beef sunt ball tip, qui bresaola enim
+                        <p>Pork drumstick turkey fugiat. Tri-tip elit turducken pork chop in. Swine short ribs meatball
+                            irure
+                            bacon nulla pork belly cupidatat meatloaf cow. Nulla corned beef sunt ball tip, qui bresaola
+                            enim
                             jowl. Capicola short ribs minim salami nulla nostrud pastrami.</p>
                     </div>
                 </div>
@@ -65,8 +71,8 @@
                 <a href="#">Read More →</a>
             </div>
         </aside>
-    </div>
-{% endblock %}
+    {% endblock %}
+</div>
 {% include "footer.html" %}
 <script src="{% static "js/production.min.js" %}"></script>
 <script>
