@@ -55,4 +55,6 @@ ssp_canvassing/settings/secrets.py
 postcode_locator
 bower_components
 node_modules
-data
+data/*
+
+!data/reset.sh
