@@ -96,7 +96,7 @@ $font-family-serif: "Roboto Slab", Georgia, Cambria, "Times New Roman", Times, s
 
 // We use these to define default font weights
 // $font-weight-normal: normal !default;
-// $font-weight-bold: bold !default;
+$font-weight-bold: bold !default;
 
 // $white       : #FFFFFF;
 // $ghost       : #FAFAFA;
@@ -201,7 +201,7 @@ $global-radius: 6px;
 
 // We use these to control header font styles
 // $header-font-family: $body-font-family;
-// $header-font-weight: $font-weight-normal;
+$header-font-weight: $font-weight-bold;
 // $header-font-style: normal;
 // $header-font-color: $jet;
 // $header-line-height: 1.4;
