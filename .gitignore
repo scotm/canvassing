@@ -56,5 +56,10 @@ postcode_locator
 bower_components
 node_modules
 data/*
+css/*
+js/*
+static/*
 
 !data/reset.sh
+!js/.js_files_go_here
+!css/.css_files_go_here
