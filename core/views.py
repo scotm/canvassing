@@ -53,3 +53,16 @@ class DomecileAddressView(JSONDataView):
         context.update({'data':data, 'postcode':postcode})
         return context
 
+
+class WardListView(ListView):
+    model = Ward
+
+    def get_queryset(self):
+        return super(WardListView, self).get_queryset()
+
+
+class WardView(DetailView):
+    model = Ward
+
+    def get_context_data(self, **kwargs):
+        return super(WardView, self).get_context_data(**kwargs)

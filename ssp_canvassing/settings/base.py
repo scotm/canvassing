@@ -18,11 +18,10 @@ try:
 except ImportError:
     # Fall back to psycopg2-ctypes
     from psycopg2cffi import compat
+
     compat.register()
 
-
 BASE_DIR = Path(os.path.dirname(__file__)).parent.parent
-
 
 ADMINS = (
 )
@@ -106,6 +105,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',
+                    'django.template.loaders.app_directories.Loader')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
