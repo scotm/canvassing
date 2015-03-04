@@ -28,22 +28,15 @@
         <div id="map"></div>
         <hr>
         <form id="run_information">
-            <div class="large-12 columns">
-                <div class="row">
-                    <div class="large-12 columns">
-                        <label>A name for this run:
-                            <input type="text" placeholder="Give this run a memorable title."
-                                   id="run_name"/>
-                        </label>
-                    </div>
-                </div>
-                <label>Notes on this run:
-                        <textarea
-                                placeholder="Notes - are there tenements, big driveways, urban area, buzzers? Write these here."
-                                id="run_notes"></textarea>
-                </label>
-                <button id="save_run">Save Run</button>
-            </div>
+            <label>A name for this run:
+                <input type="text" placeholder="Give this run a memorable title."
+                       id="run_name"/>
+            </label>
+            <label>Notes on this run:
+                <textarea placeholder="Tenements, big driveways, urban area, buzzers? Write these here."
+                          id="run_notes"></textarea>
+            </label>
+            <button id="save_run">Save Run</button>
         </form>
         <p>There are <span id="count_addresses">0</span> addresses on this run so far.</p>
         <table id="postcodes_table">
