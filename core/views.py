@@ -1,5 +1,3 @@
-from functools import cmp_to_key
-
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.core.urlresolvers import reverse_lazy
@@ -10,7 +8,6 @@ from django.views.generic import DetailView, ListView, TemplateView
 from json_views.views import JSONDataView
 
 from core.models import Contact, Domecile, Ward
-from core.utilities.domecile_comparisons import domecile_cmp
 
 
 def login_user(request):
@@ -51,11 +48,9 @@ class DomecileMapView(JSONDataView):
 
 class DomecileAddressView(JSONDataView):
     def get_context_data(self, **kwargs):
-        from django.db.models import Count
         context = super(DomecileAddressView, self).get_context_data(**kwargs)
         postcode = self.request.GET['postcode']
-        queryset = Domecile.objects.filter(postcode=postcode).annotate(num_contacts=Count('contact'))
-        data = [unicode(y)+" (%d)" % y.num_contacts for y in sorted(queryset, key=cmp_to_key(domecile_cmp))]
+        data = Domecile.get_sorted_addresses(postcode)
         context.update({'data':data, 'postcode':postcode})
         return context
 

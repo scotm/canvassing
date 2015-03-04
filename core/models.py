@@ -1,9 +1,12 @@
 # coding=utf-8
 from __future__ import print_function
+from functools import cmp_to_key
 
 from django.contrib.gis.db import models
 from django.core.urlresolvers import reverse
 from django.contrib.gis.geos import Polygon
+from django.db.models.aggregates import Count
+from core.utilities.domecile_comparisons import domecile_cmp
 
 from postcode_locator.models import PostcodeMapping
 
@@ -64,6 +67,13 @@ class Domecile(models.Model):
     @staticmethod
     def get_postcode_points(*args, **kwargs):
         return Domecile.get_domeciles(*args, **kwargs).distinct('postcode')
+
+    @staticmethod
+    def get_sorted_addresses(postcode):
+        queryset = Domecile.objects.filter(postcode=postcode).annotate(num_contacts=Count('contact'))
+        data = [unicode(y)+" (%d)" % y.num_contacts for y in sorted(queryset, key=cmp_to_key(domecile_cmp))]
+        return data
+
 
 
 class Contact(models.Model):
