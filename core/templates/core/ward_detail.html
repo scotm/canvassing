@@ -68,18 +68,19 @@
             if (error_messages.length > 0) {
                 displayModal("<h2>Errors:</h2>" + error_messages.join("<br />"));
                 error_messages = [];
+            } else {
+                $.ajax({
+                    url: '{% url 'leaflet_run_create' %}',
+                    cache: false,
+                    type: 'GET',
+                    data: {'run_name': run_name, 'selected_postcodes[]': selected_postcodes, 'run_notes': run_notes},
+                    success: function (data) {
+                        displayModal("<h2>Success</h2><p>The run was stored successfully</p>");
+                        redrawMarkers();
+                        resetPage();
+                    }
+                });
             }
-            $.ajax({
-                url: '{% url 'leaflet_run_create' %}',
-                cache: false,
-                type: 'GET',
-                data: {'run_name': run_name, 'selected_postcodes[]': selected_postcodes, 'run_notes': run_notes},
-                success: function (data) {
-                    displayModal("<h2>Success</h2><p>The run was stored successfully</p>");
-                    redrawMarkers();
-                    resetPage();
-                }
-            });
         });
     </script>
 {% endblock %}
