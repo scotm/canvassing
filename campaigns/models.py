@@ -1,10 +1,12 @@
 from datetime import date
 from datetime import timedelta
+
 from django.conf import settings
 from django.db import models
+from jsonfield import JSONField
 
-# Create your models here.
 from core.models import Domecile
+from core.utilities.functions import split_dict
 from leafleting.models import CanvassRun, LeafletRun
 
 
@@ -33,6 +35,7 @@ class PrintableCanvassingRun(models.Model):
     run_code = models.CharField(max_length=15)
     questionnaire = models.ForeignKey('polling.CanvassQuestionaire')
     canvass_run = models.ForeignKey(CanvassRun)
+    preserved_canvass_run = JSONField()
     booked_till = models.DateField(blank=True, null=True)
     booked_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True)
     completed = models.BooleanField(default=False)
@@ -43,7 +46,14 @@ class PrintableCanvassingRun(models.Model):
             raise Exception("Can't book this till %s." % self.booked_till)
         self.booked_till = date.today() + timedelta(days=10)
         self.booked_by = user
-        self.save()
+        self.save(update_fields=['booked_till', 'booked_by'])
+
+    def preserve_canvass_run(self):
+        preserved_canvass_run = split_dict(self.__dict__, ['campaign', 'run_code'])
+        preserved_canvass_run.update({'contacts': [[unicode(contact) for contact in domecile.contact_set.all()]
+                                                   for domecile in self.canvass_run.domeciles()]})
+
+        self.save(update_fields=['preserved_canvass_run'])
 
 
 class AssignedLeafletRun(models.Model):

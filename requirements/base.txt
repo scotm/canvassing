@@ -9,3 +9,4 @@ git+https://github.com/scotm/django-generic-json-views.git
 Unipath
 factory-boy
 django-sortedm2m
+jsonfield
