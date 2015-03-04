@@ -1,8 +1,5 @@
 from django.db import models
 
-# Create your models here.
-from core.models import Domecile
-
 
 class LeafletRun(models.Model):
     name = models.CharField(max_length=50)
@@ -10,10 +7,13 @@ class LeafletRun(models.Model):
     notes = models.TextField()
 
     def count(self):
+        from core.models import Domecile
+
         return Domecile.objects.filter(postcode_point__in=self.postcode_points.all()).count()
 
     def __unicode__(self):
         return self.name
+
 
 class CanvassRun(LeafletRun):
     pass
