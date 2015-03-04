@@ -1,6 +1,5 @@
 __author__ = 'scotm'
-from random import randint
-from datetime import date
+from random import randint, choice
 
 import factory
 from factory import fuzzy
@@ -8,6 +7,7 @@ from django.contrib.auth.models import User, Group
 
 from postcode_locator.tests.factories import PostcodeMappingFactory
 from core.models import Contact, Domecile, ElectoralRegistrationOffice
+from .names import male_first_names, female_first_names, last_names
 
 # import logging
 # logger = logging.getLogger('factory')
@@ -26,12 +26,14 @@ class EROFactory(factory.DjangoModelFactory):
     address_3 = "blah"
     postcode = "DD1 9XE"
 
+
 class DomecileFactory(factory.DjangoModelFactory):
     class Meta:
         model = Domecile
+    django_get_or_create = ('address_2', 'address_4', 'address_6',)
 
     address_1 = ''
-    address_2 = '%d' % randint(1,40)
+    address_2 = '%d' % randint(1, 40)
     address_3 = ''
     address_4 = 'Snookit Street'
     address_5 = ''
@@ -40,7 +42,7 @@ class DomecileFactory(factory.DjangoModelFactory):
     address_8 = ''
     address_9 = ''
     postcode = ''
-    postcode_point = factory.SubFactory(PostcodeMappingFactory)
+    postcode_point = factory.SubFactory(PostcodeMappingFactory, postcode='DD19XE')
 
 
 class UserFactory(factory.DjangoModelFactory):
@@ -54,6 +56,20 @@ class UserFactory(factory.DjangoModelFactory):
     is_active = True
 
 
+class ContactFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = Contact
+
+    pd = 'EAC'
+    ero_number = factory.Sequence(lambda x: str(x))
+    title = fuzzy.FuzzyChoice(['Mr', 'Mr', 'Mr', 'Mrs', 'Ms', 'Miss'])
+    first_name = factory.LazyAttribute(
+        lambda x: choice(male_first_names) if x.title == 'Mr' else choice(female_first_names))
+    surname = fuzzy.FuzzyChoice(last_names)
+    domecile = factory.SubFactory(DomecileFactory)
+    opt_out = False
+
+
 class SuperuserFactory(UserFactory):
     is_superuser = True
 
@@ -63,24 +79,3 @@ class GroupFactory(factory.DjangoModelFactory):
         model = Group
 
     name = "Regional Organisers"
-
-
-# class MemberFactory(factory.DjangoModelFactory):
-#     class Meta:
-#         model = Member
-#
-#     salutation = 'Mr'
-#     first_name = "John"
-#     last_name = "Doe"
-#     email = factory.Sequence(lambda n: 'user%d@gmail.com' % n)
-#     date_of_birth = fuzzy.FuzzyDate(date(1940, 1, 1), date(1999, 12, 31))
-#     full_name = factory.LazyAttribute(lambda obj: '%s %s' % (obj.first_name, obj.last_name))
-#     gender = factory.LazyAttribute(lambda obj: 'Male' if obj.salutation == 'Mr' else 'Female')
-#
-#     address_line_1 = '1 FalseAddress'
-#     address_line_2 = 'No Country'
-#     address_line_3 = ''
-#     county = 'Glasgow'
-#     postcode = 'G32 7PW'
-#     telephone_number = '07886794233'
-#     branch_assigned = None
