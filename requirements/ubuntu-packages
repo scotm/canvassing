@@ -1,0 +1,7 @@
+apt-get update
+apt-get upgrade -y
+apt-get install curl
+curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - && ( echo 'deb https://deb.nodesource.com/node utopic main' && echo 'deb-src https://deb.nodesource.com/node utopic main' ) > /etc/apt/sources.list.d/nodesource.list && apt-get update && apt-get -y install nodejs git
+curl https://bootstrap.pypa.io/get-pip.py | python
+pip install uwsgi && rm -rf /tmp/pip_build_root
+apt-get install -y --force-yes postgresql-9.4 postgresql-9.4-postgis-2.1 postgresql-server-dev-9.4 postgresql-9.4-postgis-2.1-scripts python-dev postgresql-client-9.4 libpq-dev libssl-dev krb5-multidev comerr-dev libexpat1-dev libc6-dev libssl1.0.0=1.0.1f-1ubuntu9.1 libc6=2.19-10ubuntu2.3 gcc apt-transport-https libgeos-dev nginx osm2pgsql
