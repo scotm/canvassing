@@ -16,5 +16,8 @@ def domecile_cmp(x,y):
         return cmp(x.address_4, y.address_4)
     a, b = consume_int(x.address_2),consume_int(y.address_2)
     if a == b:
-        return cmp(x.address_2, y.address_2)
+        c = cmp(x.address_2, y.address_2)
+        if c == 0:
+            return cmp(x.address_1, y.address_1)
+        return c
     return cmp(a, b)
