@@ -1,4 +1,5 @@
 from __future__ import print_function
+from core.utilities.functions import split_dict, transform_dict
 
 __author__ = 'scotm'
 import csv
@@ -20,15 +21,6 @@ domecile_elements = ['address_1', 'address_2', 'address_3', 'address_4', 'addres
                      'address_8', 'address_9', 'postcode', ]
 contact_elements = ['pd', 'ero_number', 'title', 'first_name', 'initials', 'surname', 'suffix', 'date_of_attainment',
                     'franchise_flag', 'opt_out', ]
-
-
-def transform_dict(my_dict, rename_dict):
-    renamed_dict = {rename_dict[x]: y for x, y in my_dict.items() if x in rename_dict}
-    return renamed_dict
-
-
-def split_dict(my_dict, my_list):
-    return {x: my_dict[x] for x in my_list}
 
 
 def groupby_key(x):
