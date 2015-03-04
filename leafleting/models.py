@@ -12,6 +12,8 @@ class LeafletRun(models.Model):
     def count(self):
         return Domecile.objects.filter(postcode_point__in=self.postcode_points.all()).count()
 
+    def __unicode__(self):
+        return self.name
 
 class CanvassRun(LeafletRun):
     pass
