@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block breadcrumbs %}
+    <nav class="breadcrumbs">
+        <a href="{% url 'homepage' %}">Home</a>
+        <a class="current" href="#">Canvassing</a>
+    </nav>
+{% endblock %}
+{% block content %}
+    <div class="large-9 columns">
+        {% block mainblock %}
+            <h2>Canvassing</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut facilis iste molestiae nostrum reiciendis.
+                Aperiam delectus dignissimos, doloremque esse, in laborum nam nulla quaerat saepe sed, similique sint
+                voluptas voluptatum?</p>
+            <p>Commodi fugiat, odit! Asperiores, consequatur cumque dolores eos eum hic incidunt laboriosam magnam
+                maxime minima modi molestiae nisi obcaecati odio officiis optio possimus quia quibusdam recusandae
+                repellat repudiandae, sit vero?</p>
+            <p>Animi, blanditiis cum delectus dignissimos enim est fuga in inventore ipsa ipsum libero minima, nemo
+                nihil officia placeat quam reiciendis repellendus sunt tempora voluptatum? Dolor fuga nesciunt quasi
+                quia totam?</p>
+        {% endblock %}
+    </div>
+    <div class="large-3 columns">
+        {% block sidepanel %}
+            <div class="panel">
+                <h4>{% block runs %}Canvass Runs{% endblock %}</h4>
+                {% if runs %}
+                    <ul>
+                        {% for run in runs %}
+                            <li>{{ run }}</li>
+                        {% endfor %}
+                    </ul>
+                    <a href="#">See All</a>
+                {% else %}
+                    <p>None yet</p>
+                {% endif %}
+            </div>
+            <div class="panel callout radius">
+                {% block create_run %}
+                    <h5>Create Run</h5>
+                    <p>Create a <a href="{% url 'canvass_ward_list' %}">canvass run</a> near you!</p>
+                {% endblock %}
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}

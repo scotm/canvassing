@@ -1,0 +1,24 @@
+{% extends "canvassing_homepage.html" %}
+{% block breadcrumbs %}
+    <nav class="breadcrumbs">
+        <a href="{% url 'homepage' %}">Home</a>
+        <a class="current" href="#">Leafleting</a>
+    </nav>
+{% endblock %}
+{% block mainblock %}
+    <h2>Leafleting</h2>
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae blanditiis consequuntur doloribus fugit harum,
+        itaque nobis numquam pariatur recusandae reprehenderit soluta totam voluptas voluptatibus. Dignissimos minus
+        nesciunt rem sapiente sequi!</p>
+    <p>Dolore eligendi eveniet harum illum in libero maxime modi, molestias, nostrum numquam quas quia repudiandae vel.
+        Accusamus assumenda culpa debitis deserunt ea, eos illum nesciunt, optio possimus quas veniam voluptatem?</p>
+    <p>A accusantium ad alias aperiam assumenda beatae cupiditate, dignissimos enim esse est expedita explicabo
+        inventore ipsam magnam nam nihil odio porro praesentium quae quibusdam quo sit sunt tempora voluptate
+        voluptates?</p>
+
+{% endblock %}
+{% block runs %}Leaflet Runs{% endblock %}
+{% block create_run %}
+    <h5>Create Leaflet Run</h5>
+    <p>Create a <a href="{% url 'leaflet_ward_list' %}">leaflet run</a> near you!</p>
+{% endblock %}

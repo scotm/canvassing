@@ -109,6 +109,8 @@ USE_TZ = True
 TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',
                     'django.template.loaders.app_directories.Loader')
 
+TEMPLATE_DIRS = (Path(BASE_DIR, "templates"), )
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 

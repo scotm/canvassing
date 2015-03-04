@@ -1,0 +1,10 @@
+{% extends "map_view.html" %}
+{% block purpose %}Canvassing{% endblock %}
+{% block breadcrumbs %}
+    <nav class="breadcrumbs">
+        <a href="{% url 'homepage' %}">Home</a>
+        <a href="{% url 'canvass_homepage' %}">Canvassing</a>
+        <a href="{% url 'canvass_ward_list' %}">Wards</a>
+        <a class="current">{{ object.local_authority_name }} {{ object.ward_name }}</a>
+    </nav>
+{% endblock %}

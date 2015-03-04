@@ -1,13 +1,11 @@
-from django.contrib.auth import authenticate
-from functools import cmp_to_key
 from django.contrib.auth import authenticate, logout
+
 from django.contrib.auth import login
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from braces.views import LoginRequiredMixin, PermissionRequiredMixin, GroupRequiredMixin
-
+from braces.views import LoginRequiredMixin
 from django.views.generic import DetailView, ListView, TemplateView
 from json_views.views import JSONDataView
 
@@ -58,19 +56,6 @@ class DomecileAddressView(LoginRequiredMixin, JSONDataView):
         context.update({'data':data, 'postcode':postcode})
         return context
 
-
-class WardListView(LoginRequiredMixin, ListView):
-    model = Ward
-
-    def get_queryset(self):
-        return super(WardListView, self).get_queryset()
-
-
-class WardView(LoginRequiredMixin, DetailView):
-    model = Ward
-
-    def get_context_data(self, **kwargs):
-        return super(WardView, self).get_context_data(**kwargs)
 
 class HomepageView(LoginRequiredMixin, TemplateView):
     template_name='homepage.html'

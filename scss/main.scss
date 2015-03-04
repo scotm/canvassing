@@ -48,3 +48,11 @@
 #map {
   height: 500px;
 }
+
+.dark-panel {
+  @include panel($bg:#801515,$padding:20px,$adjust:true);
+}
+
+.light-panel {
+  @include panel($bg:#D46A6A,$padding:20px,$adjust:true);
+}

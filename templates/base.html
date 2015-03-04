@@ -13,6 +13,11 @@
 <body>
 {% include "header.html" %}
 <div class="row">
+    <div class="large-12 columns">
+        {% block breadcrumbs %}{% endblock %}
+    </div>
+</div>
+<div class="row">
     {% block content %}
         <div class="large-9 columns" role="content">
             <article>
