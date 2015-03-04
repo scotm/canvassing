@@ -55,6 +55,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django_extensions',
+    'sortedm2m',
     'postcode_locator',
     'core',
     'campaigns',
