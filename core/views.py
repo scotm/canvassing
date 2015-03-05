@@ -65,3 +65,6 @@ class HomepageView(LoginRequiredMixin, TemplateView):
         kwargs.update({'current_campaign':Campaign.get_latest_top_level_campaign()})
         return super(HomepageView, self).get_context_data(**kwargs)
 
+
+class LoginTemplateView(LoginRequiredMixin, TemplateView):
+    template_name = 'why_canvass.html'

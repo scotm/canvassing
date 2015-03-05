@@ -1,12 +1,15 @@
 {% extends "canvassing_homepage.html" %}
+{% load static %}
 {% block breadcrumbs %}
     <nav class="breadcrumbs">
         <a href="{% url 'homepage' %}">Home</a>
-        <a class="current" href="#">Leafleting</a>
+        <a class="current">Leafleting</a>
     </nav>
 {% endblock %}
 {% block mainblock %}
     <h2>Leafleting</h2>
+    <div class="row">
+    <div class="large-9 columns">
     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae blanditiis consequuntur doloribus fugit harum,
         itaque nobis numquam pariatur recusandae reprehenderit soluta totam voluptas voluptatibus. Dignissimos minus
         nesciunt rem sapiente sequi!</p>
@@ -15,6 +18,11 @@
     <p>A accusantium ad alias aperiam assumenda beatae cupiditate, dignissimos enim esse est expedita explicabo
         inventore ipsam magnam nam nihil odio porro praesentium quae quibusdam quo sit sunt tempora voluptate
         voluptates?</p>
+    </div>
+    <div class="large-3 columns">
+        <img class="right" src="{% static 'images/leafleting-session.jpg' %}">
+    </div>
+    </div>
 
 {% endblock %}
 {% block runs %}Leaflet Runs{% endblock %}

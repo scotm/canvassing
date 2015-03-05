@@ -1,14 +1,18 @@
 {% extends "base.html" %}
+{% load static %}
 {% block breadcrumbs %}
     <nav class="breadcrumbs">
         <a href="{% url 'homepage' %}">Home</a>
-        <a class="current" href="#">Canvassing</a>
+        <a class="current">Canvassing</a>
     </nav>
 {% endblock %}
 {% block content %}
     <div class="large-9 columns">
         {% block mainblock %}
             <h2>Canvassing</h2>
+                <div class="row">
+                <div class="large-9 columns">
+
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut facilis iste molestiae nostrum reiciendis.
                 Aperiam delectus dignissimos, doloremque esse, in laborum nam nulla quaerat saepe sed, similique sint
                 voluptas voluptatum?</p>
@@ -18,6 +22,11 @@
             <p>Animi, blanditiis cum delectus dignissimos enim est fuga in inventore ipsa ipsum libero minima, nemo
                 nihil officia placeat quam reiciendis repellendus sunt tempora voluptatum? Dolor fuga nesciunt quasi
                 quia totam?</p>
+            </div>
+                <div class="large-3 columns">
+                    <img src="{% static 'images/why_canvass/canvassing_clipboard.jpg' %}">
+                </div>
+            </div>
         {% endblock %}
     </div>
     <div class="large-3 columns">
