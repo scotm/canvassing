@@ -1,5 +1,4 @@
 from django.contrib.auth import authenticate, logout
-
 from django.contrib.auth import login
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
@@ -44,8 +43,8 @@ class DomecileMapView(LoginRequiredMixin, JSONDataView):
         query_type = self.request.GET['query_type']
         queryset = Domecile.get_postcode_points(southwest=(bbox[0], bbox[1]), northeast=(bbox[2], bbox[3]),
                                                 region=Ward.objects.get(pk=int(region)), query_type=query_type)
-        data = [{'postcode':x.postcode, 'point':x.postcode_point.point} for x in queryset]
-        context.update({'data':data})
+        data = [{'postcode': x.postcode, 'point': x.postcode_point.point} for x in queryset]
+        context.update({'data': data})
         return context
 
 
@@ -54,16 +53,18 @@ class DomecileAddressView(LoginRequiredMixin, JSONDataView):
         context = super(DomecileAddressView, self).get_context_data(**kwargs)
         postcode = self.request.GET['postcode']
         data = Domecile.get_sorted_addresses(postcode)
-        context.update({'data':data, 'postcode':postcode, 'summary': Domecile.get_summary_of_postcode(postcode)})
+        summary = Domecile.get_summary_of_postcode(postcode)
+        context.update({'data': data, 'postcode': postcode, 'summary': summary[0], 'buildings': summary[1]})
         return context
 
 
 class HomepageView(LoginRequiredMixin, TemplateView):
-    template_name='homepage.html'
+    template_name = 'homepage.html'
 
     def get_context_data(self, **kwargs):
         from campaigns.models import Campaign
-        kwargs.update({'current_campaign':Campaign.get_latest_top_level_campaign()})
+
+        kwargs.update({'current_campaign': Campaign.get_latest_top_level_campaign()})
         return super(HomepageView, self).get_context_data(**kwargs)
 
 

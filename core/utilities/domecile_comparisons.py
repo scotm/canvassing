@@ -50,4 +50,4 @@ def domecile_list_to_string(domecile_list):
                                     first_domecile.postcode] if y)
     return " ".join(
         x for x in [str(consume_int(first_domecile.address_2)) + "-" + str(consume_int(domecile_list[-1].address_2)),
-                    number_types, residue, "- " + str(len(domecile_list)) + " buildings"] if x)
+                    number_types, residue,] if x), len(domecile_list)

@@ -1,7 +1,7 @@
 from __future__ import print_function
 # Create your views here.
 from braces.views import LoginRequiredMixin
-from django.views.generic import ListView, DetailView, TemplateView
+from django.views.generic import ListView, DetailView, TemplateView, UpdateView
 from json_views.views import JSONDataView
 from core.models import Ward
 
@@ -32,11 +32,8 @@ class CanvassRunCreate(LeafletRunCreate):
 
 
 # TODO: Unusable
-class LeafletRunEdit(LoginRequiredMixin, JSONDataView):
+class LeafletRunEdit(LoginRequiredMixin, UpdateView):
     model = LeafletRun
-
-    def get_context_data(self, **kwargs):
-        return super(LeafletRunEdit, self).get_context_data(**kwargs)
 
 
 class LeafletHomepage(LoginRequiredMixin, TemplateView):
