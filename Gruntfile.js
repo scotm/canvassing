@@ -8,6 +8,7 @@ module.exports = function (grunt) {
             dist: {
                 src: [
                     'bower_components/jquery/dist/jquery.js',
+                    'bower_components/jquery-ui/jquery-ui.js',
                     'bower_components/jquery-placeholder/jquery.placeholder.js',
                     'bower_components/jquery.cookie/jquery.cookie.js',
                     'bower_components/fastclick/lib/fastclick.js',
