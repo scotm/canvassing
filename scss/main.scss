@@ -56,3 +56,7 @@
 .light-panel {
   @include panel($bg:#D46A6A,$padding:20px,$adjust:true);
 }
+
+.drop-placeholder {
+  background-color:#801515;
+}

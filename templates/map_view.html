@@ -12,6 +12,8 @@
 
         <p>Zoom the map, and pick off the postcodes you'd like to add to this run.</p>
 
+        <div id="map"></div>
+
         <form id="postcode_form">
             <div class="row">
                 <div class="large-9 columns">
@@ -25,7 +27,7 @@
                 </div>
             </div>
         </form>
-        <div id="map"></div>
+
         <hr>
         <form id="run_information">
             <label>A name for this run:
@@ -41,10 +43,13 @@
         <p>There are <span id="count_addresses">0</span> addresses on this run so far.</p>
         <table id="postcodes_table">
             <thead>
-            <tr>
-                <th width="150">Postcode</th>
-                <th>Addresses</th>
-            </tr>
+            <th width="150">Postcode</th>
+            <th>Addresses</th>
+            <th>Summary</th>
+            </thead>
+            <tbody>
+
+            </tbody>
         </table>
     </div>
     <div id="myModal" class="reveal-modal" data-reveal></div>
@@ -69,18 +74,66 @@
                 displayModal("<h2>Errors:</h2>" + error_messages.join("<br />"));
                 error_messages = [];
             } else {
+                var postcodes_to_send = [];
+                $('#postcodes_table').find('tr td:first-child').each(function () {
+                    postcodes_to_send.push($(this).html());
+                });
                 $.ajax({
-                    url: '{% url 'leaflet_run_create' %}',
+                    url: '{% block run_create_url %}{% endblock %}',
                     cache: false,
                     type: 'GET',
-                    data: {'run_name': run_name, 'selected_postcodes[]': selected_postcodes, 'run_notes': run_notes},
+                    data: {'run_name': run_name, 'selected_postcodes[]': postcodes_to_send, 'run_notes': run_notes},
                     success: function (data) {
-                        displayModal("<h2>Success</h2><p>The run was stored successfully</p>");
+                        displayModal("<h2>Success</h2><p>The run was created and stored successfully</p>");
                         redrawMarkers();
                         resetPage();
+                    },
+                    error: function (data) {
+                        displayModal("<h2>Failure</h2><p>The run was not created</p>");
+                    },
+                    complete: function (data) {
+
                     }
                 });
+                postcodes_to_send = []
             }
         });
+
+        function redrawMarkers() {
+            if (map.getZoom() >= 16) {
+                var m = map.getBounds();
+                $.ajax({
+                            url: '{% url "get_domeciles" %}',
+                            cache: false,
+                            data: {
+                                'BBox': m.toBBoxString(),
+                                '{% block object_type %}region{% endblock %}': {{object.pk}},
+                                'query_type': '{% block query_type %}leafleting{% endblock %}'
+                            },
+                            success: function (data) {
+                                markers.forEach(function (entry) {
+                                    map.removeLayer(entry)
+                                });
+                                data['data'].forEach(function (entry) {
+                                    var marker = L.marker([entry['point'][1], entry['point'][0]], {'title': entry['postcode']});
+                                    if ($.inArray(entry['postcode'], selected_postcodes) == -1) {
+                                        marker.setIcon(blue_icon);
+                                    } else {
+                                        marker.setIcon(red_icon);
+                                    }
+                                    marker.on('click', marker_click);
+                                    markers.push(marker);
+                                    map.addLayer(marker);
+                                });
+
+                            }
+                        }
+                );
+            } else {
+                markers.forEach(function (entry) {
+                    map.removeLayer(entry)
+                });
+            }
+        }
     </script>
 {% endblock %}

@@ -7,3 +7,4 @@
         <a class="current">Wards</a>
     </nav>
 {% endblock %}
+{% block run_picker %}{% url 'canvass_ward_view' object.pk %}{% endblock %}

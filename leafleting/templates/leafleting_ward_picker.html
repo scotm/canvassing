@@ -6,3 +6,5 @@
         <a class="current">Wards</a>
     </nav>
 {% endblock %}
+
+{% block run_picker %}{% url 'leaflet_ward_view' object.pk %}{% endblock %}

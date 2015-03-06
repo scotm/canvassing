@@ -27,6 +27,11 @@ class LeafletRunCreate(LoginRequiredMixin, JSONDataView):
         return context
 
 
+class CanvassRunCreate(LeafletRunCreate):
+    model = CanvassRun
+
+
+# TODO: Unusable
 class LeafletRunEdit(LoginRequiredMixin, JSONDataView):
     model = LeafletRun
 
@@ -35,19 +40,21 @@ class LeafletRunEdit(LoginRequiredMixin, JSONDataView):
 
 
 class LeafletHomepage(LoginRequiredMixin, TemplateView):
-    template_name = 'leaflet_homepage.html'
+    run_klass = LeafletRun
+    template_name = 'leafleting_homepage.html'
+
+    def get_context_data(self, **kwargs):
+        kwargs.update({'runs': self.run_klass.objects.all()[:5]})
+        return super(LeafletHomepage, self).get_context_data(**kwargs)
 
 
 class CanvassHomepage(LeafletHomepage):
+    run_klass = CanvassRun
     template_name = 'canvassing_homepage.html'
 
 
 class LeafletRunListView(LoginRequiredMixin, ListView):
     model = LeafletRun
-
-
-class CanvassRunCreate(LeafletRunCreate):
-    model = CanvassRun
 
 
 class CanvassRunListView(LoginRequiredMixin, ListView):

@@ -9,7 +9,7 @@ from django.contrib.gis.geos import Polygon
 from django.contrib.gis.utils import LayerMapping
 from django.db.models.aggregates import Count
 
-from core.utilities.domecile_comparisons import domecile_cmp
+from core.utilities.domecile_comparisons import domecile_cmp, domecile_list_to_string
 from postcode_locator.models import PostcodeMapping
 
 
@@ -55,13 +55,16 @@ class Domecile(models.Model):
         super(Domecile, self).save(*args, **kwargs)
 
     @staticmethod
-    def get_domeciles(northeast, southwest, region=None):
-        from leafleting.models import LeafletRun
+    def get_domeciles(northeast, southwest, region=None, query_type='leafleting'):
+        from leafleting.models import LeafletRun, CanvassRun
         # Construct a bounding box
         # http://stackoverflow.com/questions/9466043/geodjango-within-a-ne-sw-box
         geom = Polygon.from_bbox((southwest[0], southwest[1], northeast[0], northeast[1]))
-        queryset = Domecile.objects.filter(postcode_point__point__contained=geom).exclude(
-            postcode_point__in=LeafletRun.objects.all().values_list('postcode_points', flat=True))
+        queryset = Domecile.objects.filter(postcode_point__point__contained=geom)
+        if query_type == 'leafleting':
+            queryset = queryset.exclude(postcode_point__in=LeafletRun.objects.filter(postcode_points__point__contained=geom).values_list('postcode_points', flat=True))
+        elif query_type == 'canvassing':
+            queryset = queryset.exclude(postcode_point__in=CanvassRun.objects.filter(postcode_points__point__contained=geom).values_list('postcode_points', flat=True))
         if region:
             queryset = queryset.filter(postcode_point__point__within=region.geom)
         return queryset
@@ -75,6 +78,10 @@ class Domecile(models.Model):
         queryset = Domecile.objects.filter(postcode=postcode).annotate(num_contacts=Count('contact'))
         data = [unicode(y) + " (%d)" % y.num_contacts for y in sorted(queryset, key=cmp_to_key(domecile_cmp))]
         return data
+
+    @staticmethod
+    def get_summary_of_postcode(postcode):
+        return domecile_list_to_string(Domecile.objects.filter(postcode=postcode))
 
 
 class Contact(models.Model):
@@ -136,9 +143,6 @@ class Ward(models.Model):
 
         print("Removing the non-Scottish wards")
         Ward.objects.exclude(local_authority_code__startswith="S").delete()
-
-    def get_absolute_url(self):
-        return reverse('ward_view', args=[self.pk])
 
     def centre_point(self):
         centroid = self.geom.centroid

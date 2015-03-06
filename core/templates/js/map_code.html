@@ -16,6 +16,19 @@
         shadowUrl: '{% static "images/marker-shadow.png" %}'
     });
 
+    // Return a helper with preserved width of cells
+    var fixHelper = function (e, ui) {
+        ui.children().each(function () {
+            $(this).width($(this).width());
+        });
+        return ui;
+    };
+
+    $("#postcodes_table").find("tbody").sortable({
+        helper: fixHelper,
+        placeholder: ''
+    }).disableSelection();
+
     // Makes the map center itself on a given postcode
     $('#postcode_form').on("keyup keypress", function (e) {
         var code = e.keyCode || e.which;
@@ -67,7 +80,9 @@
                             if (index_of_postcode == -1) {
                                 // Add the row to the table.
                                 $('#postcodes_table').each(function () {
-                                    var tds = '<tr><td>' + data['postcode'] + '</td><td>' + data['data'].join('<br/>') + '</tr>';
+                                    var tds = '<tr><td>' + data['postcode'] + '</td><td>' +
+                                            //data['data'].join(':: ') +
+                                            '</td><td>' + data['summary'] + '</td></tr>';
                                     if ($('tbody', this).length > 0) {
                                         $('tbody', this).append(tds);
                                     } else {
@@ -101,14 +116,14 @@
         map.fitBounds(geojson);
     }
 
-    function updateAddressCount(){
+    function updateAddressCount() {
         $('#count_addresses').html(selected_address_count);
     }
 
     function resetPage() {
         selected_postcodes = [];
         selected_address_count = 0;
-        $('#postcodes_table').find('tr td').each(function () {
+        $('#postcodes_table').find('tr').each(function () {
             this.remove();
         });
         $("#run_name").val('');
@@ -120,39 +135,6 @@
         modal.html(html);
         modal.foundation('reveal', 'open');
 
-    }
-
-    function redrawMarkers() {
-        if (map.getZoom() >= 16) {
-            var m = map.getBounds();
-            $.ajax({
-                        url: '{% url "get_domeciles" %}',
-                        cache: false,
-                        data: {'BBox': m.toBBoxString(), '{% block object_type %}region{% endblock %}': {{object.pk}}},
-                        success: function (data) {
-                            markers.forEach(function (entry) {
-                                map.removeLayer(entry)
-                            });
-                            data['data'].forEach(function (entry) {
-                                var marker = L.marker([entry['point'][1], entry['point'][0]], {'title': entry['postcode']});
-                                if ($.inArray(entry['postcode'], selected_postcodes) == -1) {
-                                    marker.setIcon(blue_icon);
-                                } else {
-                                    marker.setIcon(red_icon);
-                                }
-                                marker.on('click', marker_click);
-                                markers.push(marker);
-                                map.addLayer(marker);
-                            });
-
-                        }
-                    }
-            );
-        } else {
-            markers.forEach(function (entry) {
-                map.removeLayer(entry)
-            });
-        }
     }
 
     // Add the event handlers

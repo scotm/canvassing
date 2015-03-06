@@ -41,8 +41,9 @@ class DomecileMapView(LoginRequiredMixin, JSONDataView):
         context = super(DomecileMapView, self).get_context_data(**kwargs)
         region = self.request.GET['region']
         bbox = self.request.GET['BBox'].split(',')
+        query_type = self.request.GET['query_type']
         queryset = Domecile.get_postcode_points(southwest=(bbox[0], bbox[1]), northeast=(bbox[2], bbox[3]),
-                                                region=Ward.objects.get(pk=int(region)))
+                                                region=Ward.objects.get(pk=int(region)), query_type=query_type)
         data = [{'postcode':x.postcode, 'point':x.postcode_point.point} for x in queryset]
         context.update({'data':data})
         return context
@@ -53,7 +54,7 @@ class DomecileAddressView(LoginRequiredMixin, JSONDataView):
         context = super(DomecileAddressView, self).get_context_data(**kwargs)
         postcode = self.request.GET['postcode']
         data = Domecile.get_sorted_addresses(postcode)
-        context.update({'data':data, 'postcode':postcode})
+        context.update({'data':data, 'postcode':postcode, 'summary': Domecile.get_summary_of_postcode(postcode)})
         return context
 
 

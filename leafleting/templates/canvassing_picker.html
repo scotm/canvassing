@@ -8,3 +8,5 @@
         <a class="current">{{ object.local_authority_name }} {{ object.ward_name }}</a>
     </nav>
 {% endblock %}
+{% block run_create_url %}{% url 'canvass_run_create' %}{% endblock %}
+{% block query_type %}canvassing{% endblock %}
