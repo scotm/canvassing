@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+{% block header %}{% endblock %}
+{% block page_title %}{{ block.super }}{% endblock %}
+{% block content %}
+    <div class="large-12 columns">
+        <h3>{{ object.name }}</h3>
+
+        <p>Question 1: Which party will you support for the upcoming UK general election?</p>
+
+        <p>Question 2: Which party will you support with your list vote in the 2016 Scottish Parliament election? (give
+            list of parties)</p>
+        {% for domecile in object.get_domeciles %}
+            <div class="domecile">
+                <div class="row">
+                    <div class="large-12 columns">
+                        <h5>{{ domecile }}</h5>
+                    </div>
+                </div>
+                {% for contact in domecile.get_contacts %}
+                    <div class="contact">
+                        <div class="row">
+                            <div class="large-4 columns">
+                                <h6>{{ contact }}</h6>
+                            </div>
+                            <div class="large-4 columns">
+                                Q1. <img src="{% static 'images/answerbox.svg' %}"/>
+                            </div>
+                            <div class="large-4 columns">
+                                Q2. <img src="{% static 'images/answerbox.svg' %}"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-2 columns">Moved <img src="{% static 'images/checkbox.svg' %}"/></div>
+                            <div class="large-2 columns">Too busy <img src="{% static 'images/checkbox.svg' %}"/></div>
+                            <div class="large-2 columns">Unavailable <img src="{% static 'images/checkbox.svg' %}"/>
+                            </div>
+                            <div class="large-2 columns">No interest <img src="{% static 'images/checkbox.svg' %}"/>
+                            </div>
+                            <div class="large-2 columns">Don't Contact <img src="{% static 'images/checkbox.svg' %}"/>
+                            </div>
+                            <div class="large-2 columns">Deceased <img src="{% static 'images/checkbox.svg' %}"/></div>
+                        </div>
+                    </div>
+                    {% if not forloop.last %}
+
+                    {% endif %}
+
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+    </div>
+{% endblock %}
+{% block footer %}{% endblock %}

@@ -60,3 +60,27 @@
 .drop-placeholder {
   background-color:#801515;
 }
+
+.spacer{
+  margin-top:0.5em;
+  margin-bottom:0.5em;
+}
+
+// This would make the large grid function like a print grid
+@media print {
+  @for $i from 1 through $total-columns {
+    .large-#{$i} {
+      width: grid-calc($i, $total-columns);
+    }
+  }
+}
+
+@media print{
+    .domecile{
+        page-break-inside: avoid;
+    }
+}
+
+.domecile:nth-child(n+1){
+  margin-top:1.5em;
+}

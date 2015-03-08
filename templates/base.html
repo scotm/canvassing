@@ -11,7 +11,7 @@
     {% block extrahead %}{% endblock %}
 </head>
 <body>
-{% include "header.html" %}
+{% block header %}{% include "header.html" %}{% endblock %}
 <div class="row">
     <div class="large-12 columns">
         {% block breadcrumbs %}{% endblock %}
@@ -78,7 +78,7 @@
         </aside>
     {% endblock %}
 </div>
-{% include "footer.html" %}
+{% block footer %}{% include "footer.html" %}{% endblock %}
 <script src="{% static "js/production.min.js" %}"></script>
 <script>
     $(document).foundation();

@@ -83,6 +83,9 @@ class Domecile(models.Model):
     def get_summary_of_postcode(postcode):
         return domecile_list_to_string(Domecile.objects.filter(postcode=postcode))
 
+    def get_contacts(self):
+        return Contact.objects.filter(domecile=self)
+
 
 class Contact(models.Model):
     pd = models.CharField(max_length=5, db_index=True)

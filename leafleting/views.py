@@ -49,12 +49,14 @@ class CanvassHomepage(LeafletHomepage):
     run_klass = CanvassRun
     template_name = 'canvassing_homepage.html'
 
+class CanvassRunDetailView(LoginRequiredMixin, DetailView):
+    model = CanvassRun
 
 class LeafletRunListView(LoginRequiredMixin, ListView):
     model = LeafletRun
 
 
-class CanvassRunListView(LoginRequiredMixin, ListView):
+class CanvassRunListView(LeafletRunListView):
     model = CanvassRun
 
 
@@ -63,14 +65,6 @@ class LeafletingPicker(LoginRequiredMixin, DetailView):
     template_name = 'leafleting_picker.html'
 
 
-class CanvassingPicker(LeafletingPicker):
-    template_name = 'canvassing_picker.html'
-
-
 class LeafletWardPicker(LoginRequiredMixin, ListView):
     model = Ward
     template_name = 'leafleting_ward_picker.html'
-
-
-class CanvassWardPicker(LeafletWardPicker):
-    template_name = 'canvassing_ward_picker.html'

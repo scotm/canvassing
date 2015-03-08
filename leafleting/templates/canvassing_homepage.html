@@ -43,7 +43,7 @@
                 {% if runs %}
                     <ul>
                         {% for run in runs %}
-                            <li>{{ run }}</li>
+                            <li><a href="{{ run.get_absolute_url }}">{{ run }}</a></li>
                         {% endfor %}
                     </ul>
                     <a href="#">See All</a>
