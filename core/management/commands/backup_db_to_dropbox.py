@@ -8,20 +8,19 @@ from datetime import datetime
 import dropbox
 from django.conf import settings
 from django.core.management.base import BaseCommand
-
-access_token = u'jdjeIthf6JgAAAAAAAG0_zlvZwIT8hTMkNwnRADwEAlu9kYFQNMeF5AVO4a37GSx'
+from ssp_canvassing.settings.secrets import DROPBOX_ACCESS_TOKEN
 
 
 class Command(BaseCommand):
     help = "Dumps DB to Drobox"
 
     def handle(self, *args, **options):
-        client = dropbox.client.DropboxClient(access_token)
+        client = dropbox.client.DropboxClient(DROPBOX_ACCESS_TOKEN)
         now = datetime.now().strftime('%Y-%m-%d')
         db_name = settings.DATABASES['default']['NAME']
         filename = 'canvassing_db_%s.pgsql' % now
         with open(filename, 'wb') as myfile:
-            call(["pg_dump", db_name], stdout=myfile)
+            call(["pg_dump", "-T", "planet*", db_name], stdout=myfile)
         print("Dump complete - compressing.")
         call(["bzip2", filename])
         filename += ".bz2"
