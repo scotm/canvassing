@@ -58,6 +58,7 @@
 {% endblock %}
 
 {% block before_body_close %}
+    <script src="{% static 'js/jquery-ui.min.js' %}"
     <script>
         /**
          * Created by scotm on 26/02/15.
@@ -83,7 +84,8 @@
             return ui;
         };
 
-        $("#postcodes_table").find("tbody").sortable({
+        var table_body = $("#postcodes_table").find("tbody");
+        table_body.sortable({
             helper: fixHelper,
             placeholder: ''
         }).disableSelection();
