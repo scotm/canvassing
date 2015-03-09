@@ -47,6 +47,7 @@
             <th>Addresses</th>
             <th>Summary</th>
             <th>Buildings</th>
+            <th>Contacts</th>
             </thead>
             <tbody>
 
@@ -58,7 +59,7 @@
 {% endblock %}
 
 {% block before_body_close %}
-    <script src="{% static 'js/jquery-ui.min.js' %}"
+    <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
     <script>
         /**
          * Created by scotm on 26/02/15.
@@ -144,7 +145,7 @@
                                         var tds = '<tr><td>' + data['postcode'] + '</td><td>' +
                                                     //data['data'].join(':: ') +
                                                 '</td><td>' + data['summary'] + '</td><td>' +
-                                                data['buildings'] + '</td></tr>';
+                                                data['buildings'] + '</td><td>'+data['contacts']+'</td></tr>';
                                         if ($('tbody', this).length > 0) {
                                             $('tbody', this).append(tds);
                                         } else {

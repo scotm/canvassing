@@ -57,7 +57,7 @@ class Command(BaseCommand):
             my_group = list(my_group)
             domecile_dict = split_dict(my_group[0], domecile_elements)
             domecile_dict['electoral_registration_office'] = self.ero
-            domecile_obj = Domecile.objects.get_or_create(**domecile_dict)
+            domecile_obj, result = Domecile.objects.get_or_create(**domecile_dict)
             for line in my_group:
                 contact_dict = split_dict(line, contact_elements)
                 if contact_dict['date_of_attainment']:
