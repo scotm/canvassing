@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="large-12 columns">
+    <h2>Petition Data Entry</h2>
+        {% include "petition_form.html" %}
+        <hr>
+        {% if object_list %}
+            <form>
+                <table>
+                    <thead>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Address</th>
+                    </thead>
+                    {% for object in object_list %}
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>{{ object }}</td>
+                            <td>{{ object.domecile }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </form>
+        {% endif %}
+    </div>
+{% endblock %}
+{% block before_body_close %}
+
+{% endblock %}
