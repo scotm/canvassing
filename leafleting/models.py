@@ -1,11 +1,13 @@
 from functools import cmp_to_key
 
+from django.contrib.gis.geos import MultiPoint
 from django.core.urlresolvers import reverse
 from django.db import models
 from sortedm2m.fields import SortedManyToManyField
 
 from core.utilities.domecile_comparisons import domecile_cmp
 from core.models import Domecile
+
 
 class BaseRun(models.Model):
     name = models.CharField(max_length=50)
@@ -30,6 +32,10 @@ class BaseRun(models.Model):
 
     def get_absolute_url(self):
         return reverse(self.url_name, args=[self.pk, ])
+
+    def get_points_json(self):
+        points = MultiPoint([x.point for x in self.postcode_points.all()])
+        return points.json
 
 
 class LeafletRun(BaseRun):
