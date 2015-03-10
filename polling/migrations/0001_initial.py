@@ -7,8 +7,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('leafleting', '0001_initial'),
-        ('core', '0001_initial'),
+        ('core', '0002_auto_20150302_1541'),
         ('campaigns', '0001_initial'),
     ]
 
@@ -119,18 +118,6 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('notes', models.TextField()),
                 ('person', models.ForeignKey(to='core.Contact')),
-            ],
-            options={
-            },
-            bases=(models.Model,),
-        ),
-        migrations.CreateModel(
-            name='PrintableCanvassingRun',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('run_code', models.CharField(max_length=15)),
-                ('canvass_run', models.ForeignKey(to='leafleting.CanvassRun')),
-                ('questionnaire', models.ForeignKey(to='polling.CanvassQuestionaire')),
             ],
             options={
             },

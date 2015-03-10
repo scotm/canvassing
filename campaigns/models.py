@@ -60,3 +60,8 @@ class AssignedLeafletRun(models.Model):
     campaign = models.ForeignKey(Campaign)
     leaflet_run = models.ForeignKey(LeafletRun)
     completed = models.BooleanField(default=False)
+
+
+class Signature(models.Model):
+    contact = models.ForeignKey('core.Contact')
+    campaign = models.ForeignKey(Campaign)

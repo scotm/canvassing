@@ -1,17 +1,60 @@
 {% load static %}
 <div class="row">
     <div class="large-12 columns">
-        <div class="nav-bar left">
-            <a href="{% url 'homepage' %}"><img src='{% static "images/comrade-header.svg" %}'/></a>
-        </div>
-        <div class="nav-bar right">
-            <ul class="button-group">
-                <li><a href="{% url 'canvass_homepage'%}" class="button radius">Canvass</a></li>
-                <li><a href="{% url 'leaflet_homepage'%}" class="button radius">Leaflet</a></li>
-                <li><a href="#" class="button radius">Signatures</a></li>
-                <li><a href="{% url 'reporting' %}" class="button radius">Reports</a></li>
+        <nav class="top-bar" data-topbar role="navigation">
+            <ul class="title-area">
+                <li class="name">
+                    <h1><a href="{% url 'homepage' %}"><img src='{% static "images/comrade-header.svg" %}'
+                                                            id="header_image"/></a></h1>
+                </li>
+                <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
+                <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
             </ul>
-        </div>
-        <hr/>
+
+            <section class="top-bar-section">
+                <!-- Right Nav Section -->
+                <ul class="right">
+                    <li><a href="{% url 'canvass_homepage' %}" class="button">Canvass</a></li>
+                    <li><a href="{% url 'leaflet_homepage' %}" class="button">Leaflet</a></li>
+                    <li><a href="{% url 'find_contact' %}" class="button">Signatures</a></li>
+                    <li class="has-dropdown">
+                        <a href="#">My Account</a>
+                        <ul class="dropdown">
+                            <li><a href="#">Data Entry</a></li>
+                            <li><a href="{% url 'reporting' %}">Reports</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <!-- Left Nav Section -->
+                {#        <ul class="left">#}
+                {#            <li><a href="#">Left Nav Button</a></li>#}
+                {#        </ul>#}
+            </section>
+        </nav>
     </div>
 </div>
+{#<div class="row">#}
+{#    <div class="large-12 columns">#}
+{#        <div class="nav-bar left">#}
+{#            <a href="{% url 'homepage' %}"><img src='{% static "images/comrade-header.svg" %}'/></a>#}
+{#        </div>#}
+{#        <div class="nav-bar right">#}
+{#            <ul class="button-group">#}
+{#                <li><a href="{% url 'canvass_homepage' %}" class="button radius">Canvass</a></li>#}
+{#                <li><a href="{% url 'leaflet_homepage' %}" class="button radius">Leaflet</a></li>#}
+{#                <li><a href="{% url 'find_contact' %}" class="button radius">Signatures</a></li>#}
+{#                <li>#}
+{#                    <a href="#" class="button split">My Account<span data-dropdown="drop"></span></a><br>#}
+{#                    <ul id="drop" class="f-dropdown" data-dropdown-content>#}
+{#                        <li><a href="#">This is another</a></li>#}
+{#                        <li><a href="{% url 'reporting' %}">Reports</a></li>#}
+{#                        <li><a href="#">Booked runs</a></li>#}
+{#                        <li><a href="#">Yet another</a></li>#}
+{#                    </ul>#}
+{#                </li>#}
+{#            </ul>#}
+{#        </div>#}
+{#        <hr/>#}
+{#    </div>#}
+{#</div>#}

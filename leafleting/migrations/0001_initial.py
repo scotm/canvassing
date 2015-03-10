@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import sortedm2m.fields
 
 
 class Migration(migrations.Migration):
@@ -12,29 +13,29 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
+            name='CanvassRun',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=50)),
+                ('notes', models.TextField()),
+                ('postcode_points', sortedm2m.fields.SortedManyToManyField(help_text=None, to='postcode_locator.PostcodeMapping')),
+            ],
+            options={
+                'abstract': False,
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
             name='LeafletRun',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=50)),
                 ('notes', models.TextField()),
+                ('postcode_points', sortedm2m.fields.SortedManyToManyField(help_text=None, to='postcode_locator.PostcodeMapping')),
             ],
             options={
+                'abstract': False,
             },
             bases=(models.Model,),
-        ),
-        migrations.CreateModel(
-            name='CanvassRun',
-            fields=[
-                ('leafletrun_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='leafleting.LeafletRun')),
-            ],
-            options={
-            },
-            bases=('leafleting.leafletrun',),
-        ),
-        migrations.AddField(
-            model_name='leafletrun',
-            name='postcode_points',
-            field=models.ManyToManyField(to='postcode_locator.PostcodeMapping'),
-            preserve_default=True,
         ),
     ]

@@ -27,7 +27,7 @@
         </div>
         <div class="panel">
             <h5>Current campaign</h5>
-            {{ current_campaign |default:"None just now" }}
+            {{ current_campaign.name |default:"None just now" }}
         </div>
     </div>
 {% endblock %}

@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+{% for domecile in object.get_domeciles %}
+    {{ domecile }}
+{% endfor %}
+{% endblock %}

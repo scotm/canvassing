@@ -84,7 +84,7 @@ class Domecile(models.Model):
         return domecile_list_to_string(Domecile.objects.filter(postcode=postcode))
 
     def get_contacts(self):
-        return Contact.objects.filter(domecile=self)
+        return self.contact_set.all()
 
 
 class Contact(models.Model):

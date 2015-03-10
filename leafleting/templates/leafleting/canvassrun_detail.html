@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
 {% block header %}{% endblock %}
+{% block extrahead %}
+    <link rel="stylesheet" href="{% static 'leaflet.css' %}"/>
+{% endblock %}
 {% block page_title %}{{ block.super }}{% endblock %}
 {% block content %}
     <div class="large-12 columns">
@@ -10,6 +13,8 @@
 
         <p>Question 2: Which party will you support with your list vote in the 2016 Scottish Parliament election? (give
             list of parties)</p>
+
+        <div id="map"></div>
         {% for domecile in object.get_domeciles %}
             <div class="domecile">
                 <div class="row">
@@ -37,8 +42,7 @@
                             </div>
                             <div class="large-2 columns">No interest <img src="{% static 'images/checkbox.svg' %}"/>
                             </div>
-                            <div class="large-2 columns">Don't Contact <img src="{% static 'images/checkbox.svg' %}"/>
-                            </div>
+                            <div class="large-2 columns">DNC <img src="{% static 'images/checkbox.svg' %}"/></div>
                             <div class="large-2 columns">Deceased <img src="{% static 'images/checkbox.svg' %}"/></div>
                         </div>
                     </div>
@@ -53,3 +57,18 @@
     </div>
 {% endblock %}
 {% block footer %}{% endblock %}
+{% block before_body_close %}
+    <script>
+        L.Icon.Default.imagePath = '{% static "images" %}';
+        var mapboxTiles = L.tileLayer('	http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg?', {
+            attribution: '© OpenStreetMap contributors - <a href="http://www.opendatacommons.org/licenses/odbl">Terms</a>'
+        });
+        var geojson = L.geoJson({{ object.get_points_json | safe}}, {});
+
+        var map = L.map('map').addLayer(mapboxTiles);
+
+        geojson.addTo(map);
+
+        map.fitBounds(geojson);
+    </script>
+{% endblock %}

@@ -49,8 +49,14 @@ class CanvassHomepage(LeafletHomepage):
     run_klass = CanvassRun
     template_name = 'canvassing_homepage.html'
 
-class CanvassRunDetailView(LoginRequiredMixin, DetailView):
+
+class LeafletRunDetailView(LoginRequiredMixin, DetailView):
+    model = LeafletRun
+
+
+class CanvassRunDetailView(LeafletRunDetailView):
     model = CanvassRun
+
 
 class LeafletRunListView(LoginRequiredMixin, ListView):
     model = LeafletRun
