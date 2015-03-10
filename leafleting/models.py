@@ -19,7 +19,7 @@ class BaseRun(models.Model):
 
     def get_domeciles(self):
         for postcode_point in self.postcode_points.all():
-            list_of_domeciles = sorted(Domecile.objects.filter(postcode_point=postcode_point),
+            list_of_domeciles = sorted(Domecile.objects.filter(postcode_point=postcode_point).prefetch_related('contact_set'),
                                        key=cmp_to_key(domecile_cmp))
             for domecile in list_of_domeciles:
                 yield domecile
