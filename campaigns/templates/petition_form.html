@@ -1,28 +1,28 @@
 <form action="{% url 'find_contact' %}" method="get">
     {% csrf_token %}
     <div class="row">
-        <div class="large-12 columns">
+        <div class="small-12 columns">
             {{ form.non_field_errors }}
         </div>
     </div>
     <div class="row">
-        <div class="large-6 columns">
+        <div class="small-6 columns">
             {{ form.first_name.errors }}
             <label for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}:</label>
             {{ form.first_name }}
         </div>
-        <div class="large-6 columns">
+        <div class="small-6 columns">
             {{ form.last_name.errors }}
             <label for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}:</label>
             {{ form.last_name }}
         </div>
     </div>
     <div class="row">
-        <div class="large-12 columns">
+        <div class="small-12 columns">
             {{ form.postcode.errors }}
             <label for="{{ form.postcode.id_for_label }}">{{ form.postcode.label }}:</label>
             {{ form.postcode }}
         </div>
     </div>
-    <button type="submit">Submit</button>
+    <button type="submit" class="round">Submit</button>
 </form>

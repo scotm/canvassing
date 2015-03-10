@@ -50,6 +50,9 @@
 
 .dark-panel {
   @include panel($bg: #801515, $padding: 20px, $adjust: true);
+  a {
+    color: lightgrey;
+  }
 }
 
 .light-panel {
@@ -76,9 +79,6 @@
     page-break-inside: avoid;
   }
 
-}
-
-@media print {
 }
 
 .domecile:nth-child(n+1) {

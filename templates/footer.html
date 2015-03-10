@@ -2,16 +2,18 @@
     <div class="large-12 columns">
         <hr/>
         <div class="row">
-            <div class="large-6 columns">
-                <p>© Copyright Scottish Socialist Party<br>Suite 370 Central Chambers, 93 Hope Street, Glasgow, G2 6LD<br />
-P: 07790 581883</p>
+            <div class="small-12 medium-4 columns">
+                <p>© Copyright Scottish Socialist Party<br>Suite 370 Central Chambers,<br> 93 Hope Street,<br> Glasgow,<br> G2
+                    6LD<br/>
+                    P: <a href="tel:+447790581883">07790 581883</a></p>
             </div>
-            <div class="large-6 columns">
+            <div class="small-12 medium-8 columns">
                 <ul class="inline-list right">
                     <li><a href="{% url 'about_the_ssp' %}">About the SSP</a></li>
-                    <li><a href="#">Documentation</a></li>
+{#                    <li><a href="#">Documentation</a></li>#}
                     <li><a href="{% url 'why_canvass' %}">Why Canvass?</a></li>
-                    <li><a href="#">Organisers</a></li>
+                    <li><a href="{% url 'why_leaflet' %}">Why Leaflet?</a></li>
+{#                    <li><a href="#">Organisers</a></li>#}
                 </ul>
             </div>
         </div>
