@@ -2,9 +2,7 @@
 // Foundation by ZURB
 // foundation.zurb.com
 // Licensed under MIT Open Source
-
 // Make sure the charset is set appropriately
-
 // Behold, here are all the Foundation components.
 @import "settings";
 @import "foundation/components/grid";
@@ -47,24 +45,24 @@
 
 #map {
   height: 500px;
-  page-break-after:always;
+  page-break-after: always;
 }
 
 .dark-panel {
-  @include panel($bg:#801515,$padding:20px,$adjust:true);
+  @include panel($bg: #801515, $padding: 20px, $adjust: true);
 }
 
 .light-panel {
-  @include panel($bg:#D46A6A,$padding:20px,$adjust:true);
+  @include panel($bg: #D46A6A, $padding: 20px, $adjust: true);
 }
 
 .drop-placeholder {
-  background-color:#801515;
+  background-color: #801515;
 }
 
-.spacer{
-  margin-top:0.5em;
-  margin-bottom:0.5em;
+.spacer {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
 }
 
 // This would make the large grid function like a print grid
@@ -74,14 +72,34 @@
       width: grid-calc($i, $total-columns);
     }
   }
+  .domecile {
+    page-break-inside: avoid;
+  }
+
 }
 
-@media print{
-    .domecile{
-        page-break-inside: avoid;
-    }
+@media print {
 }
 
-.domecile:nth-child(n+1){
-  margin-top:1.5em;
+.domecile:nth-child(n+1) {
+  margin-top: 1.5em;
 }
+
+@media #{$small-only} {
+  #header_image {
+    width: 150px;
+  }
+}
+
+@media #{$medium-only} {
+  #header_image {
+    width: 200px;
+  }
+}
+
+@media #{$large-only} {
+  #header_image {
+    width: 250px;
+  }
+}
+
