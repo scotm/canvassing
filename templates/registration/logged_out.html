@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block page_title %}{{ block.super }} Logged out{% endblock %}
+{% block breadcrumbs %}
+    <nav class="breadcrumbs">
+        <a href="{% url 'homepage' %}">Home</a>
+        <a class="current">Log out</a>
+    </nav>
+{% endblock %}
+{% block content %}
+    <div class="small-12 columns">
+        <h2>Logged Out</h2>
+
+        <p>You are now logged out from COMRADE. Have a nice day!</p>
+    <p><a href="{% url 'login' %}">Log in</a> again?</p>
+    </div>
+{% endblock %}

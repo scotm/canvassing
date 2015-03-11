@@ -12,6 +12,17 @@
 
         <p>Zoom the map, and pick off the postcodes you'd like to add to this run.</p>
 
+        <form id="run_information">
+            <label>A name for this run:
+                <input type="text" placeholder="Give this run a memorable title."
+                       id="run_name"/>
+            </label>
+            <label>Notes on this run:
+                <textarea placeholder="Tenements, big driveways, urban area, buzzers? Write these here."
+                          id="run_notes"></textarea>
+            </label>
+            <button id="save_run">Save Run</button>
+        </form>
         <div id="map"></div>
 
         <form id="postcode_form">
@@ -29,17 +40,6 @@
         </form>
 
         <hr>
-        <form id="run_information">
-            <label>A name for this run:
-                <input type="text" placeholder="Give this run a memorable title."
-                       id="run_name"/>
-            </label>
-            <label>Notes on this run:
-                <textarea placeholder="Tenements, big driveways, urban area, buzzers? Write these here."
-                          id="run_notes"></textarea>
-            </label>
-            <button id="save_run">Save Run</button>
-        </form>
         <p>There are <span id="count_addresses">0</span> addresses on this run so far.</p>
         <table id="postcodes_table">
             <thead>
@@ -203,7 +203,8 @@
         // Add the event handlers
         map.on('zoomend', redrawMarkers);
         map.on('dragend', redrawMarkers);
-        $("#resetView").click(function () {
+        $("#resetView").click(function (e) {
+            e.preventDefault();
             resetView();
         });
 

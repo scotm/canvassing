@@ -4,8 +4,9 @@
         <nav class="top-bar" data-topbar role="navigation">
             <ul class="title-area">
                 <li class="name">
-                    <h1><a href="{% url 'homepage' %}"><img src='{% static "images/comrade-header.svg" %}'
-                                                            id="header_image"/></a></h1>
+                    {#                    <h1><a href="{% url 'homepage' %}"><img src='{% static "images/comrade-header.svg" %}'#}
+                    {#                                                            id="header_image"/></a></h1>#}
+                    <h1><a href="{% url 'homepage' %}">COMRADE</a></h1>
                 </li>
                 <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
                 <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
@@ -14,16 +15,20 @@
             <section class="top-bar-section">
                 <!-- Right Nav Section -->
                 <ul class="right">
-                    <li><a href="{% url 'canvass_homepage' %}" class="button">Canvass</a></li>
-                    <li><a href="{% url 'leaflet_homepage' %}" class="button">Leaflet</a></li>
-                    <li><a href="{% url 'find_contact' %}" class="button">Signatures</a></li>
+                    {% if user and user.is_authenticated %}
+                    <li><a href="{% url 'canvass_homepage' %}">Canvass</a></li>
+                    <li><a href="{% url 'leaflet_homepage' %}">Leaflet</a></li>
+                    <li><a href="{% url 'find_contact' %}">Signatures</a></li>
                     <li class="has-dropdown">
-                        <a href="#">My Account</a>
+                        <a href="#">Account</a>
                         <ul class="dropdown">
-                            <li><a href="#">Data Entry</a></li>
+                            <li><a href="#">My Booked Lists</a></li>
                             <li><a href="{% url 'reporting' %}">Reports</a></li>
+                            <li><a href="{% url 'password_change' %}">Change Password</a></li>
+                            <li><a href="{% url 'logout' %}">Log out</a></li>
                         </ul>
                     </li>
+                    {% endif %}
                 </ul>
 
                 <!-- Left Nav Section -->

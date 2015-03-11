@@ -10,7 +10,7 @@ from core.models import Domecile
 
 
 class BaseRun(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
     postcode_points = SortedManyToManyField('postcode_locator.PostcodeMapping')
     notes = models.TextField()
 

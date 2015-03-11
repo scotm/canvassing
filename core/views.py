@@ -11,21 +11,6 @@ from json_views.views import JSONDataView
 from core.models import Contact, Domecile, Ward
 
 
-def login_user(request):
-    if request.POST:
-        user = authenticate(username=request.POST['username'], password=request.POST['password'])
-        if user is not None:
-            if user.is_active:
-                login(request, user)
-                return HttpResponseRedirect(reverse_lazy('homepage'))
-    return render_to_response('account_auth/login.html', context_instance=RequestContext(request))
-
-
-def logout_user(request):
-    logout(request)
-    return HttpResponseRedirect('/')
-
-
 class ContactView(LoginRequiredMixin, DetailView):
     model = Contact
 
