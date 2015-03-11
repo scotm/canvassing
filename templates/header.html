@@ -18,9 +18,11 @@
                     <li><a href="{% url 'leaflet_homepage' %}" class="button">Leaflet</a></li>
                     <li><a href="{% url 'find_contact' %}" class="button">Signatures</a></li>
                     <li class="has-dropdown">
-                        <a href="#">My Account</a>
+                        <a href="#">Account</a>
                         <ul class="dropdown">
-                            <li><a href="#">Data Entry</a></li>
+                            <li><a href="{% url 'logout' %}">Log out</a></li>
+                            <li><a href="{% url 'logout' %}">Change Password</a></li>
+                            <li><a href="#">My Booked Lists</a></li>
                             <li><a href="{% url 'reporting' %}">Reports</a></li>
                         </ul>
                     </li>

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}COMRADE: Log In{% endblock %}
+{% block main_header %}COMRADE{% endblock %}
+{% block breadcrumbs %}
+    <nav class="breadcrumbs">
+        <a href="{% url 'homepage' %}">Home</a>
+        <a class="current">Login</a>
+    </nav>
+{% endblock %}
+{% block summary %}{% endblock %}
+{% block content %}
+    <div class="small-12 large-6 large-offset-3 columns">
+        <h1>COMRADE Log In</h1>
+
+        <div id="login">
+            <form class="form-horizontal" name="LoginForm" action="{% url 'login' %}" method="post">
+                {% csrf_token %}
+                <table>
+                    {{ form.as_table }}
+                </table>
+                <button type="submit" class="round">
+                    {% block buttontext %}Submit{% endblock %}
+                </button>
+            </form>
+        </div>
+        <div data-alert class="alert-box warning radius" role="alert">
+            <p>Unauthorised access is prohibited and constitutes an offence under the Computer Misuse Act 1990. It may
+                result in criminal prosecution punishable by up to 6 months imprisonment or fine not exceeding £5000.00,
+                or both, and a claim for civil damages.</p>
+
+            <p>Authorised users are reminded to keep their User name and password confidential and to contact
+                <a href="mailto:scott.scotm@gmail.com">Scott Macdonald</a> immediately they become aware of any
+                unauthorised user obtaining their User name and password.</p>
+        </div>
+    </div>
+{% endblock %}

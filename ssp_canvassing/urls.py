@@ -20,6 +20,6 @@ urlpatterns = patterns('',
                        url(r'', include('campaigns.urls')),
                        url(r'^ajax/get_domeciles$', DomecileMapView.as_view(), name='get_domeciles'),
                        url(r'^ajax/get_addresses$', DomecileAddressView.as_view(), name='get_addresses'),
-                       url(r'accounts/login', 'core.views.login_user', name='login'),
+                       url('^', include('django.contrib.auth.urls')),
                        # url(r'^ward/(?P<slug>[a-z\-_]+)', WardView.as_view()),
 )

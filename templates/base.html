@@ -17,7 +17,11 @@
 {% block header %}{% include "header.html" %}{% endblock %}
 <div class="row">
     <div class="large-12 columns">
-        {% block breadcrumbs %}{% endblock %}
+        {% block breadcrumbs %}
+            <nav class="breadcrumbs">
+                <a class="current">Home</a>
+            </nav>
+        {% endblock %}
     </div>
 </div>
 <div class="row">
