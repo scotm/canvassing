@@ -2,7 +2,7 @@
 
 {% block content %}
     <div class="large-9 columns">
-        <h1>Local Authorities in Scotland</h1>
+        <h1>Local Authorities</h1>
         {% regroup object_list by local_authority_name as ward_list %}
         <ul class="accordion" data-accordion>
             {% for local_authority in ward_list %}

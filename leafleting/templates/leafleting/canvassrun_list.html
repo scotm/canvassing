@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="small-12 columns">
-    <h2>Canvass Runs</h2>
+    <h2>{% block name %}Canvass Runs{% endblock %}</h2>
     <ul>
     {% for object in object_list %}
-        <li><a href="{% url 'canvass_run' object.pk %}">{{ object }}</a></li>
+        {% block line %}<li><a href="{% url 'canvass_run' object.pk %}">{{ object }}</a> - {{ object.count_people }} people</li>{% endblock %}
     {% endfor %}
     </ul>
     </div>
