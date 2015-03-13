@@ -16,6 +16,7 @@ class BaseRun(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ('-pk',)
 
     def get_domeciles(self):
         for postcode_point in self.postcode_points.all():

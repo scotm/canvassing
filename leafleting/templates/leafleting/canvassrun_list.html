@@ -1,4 +1,12 @@
 {% extends "base.html" %}
+{% block breadcrumbs %}
+    <nav class="breadcrumbs">
+        <a href="{% url 'homepage' %}">Home</a>
+        <a href="{% url 'canvass_homepage' %}">Canvassing</a>
+        <a class="current">Choose Run</a>
+    </nav>
+{% endblock %}
+
 {% block content %}
     <div class="small-12 columns">
     <h2>{% block name %}Canvass Runs{% endblock %}</h2>

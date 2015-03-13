@@ -1,3 +1,11 @@
 {% extends "leafleting/canvassrun_list.html" %}
-{% block line %}<li><a href="{% url 'leaflet_run' object.pk %}">{{ object }}</a> - {{ object.count }} houses</li>{% endblock %}
+{% block breadcrumbs %}
+    <nav class="breadcrumbs">
+        <a href="{% url 'homepage' %}">Home</a>
+        <a href="{% url 'leaflet_homepage' %}">Leafleting</a>
+        <a class="current">Choose Run</a>
+    </nav>
+{% endblock %}
+{% block line %}
+    <li><a href="{% url 'leaflet_run' object.pk %}">{{ object }}</a> - {{ object.count }} houses</li>{% endblock %}
 {% block name %}Leaflet Runs{% endblock %}
