@@ -74,3 +74,6 @@ class LeafletingPicker(LoginRequiredMixin, DetailView):
 class LeafletWardPicker(LoginRequiredMixin, ListView):
     model = Ward
     template_name = 'leafleting_ward_picker.html'
+
+    def get_queryset(self):
+        return super(LeafletWardPicker, self).get_queryset().filter(active=True)
