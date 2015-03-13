@@ -4,7 +4,7 @@ __author__ = 'scotm'
 from django.conf.urls import patterns, url
 
 from leafleting.views import LeafletingPicker, LeafletWardPicker, LeafletRunCreate, CanvassRunCreate, \
-    LeafletHomepage, CanvassHomepage, CanvassRunDetailView, LeafletRunDetailView
+    LeafletHomepage, CanvassHomepage, CanvassRunDetailView, LeafletRunDetailView, CanvassRunListView
 
 
 urlpatterns = patterns('',
@@ -25,5 +25,6 @@ urlpatterns = patterns('',
                            LeafletWardPicker.as_view(template_name='canvassing_ward_picker.html'),
                            name='canvass_ward_list'),
                        url(r'^canvassing/run/(?P<pk>[0-9]+)$', CanvassRunDetailView.as_view(), name='canvass_run'),
+                       url(r'^canvassing/list/', CanvassRunListView.as_view(), name='canvass_list'),
                        url(r'^canvassing/$', CanvassHomepage.as_view(), name='canvass_homepage'),
                        )

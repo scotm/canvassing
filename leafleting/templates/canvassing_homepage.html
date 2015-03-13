@@ -46,7 +46,7 @@
                             <li><a href="{{ run.get_absolute_url }}">{{ run }}</a></li>
                         {% endfor %}
                     </ul>
-                    <a href="#">See All</a>
+                    <a href="{% url 'canvass_list' %}">See All</a>
                 {% else %}
                     <p>None yet</p>
                 {% endif %}
