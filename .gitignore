@@ -63,3 +63,8 @@ static/*
 !data/reset.sh
 !js/.js_files_go_here
 !css/.css_files_go_here
+!data/maryfield_postcodes.csv
+!data/Wards_GB_2014_Boundaries/dundee_maryfield.dbf
+!data/Wards_GB_2014_Boundaries/dundee_maryfield.prj
+!data/Wards_GB_2014_Boundaries/dundee_maryfield.shp
+!data/Wards_GB_2014_Boundaries/dundee_maryfield.shx

@@ -6,7 +6,7 @@ from django.db import models
 from sortedm2m.fields import SortedManyToManyField
 
 from core.utilities.domecile_comparisons import domecile_cmp
-from core.models import Domecile
+from core.models import Domecile, Contact
 
 
 class BaseRun(models.Model):
@@ -16,6 +16,7 @@ class BaseRun(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ('-pk',)
 
     def get_domeciles(self):
         for postcode_point in self.postcode_points.all():
@@ -26,6 +27,9 @@ class BaseRun(models.Model):
 
     def count(self):
         return sum(Domecile.objects.filter(postcode_point=x).count() for x in self.postcode_points.all())
+
+    def count_people(self):
+        return sum(Contact.objects.filter(domecile__postcode_point=x).count() for x in self.postcode_points.all())
 
     def __unicode__(self):
         return self.name

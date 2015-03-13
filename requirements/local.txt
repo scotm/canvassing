@@ -1,3 +1,4 @@
 -r base.txt
 django-debug-toolbar
 django-livereload
+django-debug-toolbar-line-profiler
