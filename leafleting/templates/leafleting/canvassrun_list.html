@@ -9,11 +9,28 @@
 
 {% block content %}
     <div class="small-12 columns">
-    <h2>{% block name %}Canvass Runs{% endblock %}</h2>
-    <ul>
-    {% for object in object_list %}
-        {% block line %}<li><a href="{% url 'canvass_run' object.pk %}">{{ object }}</a> - {{ object.count_people }} people</li>{% endblock %}
-    {% endfor %}
-    </ul>
+        <h2>{% block name %}Canvass Runs{% endblock %}</h2>
+        <table>
+            <tr>
+                {% block table_header %}
+                    <th>Name</th>
+                    <th>People</th>
+                    <th>Local Authority</th>
+                    <th>Ward</th>
+                    <th>Created by</th>
+                {% endblock table_header %}
+            </tr>
+            {% for object in object_list %}
+                <tr>
+                    {% block line %}
+                        <td><a href="{% url 'canvass_run' object.pk %}">{{ object }}</a></td>
+                        <td>{{ object.count_people }}</td>
+                        <td>{{ object.ward.local_authority_name }}</td>
+                        <td>{{ object.ward.ward_name }}</td>
+                        <td>{{ object.created_by }}</td>
+                    {% endblock %}
+                </tr>
+            {% endfor %}
+        </table>
     </div>
 {% endblock %}
