@@ -1,4 +1,5 @@
 from functools import cmp_to_key
+from django.conf import settings
 
 from django.contrib.gis.geos import MultiPoint
 from django.core.urlresolvers import reverse
@@ -13,6 +14,8 @@ class BaseRun(models.Model):
     name = models.CharField(max_length=100)
     postcode_points = SortedManyToManyField('postcode_locator.PostcodeMapping')
     notes = models.TextField()
+    ward = models.ForeignKey('core.Ward', on_delete=models.SET_NULL, null=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True)
 
     class Meta:
         abstract = True
@@ -37,9 +40,16 @@ class BaseRun(models.Model):
     def get_absolute_url(self):
         return reverse(self.url_name, args=[self.pk, ])
 
+    def get_points(self):
+        return MultiPoint([x.point for x in self.postcode_points.all()])
+
     def get_points_json(self):
-        points = MultiPoint([x.point for x in self.postcode_points.all()])
-        return points.json
+        return self.get_points().json
+
+    def get_ward(self):
+        from core.models import Ward
+        return Ward.objects.filter(geom__contains=self.get_points().centroid).first()
+
 
 
 class LeafletRun(BaseRun):
