@@ -19,9 +19,11 @@ class LeafletRunCreate(LoginRequiredMixin, JSONDataView):
             raise Exception("A list of postcodes is required.")
 
         leaflet_run = self.model.objects.create(
-            **{'name': self.request.GET['run_name'], 'notes': self.request.GET['run_notes']})
+            **{'name': self.request.GET['run_name'], 'notes': self.request.GET['run_notes'],
+               'created_by': self.request.user})
         for x in postcodes:
             leaflet_run.postcode_points.add(PostcodeMapping.match_postcode(x))
+
         leaflet_run.save()
         context.update({'outcome': 'success'})
         return context
