@@ -7,5 +7,16 @@
     </nav>
 {% endblock %}
 {% block line %}
-    <li><a href="{% url 'leaflet_run' object.pk %}">{{ object }}</a> - {{ object.count }} houses</li>{% endblock %}
+    <td><a href="{% url 'leaflet_run' object.pk %}">{{ object }}</a></td>
+    <td>{{ object.count }} houses</td>
+    <td>{{ object.ward }}</td>
+    <td>{{ object.created_by }}</td>
+{% endblock %}
 {% block name %}Leaflet Runs{% endblock %}
+{% block table_header %}
+    <th>Name</th>
+    <th>Houses</th>
+    <th>Local Authority</th>
+    <th>Ward</th>
+    <th>Created by</th>
+{% endblock table_header %}
