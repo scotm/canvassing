@@ -24,6 +24,7 @@ class LeafletRunCreate(LoginRequiredMixin, JSONDataView):
         for x in postcodes:
             leaflet_run.postcode_points.add(PostcodeMapping.match_postcode(x))
 
+        leaflet_run.ward = leaflet_run.get_ward()
         leaflet_run.save()
         context.update({'outcome': 'success'})
         return context
