@@ -58,4 +58,3 @@ class LeafletRun(BaseRun):
 
 class CanvassRun(BaseRun):
     url_name = 'canvass_run'
-
