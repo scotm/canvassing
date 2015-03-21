@@ -63,6 +63,7 @@ INSTALLED_APPS = (
     'OpenStreetMap',
     'leafleting',
     'reporting',
+    'django_filters',
 )
 
 MIDDLEWARE_CLASSES = (

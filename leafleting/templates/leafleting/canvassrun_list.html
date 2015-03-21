@@ -10,14 +10,24 @@
 {% block content %}
     <div class="small-12 columns">
         <h2>{% block name %}Canvass Runs{% endblock %}</h2>
+        <form action="" method="get">
         <table>
             <tr>
                 {% block table_header %}
-                    <th>Name</th>
+                    <th>{{ filter.form.name.errors }}
+            <label for="{{ filter.form.name.id_for_label }}">{{ filter.form.name.label }}:</label>
+            {{ filter.form.name }}</th>
                     <th>People</th>
-                    <th>Local Authority</th>
-                    <th>Ward</th>
-                    <th>Created by</th>
+                    <th>{{ filter.form.ward__local_authority_name.errors }}
+            <label for="{{ filter.form.ward__local_authority_name.id_for_label }}">Local Authority:</label>
+            {{ filter.form.ward__local_authority_name }}</th>
+                    <th>{{ filter.form.ward__ward_name.errors }}
+            <label for="{{ filter.form.ward__ward_name.id_for_label }}">Ward Name:</label>
+            {{ filter.form.ward__ward_name }}</th>
+                    <th>{{ filter.form.created_by.errors }}
+            <label for="{{ filter.form.created_by.id_for_label }}">{{ filter.form.created_by.label }}:</label>
+            {{ filter.form.created_by }}</th>
+                    <th><input type="submit"></th>
                 {% endblock table_header %}
             </tr>
             {% for object in object_list %}
@@ -32,5 +42,7 @@
                 </tr>
             {% endfor %}
         </table>
+        </form>
+
     </div>
 {% endblock %}

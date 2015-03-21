@@ -11,3 +11,4 @@ factory-boy
 django-sortedm2m
 jsonfield
 django-braces
+django-filter
