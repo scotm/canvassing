@@ -118,7 +118,18 @@ class Contact(models.Model):
                  'address_9', ] if getattr(self.domecile, x)]
 
 
-class Ward(models.Model):
+class GeomMixin(object):
+    geom = models.MultiPolygonField(srid=4326)
+
+    def get_simplified_geom_json(self, simplify_factor=0.00003):
+        return self.geom.simplify(simplify_factor).json
+
+    def centre_point(self):
+        centroid = self.geom.centroid
+        return centroid.y, centroid.x
+
+
+class Ward(GeomMixin, models.Model):
     # Based on the ward shape files available from:
     # https://geoportal.statistics.gov.uk/Docs/Boundaries/Wards_(GB)_2014_Boundaries_(Full_Extent).zip
 
@@ -127,7 +138,6 @@ class Ward(models.Model):
     wd14nmw = models.CharField(max_length=45)
     local_authority_code = models.CharField(max_length=9)
     local_authority_name = models.CharField(max_length=28)
-    geom = models.MultiPolygonField(srid=4326)
     active = models.BooleanField(default=True)
     objects = models.GeoManager()
 
@@ -148,15 +158,8 @@ class Ward(models.Model):
         print("Removing the non-Scottish wards")
         Ward.objects.exclude(local_authority_code__startswith="S").delete()
 
-    def centre_point(self):
-        centroid = self.geom.centroid
-        return centroid.y, centroid.x
 
-    def get_simplified_geom_json(self, simplify_factor=0.00003):
-        return self.geom.simplify(simplify_factor).json
-
-
-class Region(models.Model):
+class Region(GeomMixin, models.Model):
     # Data based on the Boundary-Line™ program from OS Open Data
     # https://www.ordnancesurvey.co.uk/opendatadownload/products.html
     name = models.CharField(max_length=60)
@@ -174,7 +177,6 @@ class Region(models.Model):
     descript0 = models.CharField(max_length=25)
     type_cod0 = models.CharField(max_length=3)
     descript1 = models.CharField(max_length=36)
-    geom = models.MultiPolygonField(srid=4326)
     objects = models.GeoManager()
 
     mapping = {'name': 'NAME', 'area_code': 'AREA_CODE', 'description': 'DESCRIPTIO', 'file_name': 'FILE_NAME',
