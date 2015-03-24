@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.views.generic import ListView, DetailView, TemplateView, UpdateView
 from json_views.views import JSONDataView
-from core.models import Ward
+from core.models import Ward, Region
 
 from leafleting.models import LeafletRun, CanvassRun
 from postcode_locator.models import PostcodeMapping
@@ -105,6 +105,11 @@ class CanvassRunDetailView(LeafletRunDetailView):
 
 class LeafletingPicker(LoginRequiredMixin, DetailView):
     model = Ward
+    template_name = 'leafleting_picker.html'
+
+
+class RegionLeafletingPicker(LoginRequiredMixin, DetailView):
+    model = Region
     template_name = 'leafleting_picker.html'
 
 
