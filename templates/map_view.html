@@ -8,7 +8,13 @@
     <div class="large-12 columns">
         <h1>{% block purpose %}Block:Purpose{% endblock %}</h1>
 
-        <h2>{{ object.local_authority_name }}: {{ object.ward_name }}</h2>
+        <h2>{% block type %}
+                {% if object.local_authority_name %}
+                    {{ object.local_authority_name }}: {{ object.ward_name }}
+                {% else %}
+                    {{ object.name }}: {{ object.description }}
+                {% endif %}
+            {% endblock %}</h2>
 
         <p>Zoom the map, and pick off the postcodes you'd like to add to this run.</p>
 
