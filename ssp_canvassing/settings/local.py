@@ -1,3 +1,5 @@
+import sys
+
 __author__ = 'scotm'
 
 from .base import *
@@ -23,3 +25,20 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.redirects.RedirectsPanel',
     'debug_toolbar_line_profiler.panel.ProfilingPanel',
 ]
+
+if 'test' in sys.argv:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.spatialite',
+            "NAME": ":memory:",
+            'TEST_NAME': ":memory:",
+        },
+    }
+
+    # Disable redirection when testing. https://code.djangoproject.com/ticket/12227
+    PREPEND_WWW = False
+    TEMPLATE_DEBUG = False
+    DEBUG = False
+    PASSWORD_HASHERS = (
+        'django.contrib.auth.hashers.MD5PasswordHasher',
+    )
