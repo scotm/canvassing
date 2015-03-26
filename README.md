@@ -1,6 +1,6 @@
 # COMRADE
 
-Canvassing & Organisation: Making Running Activism Downright Easy.
+Canvassing & Organisation: Making Regular Activism Downright Easy.
 
 To use this, you'll need quite a lot of additional software.
 
