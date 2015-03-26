@@ -1,7 +1,6 @@
 from __future__ import print_function
 # Create your views here.
 from braces.views import LoginRequiredMixin
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.views.generic import ListView, DetailView, TemplateView, UpdateView
 from json_views.views import JSONDataView
@@ -22,6 +21,7 @@ class UserFilter(ChoiceFilter):
         self.extra['choices'] = [("", "All")] + [(o, str(get_user_model().objects.get(pk=o))) for o in qs]
         return super(ChoiceFilter, self).field
 
+
 class AnyAllValuesFilter(AllValuesFilter):
     @property
     def field(self):
@@ -30,13 +30,16 @@ class AnyAllValuesFilter(AllValuesFilter):
         self.extra['choices'] = [("", "All")] + [(o, o) for o in qs]
         return super(AllValuesFilter, self).field
 
+
 class CanvassRunFilter(FilterSet):
     ward__ward_name = AnyAllValuesFilter()
     ward__local_authority_name = AnyAllValuesFilter()
     created_by = UserFilter()
+
     class Meta:
         model = CanvassRun
         fields = ['name', 'ward__ward_name', 'ward__local_authority_name', 'created_by']
+
 
 class CanvassRunListView(FilterView):
     filterset_class = CanvassRunFilter
@@ -95,27 +98,17 @@ class CanvassHomepage(LeafletHomepage):
     template_name = 'canvassing_homepage.html'
 
 
-class LeafletRunDetailView(LoginRequiredMixin, DetailView):
-    model = LeafletRun
+class RunDetailView(LoginRequiredMixin, DetailView):
+    pass
 
 
-class CanvassRunDetailView(LeafletRunDetailView):
-    model = CanvassRun
+class RunPicker(LoginRequiredMixin, DetailView):
+    pass
 
 
-class LeafletingPicker(LoginRequiredMixin, DetailView):
-    model = Ward
-    template_name = 'leafleting_picker.html'
-
-
-class RegionLeafletingPicker(LoginRequiredMixin, DetailView):
-    model = Region
-    template_name = 'leafleting_picker.html'
-
-
-class LeafletWardPicker(LoginRequiredMixin, ListView):
+class AreaPicker(LoginRequiredMixin, ListView):
     model = Ward
     template_name = 'leafleting_ward_picker.html'
 
     def get_queryset(self):
-        return super(LeafletWardPicker, self).get_queryset().filter(active=True)
+        return super(AreaPicker, self).get_queryset().filter(active=True)

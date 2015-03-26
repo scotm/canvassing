@@ -119,7 +119,6 @@ class Contact(models.Model):
 
 
 class GeomMixin(object):
-    geom = models.MultiPolygonField(srid=4326)
 
     def get_simplified_geom_json(self, simplify_factor=0.00003):
         return self.geom.simplify(simplify_factor).json
@@ -149,7 +148,11 @@ class Ward(GeomMixin, models.Model):
         ordering = ('local_authority_name', 'ward_name',)
 
     def __unicode__(self):
-        return "%s: %s - %s" % (self.ward_code, self.ward_name, self.local_authority_name)
+        return "%s: %s" % (self.ward_name, self.local_authority_name)
+
+    @property
+    def name(self):
+        return self.ward_name
 
     @staticmethod
     def fill_up_db(shapefile, verbose=False):
@@ -260,3 +263,32 @@ class Region(GeomMixin, models.Model):
 
         # Nuke the residue - We've already got a decent geom of it.
         Region.objects.filter(name='Highlands and Islands').delete()
+
+class IntermediateZone(GeomMixin, models.Model):
+    name = models.CharField(max_length=60)
+    code = models.CharField(max_length=12)
+    council_are = models.CharField(max_length=9)
+    local_authority_name = models.CharField(max_length=254)
+    geom = models.MultiPolygonField(srid=4326)
+    objects = models.GeoManager()
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ('local_authority_name', 'name', )
+
+    mapping = {
+        'code' : 'IZ_CODE',
+        'name' : 'IZ_NAME',
+        'council_are' : 'CouncilAre',
+        'local_authority_name' : 'NRSCouncil',
+        'geom' : 'MULTIPOLYGON',
+    }
+
+    def __unicode__(self):
+        return "%s: %s" % (self.name, self.local_authority_name)
+
+    @staticmethod
+    def fill_up_db(shapefile, verbose=False):
+        lm = LayerMapping(IntermediateZone, shapefile, IntermediateZone.mapping, transform=True, encoding='iso-8859-1')
+        lm.save(strict=True, verbose=verbose)
+        print("Regions imported")

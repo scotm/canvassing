@@ -1,6 +1,6 @@
 from functools import cmp_to_key
-from django.conf import settings
 
+from django.conf import settings
 from django.contrib.gis.geos import MultiPoint
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -15,6 +15,7 @@ class BaseRun(models.Model):
     postcode_points = SortedManyToManyField('postcode_locator.PostcodeMapping')
     notes = models.TextField()
     ward = models.ForeignKey('core.Ward', on_delete=models.SET_NULL, null=True)
+    intermediate_zone = models.ForeignKey('core.IntermediateZone', on_delete=models.SET_NULL, null=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True)
 
     class Meta:
@@ -23,8 +24,9 @@ class BaseRun(models.Model):
 
     def get_domeciles(self):
         for postcode_point in self.postcode_points.all():
-            list_of_domeciles = sorted(Domecile.objects.filter(postcode_point=postcode_point).prefetch_related('contact_set'),
-                                       key=cmp_to_key(domecile_cmp))
+            list_of_domeciles = sorted(
+                Domecile.objects.filter(postcode_point=postcode_point).prefetch_related('contact_set'),
+                key=cmp_to_key(domecile_cmp))
             for domecile in list_of_domeciles:
                 yield domecile
 
@@ -48,8 +50,13 @@ class BaseRun(models.Model):
 
     def get_ward(self):
         from core.models import Ward
+
         return Ward.objects.filter(geom__contains=self.get_points().centroid).first()
 
+    def get_zone(self):
+        from core.models import IntermediateZone
+
+        return IntermediateZone.objects.filter(geom__contains=self.get_points().centroid).first()
 
 
 class LeafletRun(BaseRun):
