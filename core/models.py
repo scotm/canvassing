@@ -139,6 +139,7 @@ class Ward(GeomMixin, models.Model):
     local_authority_code = models.CharField(max_length=9)
     local_authority_name = models.CharField(max_length=28)
     active = models.BooleanField(default=True)
+    geom = models.MultiPolygonField(srid=4326)
     objects = models.GeoManager()
 
     mapping = {'ward_code': 'WD14CD', 'ward_name': 'WD14NM', 'wd14nmw': 'WD14NMW', 'local_authority_code': 'LAD14CD',
