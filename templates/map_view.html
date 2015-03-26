@@ -176,12 +176,17 @@
                 this.setIcon(blue_icon);
                 postcode = this.options.title;
                 // Remove the row from the table
-                var p = $('#postcodes_table').find('tr td').filter(function () {
+                table = $('#postcodes_table');
+                var p = table.find('tr td').filter(function () {
                     return $(this).text() == postcode;
                 }).closest("tr");
-                // Set the counter correctly.
-                selected_address_count = selected_address_count - p[0].lastChild.innerHTML.split('<br>').length;
                 p.remove();
+                // Set the counter correctly.
+                selected_address_count = 0;
+                table.find('tr td:nth-child(4)').each(function(){
+                    selected_address_count += parseInt($(this).text());
+                });
+
                 selected_postcodes.splice($.inArray(this.options.title, selected_postcodes), 1);
                 updateAddressCount();
             }
