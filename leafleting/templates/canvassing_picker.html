@@ -5,7 +5,7 @@
     <nav class="breadcrumbs">
         <a href="{% url 'homepage' %}">Home</a>
         <a href="{% url 'canvass_homepage' %}">Canvassing</a>
-        <a href="{% url 'canvass_ward_list' %}">Wards</a>
+        <a href="{% url 'canvass_ward_list' %}">{% if '/region/' in request.path %}Regions{% elif '/ward/' in request.path %}Wards{% endif %}</a>
         <a class="current">{{ object.local_authority_name }} {{ object.ward_name }}</a>
     </nav>
 {% endblock %}
