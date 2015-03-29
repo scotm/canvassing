@@ -21,6 +21,8 @@ except ImportError:
 
     compat.register()
 
+from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
+
 BASE_DIR = Path(os.path.dirname(__file__)).parent.parent
 
 ADMINS = (
@@ -112,6 +114,9 @@ TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',
 
 TEMPLATE_DIRS = (Path(BASE_DIR, "templates"), )
 
+TEMPLATE_CONTEXT_PROCESSORS = TCP + (
+    'django.core.context_processors.request',
+)
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 

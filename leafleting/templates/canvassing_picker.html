@@ -11,3 +11,4 @@
 {% endblock %}
 {% block run_create_url %}{% url 'canvass_run_create' %}{% endblock %}
 {% block query_type %}canvassing{% endblock %}
+{% block object_type %}{% if '/ward/' in request.path %}ward{% elif '/region/' in request.path %}region{% endif %}{% endblock %}
