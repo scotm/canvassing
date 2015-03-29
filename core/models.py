@@ -88,7 +88,7 @@ class Domecile(models.Model):
 
 
 class Contact(models.Model):
-    pd = models.CharField(max_length=5, db_index=True)
+    pd = models.CharField(max_length=6, db_index=True)
     ero_number = models.IntegerField(db_index=True)
     title = models.CharField(max_length=10)
     first_name = models.CharField(max_length=100)
