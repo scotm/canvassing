@@ -41,6 +41,12 @@ except ImportError:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Attempt to import the email details.
+try:
+    from secrets import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_HOST, EMAIL_PORT, EMAIL_USE_SSL
+except ImportError:
+    pass
+
 TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
