@@ -4,11 +4,14 @@
 {% block extrahead %}
     <link rel="stylesheet" href="{% static 'leaflet.css' %}"/>
 {% endblock %}
-{% block page_title %}{{ block.super }}{% endblock %}
+{% block page_title %}{{ block.super }}{{ object.name }}{% endblock %}
 {% block breadcrumbs %}{% endblock %}
 {% block content %}
     <div class="large-12 columns">
         <h3>{{ object.name }}</h3>
+        {% if object.notes %}
+        <p><em>{{ object.notes }}</em></p>
+        {% endif %}
 
         <p>Question 1: Which party will you support for the upcoming UK general election?</p>
 
