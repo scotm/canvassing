@@ -8,7 +8,13 @@
     <div class="large-12 columns">
         <h1>{% block purpose %}Block:Purpose{% endblock %}</h1>
 
-        <h2>{{ object.local_authority_name }}: {{ object.ward_name }}</h2>
+        <h2>{% block type %}
+                {% if object.local_authority_name %}
+                    {{ object.local_authority_name }}: {{ object.ward_name }}
+                {% else %}
+                    {{ object.name }}: {{ object.description }}
+                {% endif %}
+            {% endblock %}</h2>
 
         <p>Zoom the map, and pick off the postcodes you'd like to add to this run.</p>
 
@@ -170,12 +176,17 @@
                 this.setIcon(blue_icon);
                 postcode = this.options.title;
                 // Remove the row from the table
-                var p = $('#postcodes_table').find('tr td').filter(function () {
+                table = $('#postcodes_table');
+                var p = table.find('tr td').filter(function () {
                     return $(this).text() == postcode;
                 }).closest("tr");
-                // Set the counter correctly.
-                selected_address_count = selected_address_count - p[0].lastChild.innerHTML.split('<br>').length;
                 p.remove();
+                // Set the counter correctly.
+                selected_address_count = 0;
+                table.find('tr td:nth-child(4)').each(function(){
+                    selected_address_count += parseInt($(this).text());
+                });
+
                 selected_postcodes.splice($.inArray(this.options.title, selected_postcodes), 1);
                 updateAddressCount();
             }
