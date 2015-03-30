@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+    {% regroup object_list by local_authority_name as ward_list %}
     <div class="large-9 columns">
-        <h1>Local Authorities</h1>
-        {% regroup object_list by local_authority_name as ward_list %}
+        <h1>{% block page_heading %}Local Authorities{% endblock %}</h1>
         <ul class="accordion" data-accordion>
             {% for local_authority in ward_list %}
                 <li class="accordion-navigation">
@@ -12,7 +12,7 @@
                     <div id="box{{ forloop.counter }}" class="content">
                         <ul>
                             {% for object in local_authority.list %}
-                                <li><p><a href='{% block run_picker %}{% endblock %}'>{{ object.ward_name }}</a>
+                                <li><p><a href='{% block run_picker %}{% endblock %}'>{{ object }}</a>
                                 </p></li>
                             {% endfor %}
                         </ul>
@@ -22,6 +22,6 @@
         </ul>
     </div>
     <div class="large-3 columns">
-        <p>Select the local authority area, then the ward you wish to pick from.</p>
+        <p>{% block side_message %}Select the local authority area, then the ward you wish to pick from.{% endblock %}</p>
     </div>
 {% endblock %}

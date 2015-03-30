@@ -27,7 +27,7 @@
                     <th>{{ filter.form.created_by.errors }}
             <label for="{{ filter.form.created_by.id_for_label }}">{{ filter.form.created_by.label }}:</label>
             {{ filter.form.created_by }}</th>
-                    <th><input type="submit"></th>
+                    <th><button type="submit">Submit</button></th>
                 {% endblock table_header %}
             </tr>
             {% for object in object_list %}
