@@ -55,7 +55,8 @@
             <div class="panel callout radius">
                 {% block create_run %}
                     <h5>Create Run</h5>
-                    <p>Create a <a href="{% url 'canvass_ward_list' %}">canvass run</a> near you!</p>
+                    <p>Create a canvass run near you!</p>
+                    <p><a href="{% url 'canvass_ward_list' %}">Council Ward</a>, or <a href="{% url 'canvass_region_list' %}">Region</a></p>
                 {% endblock %}
             </div>
         {% endblock %}

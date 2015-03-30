@@ -88,7 +88,7 @@ class Domecile(models.Model):
 
 
 class Contact(models.Model):
-    pd = models.CharField(max_length=5, db_index=True)
+    pd = models.CharField(max_length=6, db_index=True)
     ero_number = models.IntegerField(db_index=True)
     title = models.CharField(max_length=10)
     first_name = models.CharField(max_length=100)
@@ -181,6 +181,7 @@ class Region(GeomMixin, models.Model):
     descript0 = models.CharField(max_length=25)
     type_cod0 = models.CharField(max_length=3)
     descript1 = models.CharField(max_length=36)
+    active = models.BooleanField(default=True)
     geom = models.MultiPolygonField(srid=4326)
     objects = models.GeoManager()
 
@@ -190,7 +191,7 @@ class Region(GeomMixin, models.Model):
                'descript0': 'DESCRIPT0', 'type_cod0': 'TYPE_COD0', 'descript1': 'DESCRIPT1', 'geom': 'POLYGON', }
 
     class Meta:
-        ordering = ('name',)
+        ordering = ('description', 'name',)
 
     def __unicode__(self):
         return "%s: %s" % (self.name, self.description)

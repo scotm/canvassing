@@ -8,7 +8,7 @@ from braces.views import LoginRequiredMixin
 from django.views.generic import DetailView, ListView, TemplateView
 from json_views.views import JSONDataView
 
-from core.models import Contact, Domecile, Ward
+from core.models import Contact, Domecile, Ward, Region
 
 
 class ContactView(LoginRequiredMixin, DetailView):
@@ -23,11 +23,18 @@ class ContactListView(LoginRequiredMixin, ListView):
 class DomecileMapView(LoginRequiredMixin, JSONDataView):
     def get_context_data(self, **kwargs):
         context = super(DomecileMapView, self).get_context_data(**kwargs)
-        region = self.request.GET['region']
+        if 'region' in self.request.GET:
+            klass = Region
+            area = self.request.GET['region']
+        elif 'ward' in self.request.GET:
+            klass = Ward
+            area = self.request.GET['ward']
+        else:
+            return context
         bbox = self.request.GET['BBox'].split(',')
         query_type = self.request.GET['query_type']
         queryset = Domecile.get_postcode_points(southwest=(bbox[0], bbox[1]), northeast=(bbox[2], bbox[3]),
-                                                region=Ward.objects.get(pk=int(region)), query_type=query_type)
+                                                region=klass.objects.get(pk=int(area)), query_type=query_type)
         data = [{'postcode': x.postcode, 'point': x.postcode_point.point} for x in queryset]
         context.update({'data': data})
         return context
