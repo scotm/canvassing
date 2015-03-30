@@ -21,6 +21,8 @@ except ImportError:
 
     compat.register()
 
+from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
+
 BASE_DIR = Path(os.path.dirname(__file__)).parent.parent
 
 ADMINS = (
@@ -38,6 +40,12 @@ except ImportError:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+# Attempt to import the email details.
+try:
+    from secrets import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_HOST, EMAIL_PORT, EMAIL_USE_SSL
+except ImportError:
+    pass
 
 TEMPLATE_DEBUG = True
 
@@ -112,6 +120,9 @@ TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',
 
 TEMPLATE_DIRS = (Path(BASE_DIR, "templates"), )
 
+TEMPLATE_CONTEXT_PROCESSORS = TCP + (
+    'django.core.context_processors.request',
+)
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
