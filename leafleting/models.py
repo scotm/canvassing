@@ -22,6 +22,12 @@ class BaseRun(models.Model):
         abstract = True
         ordering = ('-pk',)
 
+    def save(self, *args, **kwargs):
+        # Fix this later
+        # self.ward = self.get_ward()
+        # self.intermediate_zone = self.get_zone()
+        super(BaseRun, self).save(*args, **kwargs)
+
     def get_domeciles(self):
         for postcode_point in self.postcode_points.all():
             list_of_domeciles = sorted(
