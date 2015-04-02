@@ -7,7 +7,7 @@ from django.db import models
 from sortedm2m.fields import SortedManyToManyField
 
 from core.utilities.domecile_comparisons import domecile_cmp
-from core.models import Domecile, Contact
+from core.models import Domecile, Contact, IntermediateZone, Ward
 
 
 class BaseRun(models.Model):
@@ -49,13 +49,9 @@ class BaseRun(models.Model):
         return self.get_points().json
 
     def get_ward(self):
-        from core.models import Ward
-
         return Ward.objects.filter(geom__contains=self.get_points().centroid).first()
 
     def get_zone(self):
-        from core.models import IntermediateZone
-
         return IntermediateZone.objects.filter(geom__contains=self.get_points().centroid).first()
 
 
