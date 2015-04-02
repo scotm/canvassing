@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block breadcrumbs %}
+    <nav class="breadcrumbs">
+        <a href="{% url 'homepage' %}">Home</a>
+        <a href="{% url 'data_find' %}">Canvass Data Input</a>
+        <a class="current">{{ object }}</a>
+    </nav>
+{% endblock %}
+{% block content %}
+    <div class="small-12 columns">
+        <h2>Data Entry for {{ object }}</h2>
+
+        <p>Run Code: {{ object.run_code }}</p>
+
+        <form>
+            {% for domecile in object.canvass_run.get_domeciles %}
+                <strong>{{ domecile }}</strong>
+                {% for contact in domecile.get_contacts %}
+                    <div class="row">
+                        <div class="small-12 columns">
+                            {{ contact }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="medium-3 columns">
+
+                            <label>Status:
+                                <select name="{{ contact.pk }}_response">
+                                    <option value="">---------</option>
+                                    <option value="responded">Responded</option>
+                                    <option value="unavailable">Unavailable</option>
+                                    <option value="busy">Too busy</option>
+                                    <option value="moved">Moved</option>
+                                    <option value="not_interested">Not Interested</option>
+                                    <option value="dnc">Do Not Contact</option>
+                                    <option value="deceased">Deceased</option>
+                                </select>
+                            </label>
+                        </div>
+
+                        <div class="medium-3 columns">
+                            <label>Westminster:
+                                <select disabled="disabled" name="{{ contact.pk }}_westminster">
+                                    <option value="">-------</option>
+                                    {% for party in parties %}
+                                        <option value="{{ party }}">{{ party }}</option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+                        </div>
+
+                        <div class="medium-3 columns">
+                            <label>Holyrood list vote:
+                                <select disabled="disabled" name="{{ contact.pk }}_holyrood">
+                                    <option value="">-------</option>
+                                    {% for party in parties %}
+                                        <option value="{{ party }}">{{ party }}</option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+                        </div>
+
+                        <div class="medium-3 columns">
+                            <label>Notes:
+                                <textarea disabled="disabled" name="{{ contact.pk }}_notes"></textarea>
+                            </label>
+                        </div>
+                    </div>
+
+                {% endfor %}
+            {% endfor %}
+    <button type="submit" name="btnSubmit">Save</button>
+    <button type="submit" name="btnArchive">Archive</button>
+    </form>
+    </div>
+{% endblock %}
+
+{% block before_body_close %}
+    <script>
+        // Put the focus on the first response
+        var pivot = $("select[name$='_response']");
+        pivot[0].focus();
+
+        // If the response changes to "Responded" - open up the other dialog boxes
+        pivot.change(function () {
+            var contact_id = $(this).prop("name").replace('_response', '');
+            var selector = $("*[name^='" + contact_id + "']:not([name$='response'])");
+            if ($(this).val() == 'responded') {
+                selector.each(function () {
+                    $(this).prop("disabled", false);
+                })
+            } else {
+                selector.each(function () {
+                    $(this).prop("disabled", true);
+                })
+            }
+        });
+    </script>
+{% endblock %}
