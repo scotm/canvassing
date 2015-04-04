@@ -4,17 +4,23 @@
 {% block extrahead %}
     <link rel="stylesheet" href="{% static 'leaflet.css' %}"/>
 {% endblock %}
-{% block page_title %}{{ block.super }}{% endblock %}
+{% block page_title %}{{ block.super }}{{ object.name }}{% endblock %}
 {% block breadcrumbs %}{% endblock %}
 {% block content %}
     <div class="large-12 columns">
         <h3>{{ object.name }}</h3>
+        {% if object.notes %}
+        <p><em>{{ object.notes }}</em></p>
+        {% endif %}
 
-        <p>Question 1: Which party will you support for the upcoming UK general election?</p>
-
-        <p>Question 2: Which party will you support with your list vote in the 2016 Scottish Parliament election? (give
-            list of parties)</p>
-
+        <p><strong>Question 1</strong>: Which party will you support for the upcoming UK general election?<br/>
+            <strong>Question 2</strong>: Which party will you support with your list vote in the 2016 Scottish
+            Parliament election? (give list of parties)<br/>
+            <strong>Question 3</strong>: (if applicable) Who would you vote for if the SNP were not standing here?<br/>
+            <strong>Question 4</strong>: (if not SSP in Q1 or Q2) Would you consider giving the SSP your vote if we had
+            a reasonable chance of being elected?<br>
+            <strong>Response</strong> - <em>M</em>: Moved, <em>B</em>: Too busy, <em>U</em>: unavailable, <em>N</em>:
+            Not interested, <em>D</em>: Do Not Contact, <em>X</em>: Deceased</p>
         <div id="map"></div>
         {% for domecile in object.get_domeciles %}
             <div class="domecile">
@@ -26,25 +32,24 @@
                 {% for contact in domecile.get_contacts %}
                     <div class="contact">
                         <div class="row">
-                            <div class="large-4 columns">
+                            <div class="large-2 columns">
                                 <h6>{{ contact }}</h6>
                             </div>
-                            <div class="large-4 columns">
-                                Q1. <img src="{% static 'images/answerbox.svg' %}"/>
+                            <div class="large-2 columns">
+                                Q1. <img src="{% static 'images/answerbox-small.svg' %}"/>
                             </div>
-                            <div class="large-4 columns">
-                                Q2. <img src="{% static 'images/answerbox.svg' %}"/>
+                            <div class="large-2 columns">
+                                Q2. <img src="{% static 'images/answerbox-small.svg' %}"/>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="large-2 columns">Moved <img src="{% static 'images/checkbox.svg' %}"/></div>
-                            <div class="large-2 columns">Too busy <img src="{% static 'images/checkbox.svg' %}"/></div>
-                            <div class="large-2 columns">Unavailable <img src="{% static 'images/checkbox.svg' %}"/>
+                            <div class="large-2 columns">
+                                Q3. <img src="{% static 'images/answerbox-small.svg' %}"/>
                             </div>
-                            <div class="large-2 columns">No interest <img src="{% static 'images/checkbox.svg' %}"/>
+                            <div class="large-2 columns">
+                                Q4. <img src="{% static 'images/answerbox-small.svg' %}"/>
                             </div>
-                            <div class="large-2 columns">DNC <img src="{% static 'images/checkbox.svg' %}"/></div>
-                            <div class="large-2 columns">Deceased <img src="{% static 'images/checkbox.svg' %}"/></div>
+                            <div class="large-2 columns">
+                                Response. <img src="{% static 'images/checkbox.svg' %}"/>
+                            </div>
                         </div>
                     </div>
                     {% if not forloop.last %}
@@ -61,10 +66,10 @@
 {% block before_body_close %}
     <script>
 
-{#        accessToken = 'pk.eyJ1Ijoic2NvdG0iLCJhIjoiMGh1dWtYYyJ9.1DmL5VwbNVjbbH3thY2qAw';#}
-{#        var mapboxTiles = L.tileLayer('https://{s}.tiles.mapbox.com/v4/scotm.lad5iljo/{z}/{x}/{y}.png?access_token=' + accessToken, {#}
-{#            attribution: '<a href="http://www.mapbox.com/about/maps/" target="_blank">Terms &amp; Feedback</a>'#}
-{#        });#}
+        {#        accessToken = 'pk.eyJ1Ijoic2NvdG0iLCJhIjoiMGh1dWtYYyJ9.1DmL5VwbNVjbbH3thY2qAw';#}
+        {#        var mapboxTiles = L.tileLayer('https://{s}.tiles.mapbox.com/v4/scotm.lad5iljo/{z}/{x}/{y}.png?access_token=' + accessToken, {#}
+        {#            attribution: '<a href="http://www.mapbox.com/about/maps/" target="_blank">Terms &amp; Feedback</a>'#}
+        {#        });#}
 
         L.Icon.Default.imagePath = '{% static "images" %}';
         var mapboxTiles = L.tileLayer('	http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg?', {
@@ -77,5 +82,6 @@
         geojson.addTo(map);
 
         map.fitBounds(geojson);
+        map.setZoom(map.getZoom()-1);
     </script>
 {% endblock %}

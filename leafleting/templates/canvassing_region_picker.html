@@ -1,0 +1,33 @@
+{% extends "ward_pick.html" %}
+{% block page_title %}{{ block.super }} Canvassing - Pick Region{% endblock %}
+{% block breadcrumbs %}
+    <nav class="breadcrumbs">
+        <a href="{% url 'homepage' %}">Home</a>
+        <a href="{% url 'canvass_homepage' %}">Canvassing</a>
+        <a class="current">Regions</a>
+    </nav>
+{% endblock %}
+{% block content %}
+    {% regroup object_list by description as ward_list %}
+    <div class="large-9 columns">
+        <h1>{% block page_heading %}Regions{% endblock %}</h1>
+        <ul class="accordion" data-accordion>
+            {% for description in ward_list %}
+                <li class="accordion-navigation">
+                    <a href="#box{{ forloop.counter }}">{{ description.grouper }}</a>
+                    <div id="box{{ forloop.counter }}" class="content">
+                        <ul>
+                            {% for object in description.list %}
+                                <li><p><a href='{% block run_picker %}{% url 'canvass_region_view' object.pk %}{% endblock %}'>{{ object }}</a>
+                                </p></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="large-3 columns">
+        <p>{% block side_message %}Select the local authority area, then the ward you wish to pick from.{% endblock %}</p>
+    </div>
+{% endblock %}

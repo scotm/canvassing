@@ -1,42 +1,53 @@
-from __future__ import print_function
 # Create your views here.
-from braces.views import LoginRequiredMixin
-from django.conf import settings
+from django.db import models
 from django.contrib.auth import get_user_model
 from django.views.generic import ListView, DetailView, TemplateView, UpdateView
-from json_views.views import JSONDataView
-from core.models import Ward, Region
 
+import django_filters
+from django_filters.views import FilterView
+from braces.views import LoginRequiredMixin
+from json_views.views import JSONDataView
+
+from core.models import Ward, Region
 from leafleting.models import LeafletRun, CanvassRun
 from postcode_locator.models import PostcodeMapping
 
-from django_filters.views import FilterView
-from django_filters import FilterSet, AllValuesFilter, ChoiceFilter
 
-
-class UserFilter(ChoiceFilter):
+class UserFilter(django_filters.ChoiceFilter):
     @property
     def field(self):
         qs = self.model._default_manager.distinct()
         qs = qs.order_by(self.name).values_list(self.name, flat=True)
         self.extra['choices'] = [("", "All")] + [(o, str(get_user_model().objects.get(pk=o))) for o in qs]
-        return super(ChoiceFilter, self).field
+        return super(django_filters.ChoiceFilter, self).field
 
-class AnyAllValuesFilter(AllValuesFilter):
+
+class AnyAllValuesFilter(django_filters.AllValuesFilter):
     @property
     def field(self):
         qs = self.model._default_manager.distinct()
         qs = qs.order_by(self.name).values_list(self.name, flat=True)
         self.extra['choices'] = [("", "All")] + [(o, o) for o in qs]
-        return super(AllValuesFilter, self).field
+        return super(django_filters.AllValuesFilter, self).field
 
-class CanvassRunFilter(FilterSet):
+
+class CanvassRunFilter(django_filters.FilterSet):
+    filter_overrides = {
+        models.CharField: {
+            'filter_class': django_filters.CharFilter,
+            'extra': lambda f: {
+                'lookup_type': 'icontains',
+            }
+        }
+    }
     ward__ward_name = AnyAllValuesFilter()
     ward__local_authority_name = AnyAllValuesFilter()
     created_by = UserFilter()
+
     class Meta:
         model = CanvassRun
         fields = ['name', 'ward__ward_name', 'ward__local_authority_name', 'created_by']
+
 
 class CanvassRunListView(FilterView):
     filterset_class = CanvassRunFilter
@@ -95,27 +106,17 @@ class CanvassHomepage(LeafletHomepage):
     template_name = 'canvassing_homepage.html'
 
 
-class LeafletRunDetailView(LoginRequiredMixin, DetailView):
-    model = LeafletRun
+class RunDetailView(LoginRequiredMixin, DetailView):
+    pass
 
 
-class CanvassRunDetailView(LeafletRunDetailView):
-    model = CanvassRun
+class RunPicker(LoginRequiredMixin, DetailView):
+    pass
 
 
-class LeafletingPicker(LoginRequiredMixin, DetailView):
-    model = Ward
-    template_name = 'leafleting_picker.html'
-
-
-class RegionLeafletingPicker(LoginRequiredMixin, DetailView):
-    model = Region
-    template_name = 'leafleting_picker.html'
-
-
-class LeafletWardPicker(LoginRequiredMixin, ListView):
+class AreaPicker(LoginRequiredMixin, ListView):
     model = Ward
     template_name = 'leafleting_ward_picker.html'
 
     def get_queryset(self):
-        return super(LeafletWardPicker, self).get_queryset().filter(active=True)
+        return super(AreaPicker, self).get_queryset().filter(active=True)
