@@ -16,6 +16,8 @@ from postcode_locator.models import PostcodeMapping
 class PoliticalParty(models.Model):
     name = models.CharField(max_length=50)
 
+    def __unicode__(self):
+        return self.name
 
 class ElectoralRegistrationOffice(models.Model):
     name = models.CharField(max_length=100, unique=True)
