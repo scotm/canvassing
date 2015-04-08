@@ -1,3 +1,9 @@
+from braces.views import LoginRequiredMixin
+from json_views.views import JSONDataView
+
+from campaigns.models import Signature, Campaign
+
+
 __author__ = 'scotm'
 from django.views.generic import ListView, DetailView
 from django_filters.views import FilterView
@@ -35,9 +41,25 @@ class CanvassDataInput(DetailView):
         return super(CanvassDataInput, self).get_context_data(**kwargs)
 
 
-class CanvassRunFind(FilterView):
+class CanvassRunFind(LoginRequiredMixin, FilterView):
     template_name = 'canvassrun_find.html'
 
     def get_context_data(self, **kwargs):
         kwargs.update({'user_runs': CanvassRun.objects.filter(booked_by=self.request.user)})
         return super(CanvassRunFind, self).get_context_data(**kwargs)
+
+
+class SignPetition(LoginRequiredMixin, JSONDataView):
+    def get_context_data(self, **kwargs):
+        try:
+            contact_pk = int(self.request.GET['contact'])
+            contact = Contact.objects.get(pk=contact_pk)
+        except:
+            return
+        signature = Signature.objects.filter(contact=contact).first()
+        if signature:
+            signature.delete()
+            return {'status': 'deleted'}
+        else:
+            Signature.objects.create(contact=contact, campaign=Campaign.get_latest_top_level_campaign())
+            return {'status': 'signed'}

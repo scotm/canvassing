@@ -1,23 +1,25 @@
 {% extends "base.html" %}
-{% block page_title %}{{block.super}} Signature Input{% endblock %}
+{% block page_title %}{{ block.super }} Signature Input{% endblock %}
 {% block content %}
     <div class="large-12 columns">
-    <h2>Petition Data Entry</h2>
+        <h2>Petition Data Entry</h2>
         {% include "petition_form.html" %}
         <hr>
         {% if object_list %}
             <form>
                 <table>
                     <thead>
-                    <th></th>
                     <th>Name</th>
                     <th>Address</th>
+                    <th>Signed</th>
                     </thead>
                     {% for object in object_list %}
                         <tr>
-                            <td><input type="checkbox"></td>
                             <td>{{ object }}</td>
                             <td>{{ object.domecile }}</td>
+                            <td>
+                                <button id="contact_sign_{{ object.pk }}">{% if object.has_signed %}Signed{% else %}Sign Petition{% endif %}</button>
+                            </td>
                         </tr>
                     {% endfor %}
                 </table>
@@ -26,5 +28,26 @@
     </div>
 {% endblock %}
 {% block before_body_close %}
+    <script>
+        $('button[id^="contact_sign_"]').click(function (e) {
+            e.preventDefault();
+            contact_pk = $(this).prop("id").replace("contact_sign_", '');
+            button = $(this);
 
+            $.ajax({
+                        url: '{% url "sign_petition_ajax" %}',
+                        cache: false,
+                        data: {'contact':contact_pk},
+                        success: function (data) {
+                            if (data['status'] == 'signed') {
+                                button.html("Signed");
+                            } else if (data['status'] == 'deleted') {
+                                button.html("Sign Petition");
+                            }
+                        }
+                    }
+            );
+
+        })
+    </script>
 {% endblock %}

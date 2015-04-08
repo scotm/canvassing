@@ -86,7 +86,6 @@ class Domecile(models.Model):
     def get_contacts(self):
         return self.contact_set.all()
 
-
 class Contact(models.Model):
     pd = models.CharField(max_length=6, db_index=True)
     ero_number = models.IntegerField(db_index=True)
@@ -116,6 +115,12 @@ class Contact(models.Model):
         return [getattr(self.domecile, x) for x in
                 ['address_1', 'address_2', 'address_3', 'address_4', 'address_5', 'address_6', 'address_7', 'address_8',
                  'address_9', ] if getattr(self.domecile, x)]
+
+    def has_signed(self,campaign=None):
+        from campaigns.models import Campaign, Signature
+        if not campaign:
+            campaign = Campaign.get_latest_top_level_campaign()
+        return Signature.objects.filter(contact=self,campaign=campaign).exists()
 
 
 class GeomMixin(object):
