@@ -14,6 +14,5 @@ class Command(BaseCommand):
         parser.add_argument('filename', nargs='+', type=unicode)
 
     def handle(self, *args, **options):
-        print(args, options)
-        for filename in args:
+        for filename in options['filename']:
             Ward.fill_up_db(filename, verbose=True)

@@ -43,7 +43,7 @@ class Command(BaseCommand):
         parser.add_argument('filename', nargs=1, type=unicode)
 
     def handle(self, *args, **options):
-        filename = args[0]
+        filename = options['filename'][0]
         with open(filename) as myfile:
             print("Reading electoral data...")
             reader = csv.DictReader(myfile)

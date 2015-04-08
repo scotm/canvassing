@@ -62,7 +62,7 @@ class Command(BaseCommand):
         parser.add_argument('filename', nargs=1, type=unicode)
 
     def handle(self, *args, **options):
-        filename = args[0]
+        filename = options['filename'][0]
         with open(filename) as myfile:
             print("Reading electoral data...")
             reader = csv.DictReader(myfile)
@@ -99,3 +99,7 @@ class Command(BaseCommand):
                         print("%d records done - last one %s, %s" % (records_done, contact_obj, domecile_obj))
                         Contact.objects.bulk_create(temp_list)
                         temp_list = []
+        if temp_list:
+            Contact.objects.bulk_create(temp_list)
+            print(temp_list)
+            temp_list = []
