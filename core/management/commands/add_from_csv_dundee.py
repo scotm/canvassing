@@ -77,3 +77,6 @@ class Command(BaseCommand):
                         print("%d records done - last one %s, %s" % (records_done, contact_obj, domecile_obj))
                         Contact.objects.bulk_create(temp_list)
                         temp_list = []
+        if temp_list:
+            Contact.objects.bulk_create(temp_list)
+            print(temp_list)

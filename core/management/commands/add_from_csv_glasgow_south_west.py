@@ -96,7 +96,7 @@ class Command(BaseCommand):
                     contact_obj.domecile = domecile_obj
                     temp_list.append(contact_obj)
                     if records_done % 1000 == 0:
-                        print("%d records done - last one %s, %s" % (records_done, contact_obj, domecile_obj))
+                        print(temp_list)
                         Contact.objects.bulk_create(temp_list)
                         temp_list = []
         if temp_list:
