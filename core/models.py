@@ -91,7 +91,7 @@ class Contact(models.Model):
     ero_number = models.IntegerField(db_index=True)
     title = models.CharField(max_length=10)
     first_name = models.CharField(max_length=100)
-    initials = models.CharField(max_length=10)
+    initials = models.CharField(max_length=40)
     surname = models.CharField(max_length=100)
     suffix = models.CharField(max_length=10)
     domecile = models.ForeignKey(Domecile)
