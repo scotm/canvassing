@@ -41,6 +41,14 @@ def preprocess_dict(my_dict):
             break
     else:
         my_dict['postcode'] = ''
+
+    address_pieces = [my_dict["Address %d" % x] for x in range(1,7) if my_dict["Address %d" % x]]
+    if address_pieces[0][0].isdigit():
+        first_pieces = address_pieces[0].split(" ")
+        my_dict['Address 2'] = first_pieces[0]
+        my_dict['Address 3'] = " ".join(first_pieces[1:])
+        for i, piece in enumerate(address_pieces[1:]):
+            my_dict['Address %d' % (i+4)] = piece
     my_dict = transform_dict(my_dict, rename_dict)
     return my_dict
 
@@ -67,7 +75,7 @@ class Command(BaseCommand):
             print("Reading electoral data...")
             reader = csv.DictReader(myfile)
             data = [preprocess_dict(x) for x in reader]
-            data.sort(key=groupby_key)
+            #data.sort(key=groupby_key)
             print("done - %d records read" % len(data))
 
         records_done = 0
