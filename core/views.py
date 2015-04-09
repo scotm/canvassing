@@ -1,3 +1,4 @@
+import random
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth import login
 from django.core.urlresolvers import reverse_lazy
@@ -35,7 +36,8 @@ class DomecileMapView(LoginRequiredMixin, JSONDataView):
         query_type = self.request.GET['query_type']
         queryset = Domecile.get_postcode_points(southwest=(bbox[0], bbox[1]), northeast=(bbox[2], bbox[3]),
                                                 region=klass.objects.get(pk=int(area)), query_type=query_type)
-        data = [{'postcode': x.postcode, 'point': x.postcode_point.point} for x in queryset]
+
+        data = [{'postcode': x.postcode, 'point': [x.postcode_point.point.x + random.uniform(-0.0002, 0.0002), x.postcode_point.point.y ]} for x in queryset]
         context.update({'data': data})
         return context
 
