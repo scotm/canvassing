@@ -46,9 +46,10 @@ def preprocess_dict(my_dict):
     if address_pieces[0][0].isdigit():
         first_pieces = address_pieces[0].split(" ")
         my_dict['Address 2'] = first_pieces[0]
-        my_dict['Address 3'] = " ".join(first_pieces[1:])
+        my_dict['Address 3'] = ''
+        my_dict['Address 4'] = " ".join(first_pieces[1:])
         for i, piece in enumerate(address_pieces[1:]):
-            my_dict['Address %d' % (i+4)] = piece
+            my_dict['Address %d' % (i+5)] = piece
         my_dict['Address 1'] = ''
     my_dict = transform_dict(my_dict, rename_dict)
     return my_dict
