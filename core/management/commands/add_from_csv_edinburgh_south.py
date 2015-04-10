@@ -49,6 +49,7 @@ def preprocess_dict(my_dict):
         my_dict['Address 3'] = " ".join(first_pieces[1:])
         for i, piece in enumerate(address_pieces[1:]):
             my_dict['Address %d' % (i+4)] = piece
+        my_dict['Address 1'] = ''
     my_dict = transform_dict(my_dict, rename_dict)
     return my_dict
 
