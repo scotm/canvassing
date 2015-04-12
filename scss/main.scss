@@ -65,6 +65,7 @@
 
 // This would make the large grid function like a print grid
 @media print {
+  font-size:0.8em;
   @for $i from 1 through $total-columns {
     .large-#{$i} {
       width: grid-calc($i, $total-columns);
@@ -80,7 +81,7 @@
 }
 
 .domecile:nth-child(n+1) {
-  margin-top: 1.5em;
+  margin-top: 0.8em;
 }
 
 @media #{$small-only} {
