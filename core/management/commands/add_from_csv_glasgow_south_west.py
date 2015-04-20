@@ -7,7 +7,7 @@ from itertools import groupby
 
 from django.core.management import BaseCommand
 
-from datetime import date
+from datetime import datetime
 from core.models import Domecile, Contact, ElectoralRegistrationOffice
 
 rename_dict = {'DISTRICT': 'pd', 'ELNO': 'ero_number', 'FORENAMES': 'first_name', 'SURNAME': 'surname',
@@ -22,18 +22,12 @@ contact_elements = ['pd', 'ero_number', 'first_name', 'surname', 'date_of_attain
 def groupby_key(x):
     return tuple(x[y] for y in domecile_elements)
 
-def is_number(my_string):
-    try:
-        int(my_string)
-    except ValueError:
-        return False
-    return True
 
 def preprocess_dict(my_dict):
     address_pieces = my_dict['STREETADD1'].split()
-    if address_pieces and is_number(address_pieces[0]) and my_dict['SUBSTREETNAME'] and not my_dict['HOUSENUMBER']:
+    if address_pieces and address_pieces[0].isnumeric() and my_dict['SUBSTREETNAME'] and not my_dict['HOUSENUMBER']:
         pieces = [x.strip() for x in my_dict['SUBSTREETNAME'].split(',')]
-        if is_number(pieces[-1]) and pieces[-1] == address_pieces[0]:
+        if pieces[-1].isnumeric() and pieces[-1] == address_pieces[0]:
             my_dict['HOUSENUMBER'] = pieces[-1]
             my_dict['SUBSTREETNAME'] = ", ".join(pieces[:-1])
             my_dict['STREETADD1'] = my_dict['STREETADD2']
@@ -42,9 +36,11 @@ def preprocess_dict(my_dict):
         my_dict['FLAT'] = my_dict['HOUSENAME']
     if not my_dict['HOUSENUMBER'] and my_dict['HOUSENAME']:
         my_dict['HOUSENUMBER'] = my_dict['HOUSENAME']
-    my_dict['SURNAME'] = my_dict['SURNAME'].replace('(z) ','')
+    my_dict['SURNAME'] = my_dict['SURNAME'].replace('(z) ', '')
+    my_dict['DO18'] = datetime.strptime(my_dict['DO18'], '%d/%m/%Y').date() if my_dict['DO18'] else None
     my_dict = transform_dict(my_dict, rename_dict)
     return my_dict
+
 
 class Command(BaseCommand):
     help = 'Fills up the DB with elector data'
@@ -78,28 +74,17 @@ class Command(BaseCommand):
             domecile_dict['electoral_registration_office'] = self.ero
             domecile_obj, result = Domecile.objects.get_or_create(**domecile_dict)
             for line in my_group:
-                contact_dict = split_dict(line, contact_elements)
-                if contact_dict['date_of_attainment']:
-                    temp = [int(x) for x in contact_dict['date_of_attainment'].split('/')]
-                    try:
-                        contact_dict['date_of_attainment'] = date(temp[2], temp[1], temp[0])
-                    except ValueError:
-                        raise
-                else:
-                    contact_dict['date_of_attainment'] = None
-                contact_obj = Contact.objects.filter(ero_number=contact_dict['ero_number'],
-                                                     domecile__electoral_registration_office=self.ero,
-                                                     pd=contact_dict['pd']).first()
+                contact = split_dict(line, contact_elements)
+                contact_obj = Contact.objects.filter(ero_number=contact['ero_number'], pd=contact['pd'],
+                                                     domecile__electoral_registration_office=self.ero).first()
                 records_done += 1
                 if not contact_obj:
-                    contact_obj = Contact(**contact_dict)
+                    contact_obj = Contact(**contact)
                     contact_obj.domecile = domecile_obj
                     temp_list.append(contact_obj)
-                    if records_done % 1000 == 0:
-                        print(temp_list)
-                        Contact.objects.bulk_create(temp_list)
-                        temp_list = []
+                if records_done % 1000 == 0:
+                    print("%d records done - last one %s, %s" % (records_done, contact_obj, domecile_obj))
+                    Contact.objects.bulk_create(temp_list)
+                    temp_list = []
         if temp_list:
             Contact.objects.bulk_create(temp_list)
-            print(temp_list)
-            temp_list = []
