@@ -16,15 +16,24 @@ class DomecileAdmin(admin.ModelAdmin):
 
 class WardAdmin(admin.OSMGeoAdmin):
     search_fields = ['ward_name']
-    list_filter = ['local_authority_name']
+    list_filter = ['local_authority_name', 'active']
+
+    def get_queryset(self, request):
+        return super(WardAdmin,self).get_queryset(request).defer('geom')
 
 class RegionAdmin(admin.OSMGeoAdmin):
     search_fields = ['name']
-    list_filter = ['description']
+    list_filter = ['description', 'active']
+
+    def get_queryset(self, request):
+        return super(RegionAdmin,self).get_queryset(request).defer('geom')
 
 class IntermediateZoneAdmin(admin.OSMGeoAdmin):
     search_fields = ['name']
-    list_filter = ['local_authority_name']
+    list_filter = ['local_authority_name', 'active']
+
+    def get_queryset(self, request):
+        return super(IntermediateZoneAdmin,self).get_queryset(request).defer('geom')
 
 
 # Register your models here.
