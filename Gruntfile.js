@@ -43,7 +43,8 @@ module.exports = function (grunt) {
             dist: {
                 files: {
                     'js/production.min.js': 'js/production.js',
-                    'templates/loadCSS.js': 'bower_components/loadcss/loadCSS.js'
+                    'templates/loadCSS.js': 'bower_components/loadcss/loadCSS.js',
+                    'templates/fontfaceobserver.js': 'bower_components/fontfaceobserver/fontfaceobserver.js'
                 }
             }
         },

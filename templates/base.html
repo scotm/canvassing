@@ -8,10 +8,29 @@
 </style>
 {% endif %}
 <script>
-  // include loadCSS here...
-  {% include "loadCSS.js" %}
-  // load a file
-  loadCSS('{% static "css/main.css" %}');
+    // include loadCSS here...
+    {% include "loadCSS.js" %}
+    // load a file
+    loadCSS('{% static "css/main.css" %}');
+
+    // load webfonts
+    loadCSS("//fonts.googleapis.com/css?family=Roboto:400,500,700");
+    // inline FontFaceObserver
+    {% include "fontfaceobserver.js" %}
+    // detect loading of fonts
+    var roboto400 = new FontFaceObserver("Roboto", {
+      weight: 400
+    });
+    var roboto700 = new FontFaceObserver("Roboto", {
+      weight: 700
+    });
+
+    Promise.all([
+      roboto400.check(),
+      roboto700.check()
+    ]).then(function() {
+      document.documentElement.className += " fonts-loaded";
+    });  
 </script>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>

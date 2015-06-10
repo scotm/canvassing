@@ -21,6 +21,7 @@
     "foundation": "~5.5.1",
     "leaflet": "~0.7.3",
     "jquery-ui": "~1.11.3",
-    "loadcss": "~0.1.6"
+    "loadcss": "~0.1.6",
+    "fontfaceobserver": "~1.4.12"
   }
 }

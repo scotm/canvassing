@@ -59,6 +59,9 @@ data/*
 css/*
 js/*
 static/*
+templates/critical.css
+templates/loadCSS.js
+templates/fontfaceobserver.js
 
 !data/reset.sh
 !js/.js_files_go_here
