@@ -118,3 +118,7 @@ tr {
     }
   }
 }
+
+.errorlist{
+  @include form-error-message();
+}
