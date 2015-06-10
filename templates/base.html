@@ -118,6 +118,7 @@
     $(document).foundation();
 </script>
 {% block before_body_close %}{% endblock %}
+{% if debug %} <script src="{% static 'js/livereload.js' %}"></script> {% endif %}
 </body>
 </html>
 
