@@ -20,6 +20,7 @@
   "dependencies": {
     "foundation": "~5.5.1",
     "leaflet": "~0.7.3",
-    "jquery-ui": "~1.11.3"
+    "jquery-ui": "~1.11.3",
+    "loadcss": "~0.1.6"
   }
 }

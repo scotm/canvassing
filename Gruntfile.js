@@ -4,6 +4,20 @@ module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
+        criticalcss: {
+            custom: {
+                options: {
+                    url: "http://127.0.0.1:8000",
+                    width: 1200,
+                    height: 900,
+                    outputfile: "templates/critical.css",
+                    filename: "css/main.css",
+                    buffer: 800*1024,
+                    ignoreConsole: false
+                }
+            }
+        },
+
         concat: {
             dist: {
                 src: [
@@ -26,9 +40,11 @@ module.exports = function (grunt) {
         },
 
         uglify: {
-            build: {
-                src: 'js/production.js',
-                dest: 'js/production.min.js'
+            dist: {
+                files: {
+                    'js/production.min.js': 'js/production.js',
+                    'templates/loadCSS.js': 'bower_components/loadcss/loadCSS.js'
+                }
             }
         },
 
@@ -84,9 +100,11 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-imagemin');
     grunt.loadNpmTasks('grunt-sass');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-criticalcss');
 
     // 3. Where we tell Grunt what to do when we type "grunt" into the terminal.
     grunt.registerTask('default', ['concat', 'uglify', 'sass']);
+    grunt.registerTask('basecss', ['criticalcss'])
     grunt.registerTask('images', ['imagemin']);
     grunt.registerTask('watch-changes', ['concat', 'uglify', 'imagemin', 'sass', 'watch']);
     grunt.registerTask('js', ['concat', 'uglify']);
