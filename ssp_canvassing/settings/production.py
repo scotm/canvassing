@@ -1,10 +1,10 @@
 import socket
 import struct
 import fcntl
+from .base import *
 
 __author__ = 'scotm'
 
-from .base import *
 
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -22,5 +22,4 @@ ADMINS += (
 
 TEMPLATE_DEBUG = False
 
-ALLOWED_HOSTS = [get_ip_address('eth0'), 'membership.scottishsocialistparty.org']
-
+ALLOWED_HOSTS = ['127.0.0.1', get_ip_address('eth0'), 'membership.scottishsocialistparty.org']

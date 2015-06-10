@@ -12,3 +12,4 @@ django-sortedm2m
 jsonfield
 django-braces
 django-filter
+django-htmlmin

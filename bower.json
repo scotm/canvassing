@@ -23,5 +23,8 @@
     "jquery-ui": "~1.11.3",
     "loadcss": "~0.1.6",
     "fontfaceobserver": "~1.4.12"
+  },
+  "devDependencies": {
+    "livereload-js": "~2.2.1"
   }
 }
