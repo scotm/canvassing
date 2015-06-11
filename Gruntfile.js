@@ -158,6 +158,6 @@ module.exports = function (grunt) {
     grunt.registerTask('images', ['imagemin']);
     grunt.registerTask('watch-changes', ['concat', 'uglify', 'imagemin', 'sass', 'watch']);
     grunt.registerTask('js', ['concat', 'uglify']);
-    grunt.registerTask('css', ['sass']);
+    grunt.registerTask('css', ['sass', 'cssmin:dist']);
     grunt.registerTask('all', ['concat', 'uglify', 'sass', 'imagemin']);
 };
