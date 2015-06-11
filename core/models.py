@@ -128,7 +128,9 @@ class Contact(models.Model):
 class GeomMixin(object):
 
     def get_simplified_geom_json(self, simplify_factor=0.00003):
-        return self.geom.simplify(simplify_factor).json
+        geom = self.geom.simplify(simplify_factor)
+        geom[0] = [(round(x,6),round(y,6)) for x,y in geom[0]]
+        return geom.json
 
     def centre_point(self):
         centroid = self.geom.centroid
