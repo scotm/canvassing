@@ -22,4 +22,4 @@ ADMINS += (
 
 TEMPLATE_DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', get_ip_address('eth0'), 'membership.scottishsocialistparty.org']
+ALLOWED_HOSTS = ['127.0.0.1', get_ip_address('eth0'), 'comrade.scottishsocialistparty.org']
