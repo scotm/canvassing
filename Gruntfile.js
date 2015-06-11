@@ -92,7 +92,7 @@ module.exports = function (grunt) {
             },
             font_logic_ugly: {
                 files: {
-                    'js/extra_font_logic.min.js': 'js/font_logic.js',
+                    'templates/extra_font_logic.min.js': 'js/font_logic.js',
                 }
             }
         },
