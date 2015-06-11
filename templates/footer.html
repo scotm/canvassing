@@ -10,13 +10,14 @@
                     P: <a href="tel:+447790581883">07790 581883</a></p>
             </div>
             <div class="small-12 medium-8 columns">
-                {% if user and user.is_authenticated %}
                 <ul class="inline-list right">
                     <li><a href="{% url 'about_the_ssp' %}">About the SSP</a></li>
+                    {% if user and user.is_authenticated %}
                     <li><a href="{% url 'why_canvass' %}">Why Canvass?</a></li>
                     <li><a href="{% url 'why_leaflet' %}">Why Leaflet?</a></li>
+                    {% endif %}
                 </ul>
-                {% endif %}
+                
             </div>
         </div>
     </div>

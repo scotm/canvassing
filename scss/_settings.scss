@@ -88,10 +88,10 @@ $row-width: rem-calc(1200);
 // - - - - - - - - - - - - - - - - - - - - - - - - -
 
 // We use these to define default font stacks
-$font-family-sans-serif: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
-// $font-family-sans-serif: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
-$font-family-serif: "Roboto Slab", Georgia, Cambria, "Times New Roman", Times, serif;
-// $font-family-serif: Georgia, Cambria, "Times New Roman", Times, serif;
+//$font-family-sans-serif: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$font-family-sans-serif: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+//$font-family-serif: "Roboto Slab", Georgia, Cambria, "Times New Roman", Times, serif;
+$font-family-serif: Georgia, Cambria, "Times New Roman", Times, serif;
 // $font-family-monospace: Consolas, "Liberation Mono", Courier, monospace;
 
 // We use these to define default font weights
@@ -116,7 +116,7 @@ $font-weight-bold: bold !default;
 // $tuatara     : #444444;
 // $oil         : #333333;
 // $jet         : #222222;
-// $black       : #000000;
+$black       : #000000;
 
 // We use these as default colors throughout
 // $primary-color: #008CBA;
@@ -130,6 +130,7 @@ $secondary-color: #e7e7e7;
 // We use these to control various global styles
 // $body-bg: $white;
 // $body-font-color: $jet;
+$body-font-color: $black;
 // $body-font-family: $font-family-sans-serif;
 // $body-font-weight: $font-weight-normal;
 // $body-font-style: normal;

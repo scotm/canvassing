@@ -62,6 +62,9 @@ static/*
 templates/critical.css
 templates/loadCSS.js
 templates/fontfaceobserver.js
+templates/extra_font_logic.min.js
+templates/critical.min.css
+templates/extra_font_logic.js
 
 !data/reset.sh
 !js/.js_files_go_here

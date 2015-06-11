@@ -1,4 +1,6 @@
 module.exports = function (grunt) {
+    require('time-grunt')(grunt);
+    //require('jit-grunt')(grunt);
 
     // 1. All configuration goes here
     grunt.initConfig({
@@ -18,33 +20,79 @@ module.exports = function (grunt) {
             }
         },
 
+        cssmin: {
+            options: {
+                shorthandCompacting: true,
+                roundingPrecision: -1
+            },
+            critical: {
+                files: {
+                  'templates/critical.min.css': ['templates/critical.css'],
+                }
+            },
+            dist: {
+                files: {
+                  'css/main.min.css': ['css/main.css'],
+                }
+            },
+        },
+
         concat: {
+
             dist: {
                 src: [
-                    'bower_components/jquery/dist/jquery.js',
-                    'bower_components/jquery-placeholder/jquery.placeholder.js',
+                    'bower_components/jquery/dist/jquery.min.js',
+                    //'bower_components/jquery-placeholder/jquery.placeholder.js',
                     'bower_components/jquery.cookie/jquery.cookie.js',
                     'bower_components/fastclick/lib/fastclick.js',
                     'bower_components/modernizr/modernizr.js',
-                    'bower_components/foundation/js/foundation.js',
-                    'bower_components/leaflet/dist/leaflet-src.js',
+                    'bower_components/leaflet/dist/leaflet.js',
                     //'bower_components/jquery-ui/jquery-ui.js',
                     'bower_components/jquery-ui/ui/core.js',
                     'bower_components/jquery-ui/ui/widget.js',
                     'bower_components/jquery-ui/ui/mouse.js',
                     'bower_components/jquery-ui/ui/sortable.js',
+                    'bower_components/foundation/js/foundation/foundation.js', 
+                    //'bower_components/foundation/js/foundation/foundation.abide.js', 
+                    'bower_components/foundation/js/foundation/foundation.accordion.js', 
+                    'bower_components/foundation/js/foundation/foundation.alert.js', 
+                    //'bower_components/foundation/js/foundation/foundation.clearing.js', 
+                    'bower_components/foundation/js/foundation/foundation.dropdown.js', 
+                    //'bower_components/foundation/js/foundation/foundation.equalizer.js', 
+                    //'bower_components/foundation/js/foundation/foundation.interchange.js', 
+                    //'bower_components/foundation/js/foundation/foundation.joyride.js', 
+                    //'bower_components/foundation/js/foundation/foundation.magellan.js', 
+                    //'bower_components/foundation/js/foundation/foundation.offcanvas.js', 
+                    //'bower_components/foundation/js/foundation/foundation.orbit.js', 
+                    'bower_components/foundation/js/foundation/foundation.reveal.js', 
+                    //'bower_components/foundation/js/foundation/foundation.slider.js', 
+                    //'bower_components/foundation/js/foundation/foundation.tab.js', 
+                    //'bower_components/foundation/js/foundation/foundation.tooltip.js', 
+                    'bower_components/foundation/js/foundation/foundation.topbar.js', 
                     'js/accordion_mods.js'
                 ],
                 dest: 'js/production.js'
-            }
+            },
+            extras: {
+                src: [
+                    'bower_components/loadcss/loadCSS.js',
+                    // 'bower_components/promise-polyfill/Promise.js'
+                    // 'bower_components/fontfaceobserver/fontfaceobserver.js',
+                    // 'js/extra_font_logic.js'
+                ],
+                dest: 'js/font_logic.js',
+            },
         },
 
         uglify: {
             dist: {
                 files: {
                     'js/production.min.js': 'js/production.js',
-                    'templates/loadCSS.js': 'bower_components/loadcss/loadCSS.js',
-                    'templates/fontfaceobserver.js': 'bower_components/fontfaceobserver/fontfaceobserver.js'
+                }
+            },
+            font_logic_ugly: {
+                files: {
+                    'js/extra_font_logic.min.js': 'js/font_logic.js',
                 }
             }
         },
@@ -63,8 +111,8 @@ module.exports = function (grunt) {
         sass: {
             options: {
                 sourceMap: true,
-                includePaths: ['bower_components/foundation/scss', 'static']
-                //outputStyle: 'compressed'
+                includePaths: ['bower_components/foundation/scss', 'static'],
+                //outputStyle: 'compressed',
             },
             dist: {
                 files: {
@@ -80,7 +128,7 @@ module.exports = function (grunt) {
             },
             sass: {
                 files: ['scss/**.scss'],
-                tasks: ['sass'],
+                tasks: ['sass', 'cssmin:dist'],
                 options: {
                     livereload: true
                 }
@@ -102,10 +150,11 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-sass');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-criticalcss');
+    grunt.loadNpmTasks('grunt-contrib-cssmin');
 
     // 3. Where we tell Grunt what to do when we type "grunt" into the terminal.
     grunt.registerTask('default', ['concat', 'uglify', 'sass']);
-    grunt.registerTask('basecss', ['criticalcss'])
+    grunt.registerTask('basecss', ['criticalcss', 'cssmin'])
     grunt.registerTask('images', ['imagemin']);
     grunt.registerTask('watch-changes', ['concat', 'uglify', 'imagemin', 'sass', 'watch']);
     grunt.registerTask('js', ['concat', 'uglify']);

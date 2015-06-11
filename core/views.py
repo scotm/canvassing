@@ -2,14 +2,23 @@ import random
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth import login
 from django.core.urlresolvers import reverse_lazy
+from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from braces.views import LoginRequiredMixin
+from braces.views._access import AccessMixin
 from django.views.generic import DetailView, ListView, TemplateView
 from json_views.views import JSONDataView
 
 from core.models import Contact, Domecile, Ward, Region
+
+
+class CustomLoginRequiredMixin(AccessMixin):
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated() or settings.ALL_ALLOWED:
+            return super(CustomLoginRequiredMixin, self).dispatch(request, *args, **kwargs)
+        return self.handle_no_permission(request)
 
 
 class ContactView(LoginRequiredMixin, DetailView):
@@ -54,7 +63,7 @@ class DomecileAddressView(LoginRequiredMixin, JSONDataView):
         return context
 
 
-class HomepageView(LoginRequiredMixin, TemplateView):
+class HomepageView(CustomLoginRequiredMixin, TemplateView):
     template_name = 'homepage.html'
 
     def get_context_data(self, **kwargs):
