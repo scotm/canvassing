@@ -139,11 +139,11 @@ class GeomMixin(object):
 
 class Ward(GeomMixin, models.Model):
     # Based on the ward shape files available from:
-    # https://geoportal.statistics.gov.uk/Docs/Boundaries/Wards_(GB)_2014_Boundaries_(Full_Extent).zip
+    # https://geoportal.statistics.gov.uk/Docs/Boundaries/Wards_(GB)_2014_Boundaries_(Full_Extent).zi
 
     ward_code = models.CharField(max_length=9)
     ward_name = models.CharField(max_length=56)
-    wd14nmw = models.CharField(max_length=45)
+    wd14nmw = models.CharField(max_length=45, blank=True)
     local_authority_code = models.CharField(max_length=9)
     local_authority_name = models.CharField(max_length=28)
     active = models.BooleanField(default=True)
@@ -188,8 +188,8 @@ class Region(GeomMixin, models.Model):
     area = models.FloatField()
     type_code = models.CharField(max_length=2)
     descript0 = models.CharField(max_length=25)
-    type_cod0 = models.CharField(max_length=3)
-    descript1 = models.CharField(max_length=36)
+    type_cod0 = models.CharField(max_length=3, blank=True)
+    descript1 = models.CharField(max_length=36, blank=True)
     active = models.BooleanField(default=True)
     geom = models.MultiPolygonField(srid=4326)
     objects = models.GeoManager()
@@ -237,7 +237,7 @@ class Region(GeomMixin, models.Model):
         print("Unifying Highlands & Islands geometry...")
         highlands = Region.objects.filter(name='Highlands and Islands').values_list('geom', flat=True)
         highlands = sorted(highlands, key=lambda x: len(x[0][0]), reverse=True)  # Sort them, so we can pop the top off
-        keep_separate = highlands.pop(0)  # This one is huge, and will slow down processing. Unify at the end.
+        keep_separate = highlands.pop(0)  # This one is huge, and will slow down processing. Unify it at the end.
         shuffle(highlands)
 
         # Process pairs of geometry, join them together and repeat.
@@ -302,3 +302,45 @@ class IntermediateZone(GeomMixin, models.Model):
         lm = LayerMapping(IntermediateZone, shapefile, IntermediateZone.mapping, transform=True, encoding='iso-8859-1')
         lm.save(strict=True, verbose=verbose)
         print("Regions imported")
+
+class DataZone(models.Model):
+    code = models.CharField(max_length=12)
+    name = models.CharField(max_length=110)
+    gaelic = models.CharField(max_length=110)
+    council_are = models.CharField(max_length=9)
+    intermedia = models.CharField(max_length=9)
+    councila_2 = models.CharField(max_length=254)
+    nrscouncil = models.CharField(max_length=254)
+    geom = models.MultiPolygonField(srid=4326)
+    objects = models.GeoManager()
+
+    # Auto-generated `LayerMapping` dictionary for DataZone model
+    mapping = {
+        'code' : 'DZ_CODE',
+        'name' : 'DZ_NAME',
+        'gaelic' : 'DZ_GAELIC',
+        'council_are' : 'CouncilAre',
+        'intermedia' : 'Intermedia',
+        'councila_2' : 'CouncilA_2',
+        'nrscouncil' : 'NRSCouncil',
+        'geom' : 'MULTIPOLYGON',
+    }
+
+    def __unicode__(self):
+        if self.name:
+            return "%s: %s" % (self.code, self.name)
+        else:
+            return "%s: %s" % (self.code, self.councila_2)
+
+    @staticmethod
+    def fill_up_db(shapefile, verbose=False):
+        lm = LayerMapping(DataZone, shapefile, DataZone.mapping, transform=True, encoding='iso-8859-1')
+        lm.save(strict=True, verbose=verbose)
+        print("Regions imported")
+        for i in DataZone.objects.filter(name=''):
+            try:
+                i.name = IntermediateZone.objects.get(code=i.intermedia).name
+                print(i.name)
+                i.save()
+            except IntermediateZone.DoesNotExist:
+                pass
