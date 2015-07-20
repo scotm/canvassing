@@ -6,8 +6,15 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from sortedm2m.fields import SortedManyToManyField
 
-from core.utilities.domecile_comparisons import domecile_cmp
+from core.utilities.domecile_comparisons import domecile_cmp, consume_int
 from core.models import Domecile, Contact, IntermediateZone, Ward
+
+def domecile_key(domecile):
+    data = unicode(domecile).split(" ")
+    for i in data:
+        number = consume_int(i)
+        return number
+    return 0
 
 
 class BaseRun(models.Model):
@@ -30,9 +37,10 @@ class BaseRun(models.Model):
 
     def get_domeciles(self):
         for postcode_point in self.postcode_points.all():
+            print "goop"
             list_of_domeciles = sorted(
                 Domecile.objects.filter(postcode_point=postcode_point).prefetch_related('contact_set'),
-                key=cmp_to_key(domecile_cmp))
+                key=domecile_key)
             for domecile in list_of_domeciles:
                 yield domecile
 
