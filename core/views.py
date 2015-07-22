@@ -47,6 +47,9 @@ class DomecileMapView(LoginRequiredMixin, JSONDataView):
                                                 region=klass.objects.get(pk=int(area)), query_type=query_type)
 
         data = [{'postcode': x.postcode, 'point': x.postcode_point.point} for x in queryset]
+        for i in data:
+            i['point'][0] = round(i['point'][0], 7)
+            i['point'][1] = round(i['point'][1], 7)
         context.update({'data': data})
         return context
 
