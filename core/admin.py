@@ -15,21 +15,26 @@ class DomecileAdmin(admin.ModelAdmin):
 
     obj_name.short_description = 'Name'
 
-class WardAdmin(admin.OSMGeoAdmin):
+
+class myOSMGeoAdmin(admin.OSMGeoAdmin):
+    openlayers_url = 'https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js'
+
+
+class WardAdmin(myOSMGeoAdmin):
     search_fields = ['ward_name']
     list_filter = ['local_authority_name', 'active']
 
     def get_queryset(self, request):
         return super(WardAdmin,self).get_queryset(request).defer('geom')
 
-class RegionAdmin(admin.OSMGeoAdmin):
+class RegionAdmin(myOSMGeoAdmin):
     search_fields = ['name']
     list_filter = ['description', 'active']
 
     def get_queryset(self, request):
         return super(RegionAdmin,self).get_queryset(request).defer('geom')
 
-class IntermediateZoneAdmin(admin.OSMGeoAdmin):
+class IntermediateZoneAdmin(myOSMGeoAdmin):
     search_fields = ['name']
     list_filter = ['local_authority_name', 'active']
 
@@ -37,7 +42,7 @@ class IntermediateZoneAdmin(admin.OSMGeoAdmin):
         return super(IntermediateZoneAdmin,self).get_queryset(request).defer('geom')
 
 
-class DataZoneAdmin(admin.OSMGeoAdmin):
+class DataZoneAdmin(myOSMGeoAdmin):
     search_fields = ['name']
     list_filter = ['councila_2']
     def get_queryset(self, request):
