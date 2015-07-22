@@ -29,6 +29,10 @@ DEBUG_TOOLBAR_PANELS = [
 ]
 
 if 'test' in sys.argv:
+    import platform
+    if platform.system() == 'Darwin':
+        SPATIALITE_LIBRARY_PATH='/usr/local/lib/mod_spatialite.dylib'
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.contrib.gis.db.backends.spatialite',
