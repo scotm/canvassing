@@ -1,20 +1,13 @@
-from functools import cmp_to_key
-
 from django.conf import settings
+
 from django.contrib.gis.geos import MultiPoint
 from django.core.urlresolvers import reverse
 from django.db import models
 from sortedm2m.fields import SortedManyToManyField
 
-from core.utilities.domecile_comparisons import domecile_cmp, consume_int
-from core.models import Domecile, Contact, IntermediateZone, Ward
+from core.utilities.domecile_comparisons import domecile_key
 
-def domecile_key(domecile):
-    data = unicode(domecile).split(" ")
-    for i in data:
-        number = consume_int(i)
-        return number
-    return 0
+from core.models import Domecile, Contact, IntermediateZone, Ward, DataZone
 
 
 class BaseRun(models.Model):
@@ -23,6 +16,7 @@ class BaseRun(models.Model):
     notes = models.TextField()
     ward = models.ForeignKey('core.Ward', on_delete=models.SET_NULL, null=True)
     intermediate_zone = models.ForeignKey('core.IntermediateZone', on_delete=models.SET_NULL, null=True)
+    # datazone = models.ForeignKey('core.DataZone', on_delete=models.SET_NULL, null=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True)
 
     class Meta:
@@ -31,13 +25,18 @@ class BaseRun(models.Model):
 
     def save(self, *args, **kwargs):
         # Fix this later
+        # if not self.ward:
+        #     self.ward = self.get_ward()
+        # if not self.intermediate_zone:
+        #     self.intermediate_zone = self.get_zone()
+        # if not self.datazone:
+        #     self.datazone = self.get_datazone()
         # self.ward = self.get_ward()
         # self.intermediate_zone = self.get_zone()
         super(BaseRun, self).save(*args, **kwargs)
 
     def get_domeciles(self):
         for postcode_point in self.postcode_points.all():
-            print "goop"
             list_of_domeciles = sorted(
                 Domecile.objects.filter(postcode_point=postcode_point).prefetch_related('contact_set'),
                 key=domecile_key)
@@ -67,6 +66,9 @@ class BaseRun(models.Model):
 
     def get_zone(self):
         return IntermediateZone.objects.filter(geom__contains=self.get_points().centroid).first()
+
+    def get_datazone(self):
+        return DataZone.objects.filter(geom__contains=self.get_points().centroid).first()
 
 
 class LeafletRun(BaseRun):

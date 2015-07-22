@@ -12,25 +12,12 @@ def consume_int(x):
             break
     return sum_total
 
-
-def domecile_cmp(x, y):
-    if x.address_4 != y.address_4:
-        return cmp(x.address_4, y.address_4)
-    a, b = consume_int(x.address_2), consume_int(y.address_2)
-    if a == b:
-        c = cmp(x.address_2, y.address_2)
-        if c == 0:
-            return cmp(x.address_1, y.address_1)
-        return c
-    return cmp(a, b)
-
-
 # Its intention is to turn a postcode into a readable summary.
 # Instead of a list of addresses - we get:
 # postcode: 'DD2 3AG'
 # return '28-48 (Evens) Whorterbank, Dundee, DD2 3AG'
 def domecile_list_to_string(domecile_list):
-    domecile_list = sorted(domecile_list, key=cmp_to_key(domecile_cmp))
+    domecile_list = sorted(domecile_list, key=domecile_key)
     number_types = ''
     domecile_indices = [consume_int(x.address_2) for x in domecile_list]
     comparisons = [x % 2 for x in domecile_indices]
@@ -51,3 +38,15 @@ def domecile_list_to_string(domecile_list):
     return " ".join(
         x for x in [str(consume_int(first_domecile.address_2)) + "-" + str(consume_int(domecile_list[-1].address_2)),
                     number_types, residue,] if x), len(domecile_list)
+
+
+def domecile_key(domecile):
+    data = [getattr(domecile, x) for x in
+            ["address_1", "address_2", "address_3", "address_4", "address_5", "address_6", "address_7", "address_8",
+             "address_9"] if getattr(domecile, x)]
+    secondkey = " ".join(data)
+    for i in reversed(data):
+        number = consume_int(i)
+        if number:
+            return number, secondkey
+    return 0, secondkey

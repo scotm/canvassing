@@ -9,7 +9,7 @@ from django.contrib.gis.geos import Polygon
 from django.contrib.gis.utils import LayerMapping
 from django.db.models.aggregates import Count
 
-from core.utilities.domecile_comparisons import domecile_cmp, domecile_list_to_string
+from core.utilities.domecile_comparisons import domecile_list_to_string, domecile_key
 from postcode_locator.models import PostcodeMapping
 
 
@@ -78,7 +78,7 @@ class Domecile(models.Model):
     @staticmethod
     def get_sorted_addresses(postcode):
         queryset = Domecile.objects.filter(postcode=postcode).annotate(num_contacts=Count('contact'))
-        data = [unicode(y) + " (%d)" % y.num_contacts for y in sorted(queryset, key=cmp_to_key(domecile_cmp))]
+        data = [unicode(y) + " (%d)" % y.num_contacts for y in sorted(queryset, key=domecile_key)]
         return data
 
     @staticmethod
