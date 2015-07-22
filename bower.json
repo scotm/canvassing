@@ -18,14 +18,14 @@
     "tests"
   ],
   "dependencies": {
-    "foundation": "~5.5.1",
-    "leaflet": "~0.7.3",
-    "jquery-ui": "~1.11.3",
-    "loadcss": "~0.1.6",
-    "fontfaceobserver": "~1.4.12",
-    "promise-polyfill": "~2.0.2"
+    "foundation": "^5.5.1",
+    "leaflet": "^0.7.3",
+    "jquery-ui": "^1.11.3",
+    "loadcss": "^0.1.6",
+    "fontfaceobserver": "^1.4.12",
+    "promise-polyfill": "^2.0.2"
   },
   "devDependencies": {
-    "livereload-js": "~2.2.1"
+    "livereload-js": "^2.2.1"
   }
 }
