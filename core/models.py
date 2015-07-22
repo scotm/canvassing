@@ -129,7 +129,10 @@ class GeomMixin(object):
 
     def get_simplified_geom_json(self, simplify_factor=0.00003):
         geom = self.geom.simplify(simplify_factor)
-        geom[0] = [(round(x,6),round(y,6)) for x,y in geom[0]]
+        try:
+            geom[0] = [(round(x,6),round(y,6)) for x,y in geom[0]]
+        except:
+            pass
         return geom.json
 
     def centre_point(self):
