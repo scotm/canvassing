@@ -1,13 +1,12 @@
 from django.db import models
+from sortedm2m.fields import SortedManyToManyField
 
 from campaigns.models import Campaign
 from core.models import Contact
-from leafleting.models import CanvassRun, LeafletRun
 
 
 class CanvassQuestion(models.Model):
     polling_question = models.CharField(max_length=200)
-    ordering = models.IntegerField()
     type = models.CharField(max_length=20, choices=(
         ('True/False', 'binary'), ('Multiple-choice', 'choice'), ('Range', 'range'), ('Detailed Answer', 'answer')),
                             default='binary')
@@ -55,10 +54,9 @@ class CanvassParty(CanvassResponse):
 
 class CanvassQuestionaire(models.Model):
     campaign = models.ForeignKey(Campaign)
-    questions = models.ManyToManyField(CanvassQuestion)
+    questions = SortedManyToManyField(CanvassQuestion)
 
 
 class Conversation(models.Model):
     person = models.ForeignKey(Contact)
     notes = models.TextField()
-
