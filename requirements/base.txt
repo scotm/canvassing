@@ -13,3 +13,4 @@ jsonfield
 django-braces
 django-filter
 django-htmlmin
+django-flat-theme
