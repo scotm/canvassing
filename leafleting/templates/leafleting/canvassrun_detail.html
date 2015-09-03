@@ -13,12 +13,11 @@
         <p><em>{{ object.notes }}</em></p>
         {% endif %}
 
-        <p><strong>Question 1</strong>: Which party will you support for the upcoming UK general election?<br/>
-            <strong>Question 2</strong>: Which party will you support with your list vote in the 2016 Scottish
+        <p><strong>Question 1</strong>: What are the most important issues facing you and your family today?<br/>
+            <strong>Question 2</strong>: Thinking about the upcoming council by-election, which candidate or party most
+            agrees with you?<br/>
+            <strong>Question 3</strong>: Which party will you support with your list vote in the 2016 Scottish
             Parliament election? (give list of parties)<br/>
-            <strong>Question 3</strong>: (if applicable) Who would you vote for if the SNP were not standing here?<br/>
-            <strong>Question 4</strong>: (if not SSP in Q1 or Q2) Would you consider giving the SSP your vote if we had
-            a reasonable chance of being elected?<br>
             <strong>Response</strong> - <em>M</em>: Moved, <em>B</em>: Too busy, <em>U</em>: unavailable, <em>N</em>:
             Not interested, <em>D</em>: Do Not Contact, <em>X</em>: Deceased</p>
         <div id="map"></div>
@@ -35,7 +34,7 @@
                             <div class="large-2 columns">
                                 <strong>{{ contact }}</strong>
                             </div>
-                            <div class="large-2 columns">
+                            <div class="large-4 columns">
                                 Q1. <img src="{% static 'images/answerbox-small.svg' %}"/>
                             </div>
                             <div class="large-2 columns">
@@ -43,9 +42,6 @@
                             </div>
                             <div class="large-2 columns">
                                 Q3. <img src="{% static 'images/answerbox-small.svg' %}"/>
-                            </div>
-                            <div class="large-2 columns">
-                                Q4. <img src="{% static 'images/answerbox-small.svg' %}"/>
                             </div>
                             <div class="large-2 columns">
                                 Response. <img src="{% static 'images/checkbox.svg' %}"/>
