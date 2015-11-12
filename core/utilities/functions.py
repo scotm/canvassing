@@ -6,5 +6,5 @@ def split_dict(my_dict, my_list):
 
 
 def transform_dict(my_dict, rename_dict):
-    renamed_dict = {rename_dict[x]: y for x, y in my_dict.items() if x in rename_dict}
+    renamed_dict = {rename_dict[x]: y.strip() for x, y in my_dict.items() if x in rename_dict}
     return renamed_dict
