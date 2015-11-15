@@ -2,6 +2,16 @@
 {% load static %}
 {% block extrahead %}
     <link rel="stylesheet" href="{% static 'leaflet.css' %}"/>
+    <style>
+        body{
+            background-color:white;
+            color:black;
+        }
+    h1, h2, h3, h4, h5, h6{
+        text-transform: uppercase;
+        color:black;
+    }
+    </style>
 {% endblock %}
 {% block breadcrumbs %}
     <nav class="breadcrumbs">
