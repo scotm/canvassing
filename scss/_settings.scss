@@ -90,20 +90,21 @@ $row-width: rem-calc(1200);
 // We use these to define default font stacks
 //$font-family-sans-serif: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
 $font-family-sans-serif: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+
 //$font-family-serif: "Roboto Slab", Georgia, Cambria, "Times New Roman", Times, serif;
-$font-family-serif: Georgia, Cambria, "Times New Roman", Times, serif;
+//$font-family-serif: Georgia, Cambria, "Times New Roman", Times, serif;
 // $font-family-monospace: Consolas, "Liberation Mono", Courier, monospace;
 
 // We use these to define default font weights
 // $font-weight-normal: normal !default;
 $font-weight-bold: bold !default;
 
-// $white       : #FFFFFF;
+$white       : #FFFFFF;
 // $ghost       : #FAFAFA;
 // $snow        : #F9F9F9;
 // $vapor       : #F6F6F6;
 // $white-smoke : #F5F5F5;
-// $silver      : #EFEFEF;
+$silver      : #EFEFEF;
 // $smoke       : #EEEEEE;
 // $gainsboro   : #DDDDDD;
 // $iron        : #CCCCCC;
@@ -118,9 +119,10 @@ $font-weight-bold: bold !default;
 // $jet         : #222222;
 $black       : #000000;
 
+
 // We use these as default colors throughout
 // $primary-color: #008CBA;
-$primary-color: #ec1824;
+$primary-color: rgb(240, 89, 36);
 $secondary-color: #e7e7e7;
 // $alert-color: #f04124;
 // $success-color: #43AC6A;
@@ -130,7 +132,7 @@ $secondary-color: #e7e7e7;
 // We use these to control various global styles
 // $body-bg: $white;
 // $body-font-color: $jet;
-$body-font-color: $black;
+$body-font-color: $white;
 // $body-font-family: $font-family-sans-serif;
 // $body-font-weight: $font-weight-normal;
 // $body-font-style: normal;
@@ -202,9 +204,11 @@ $global-radius: 6px;
 
 // We use these to control header font styles
 // $header-font-family: $body-font-family;
+$header-font-family: 'Montserrat',  sans-serif;
 $header-font-weight: $font-weight-bold;
 // $header-font-style: normal;
 // $header-font-color: $jet;
+$header-font-color: $white;
 // $header-line-height: 1.4;
 // $header-top-margin: .2rem;
 // $header-bottom-margin: .5rem;
@@ -212,6 +216,7 @@ $header-font-weight: $font-weight-bold;
 
 // We use these to control header font sizes
 // $h1-font-size: rem-calc(44);
+$h1-font-size: rem-calc(40);
 // $h2-font-size: rem-calc(37);
 // $h3-font-size: rem-calc(27);
 // $h4-font-size: rem-calc(23);
@@ -326,15 +331,18 @@ $anchor-text-decoration-hover: underline;
 // $include-html-accordion-classes: $include-html-classes;
 
 // $accordion-navigation-padding: rem-calc(16);
-// $accordion-navigation-bg-color: $silver  ;
+$accordion-navigation-bg-color: $silver  ;
 // $accordion-navigation-hover-bg-color: scale-color($accordion-navigation-bg-color, $lightness: -5%);
 // $accordion-navigation-active-bg-color: scale-color($accordion-navigation-bg-color, $lightness: -3%);
+$accordion-navigation-hover-bg-color: mix($accordion-navigation-bg-color,$primary-color,85%);
+$accordion-navigation-active-bg-color: mix($accordion-navigation-bg-color,$primary-color,90%);
 // $accordion-navigation-font-color: $jet;
 // $accordion-navigation-font-size: rem-calc(16);
 // $accordion-navigation-font-family: $body-font-family;
 
 // $accordion-content-padding: $column-gutter/2;
 // $accordion-content-active-bg-color: $white;
+$accordion-content-active-bg-color: mix($accordion-navigation-bg-color,$primary-color,95%);
 
 // 02. Alert Boxes
 // - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -398,7 +406,8 @@ $anchor-text-decoration-hover: underline;
 // $include-html-nav-classes: $include-html-classes;
 
 // We use this to set the background color for the breadcrumb container.
-$crumb-bg: scale-color($secondary-color, $lightness: 55%);
+//$crumb-bg: scale-color($secondary-color, $lightness: 55%);
+$crumb-bg: scale_color($black, $lightness:20%);
 
 // We use these to set the padding around the breadcrumbs.
 // $crumb-padding: rem-calc(9 14 9);
@@ -417,15 +426,16 @@ $crumb-border-color: scale-color($crumb-bg, $lightness: -20%);
 // We use these to set various text styles for breadcrumbs.
 // $crumb-font-size: rem-calc(11);
 // $crumb-font-color: $primary-color;
+$crumb-font-color: $white;
 // $crumb-font-color-current: $oil;
-$crumb-font-color-current: #000000;
+$crumb-font-color-current: $primary-color;
 // $crumb-font-color-unavailable: $aluminum;
 // $crumb-font-transform: uppercase;
 // $crumb-link-decor: underline;
 
 // We use these to control the slash between breadcrumbs
 // $crumb-slash-color: $base;
-$crumb-slash-color: $crumb-border-color;
+$crumb-slash-color: $white;
 // $crumb-slash: "/";
 
 // 05. Buttons
@@ -463,11 +473,14 @@ $button-margin-bottom: rem-calc(10);
 
 // We use these to control button border and hover styles.
 // $button-border-width: 0px;
-$button-border-width: 1px;
+$button-border-width: 3px;
 // $button-border-style: solid;
 // $button-bg-color: $primary-color;
+$button-bg-color: transparent;
 // $button-bg-hover: scale-color($button-bg-color, $lightness: $button-function-factor);
+$button-bg-hover: $primary-color;
 // $button-border-color: $button-bg-hover;
+$button-border-color: $white;
 // $secondary-button-bg-hover: scale-color($secondary-color, $lightness: $button-function-factor);
 // $secondary-button-border-color: $secondary-button-bg-hover;
 // $success-button-bg-hover: scale-color($success-color, $lightness: $button-function-factor);
@@ -638,6 +651,7 @@ $button-border-width: 1px;
 // $form-label-font-weight: $font-weight-normal;
 // $form-label-line-height: 1.5;
 // $form-label-font-color: scale-color($black, $lightness: 30%);
+$form-label-font-color: scale-color($white, $lightness: -30%);
 // $form-label-small-transform: capitalize;
 // $form-label-bottom-margin: 0;
 // $input-font-family: inherit;
@@ -970,6 +984,7 @@ $button-border-width: 1px;
 
 // We use these to control the background and border styles
 // $panel-bg: scale-color($white, $lightness: -5%);
+$panel-bg: scale-color($primary-color, $lightness: 50%);
 // $panel-border-style: solid;
 // $panel-border-size: 1px;
 
@@ -1380,7 +1395,7 @@ $button-border-width: 1px;
 
 // Background color for the top bar
 // $topbar-bg-color: $oil;
-$topbar-bg-color: #000000;
+$topbar-bg-color: #f05924;
 // $topbar-bg: $topbar-bg-color;
 
 // Height and margin

@@ -3,15 +3,15 @@
         <hr/>
         <div class="row">
             <div class="small-12 medium-4 columns">
-                <p class="visible-for-small-only">© Copyright Scottish Socialist Party, Central Chambers: Suite 370, 93 Hope Street, Glasgow, G2 6LD<br/>
-                    P: <a href="tel:+447790581883">07790 581883</a></p>
-                <p class="visible-for-medium-up">© Copyright Scottish Socialist Party<br>Central Chambers: Suite 370,<br> 93 Hope Street,<br> Glasgow,<br> G2
-                    6LD<br/>
-                    P: <a href="tel:+447790581883">07790 581883</a></p>
+{#                <p class="visible-for-small-only">© Copyright RISE, Central Chambers: Suite 370, 93 Hope Street, Glasgow, G2 6LD<br/>#}
+{#                    P: <a href="tel:+447790581883">07790 581883</a></p>#}
+{#                <p class="visible-for-medium-up">© Copyright RISE<br>Central Chambers: Suite 370,<br> 93 Hope Street,<br> Glasgow,<br> G2#}
+{#                    6LD<br/>#}
+{#                    P: <a href="tel:+447790581883">07790 581883</a></p>#}
             </div>
             <div class="small-12 medium-8 columns">
                 <ul class="inline-list right">
-                    <li><a href="{% url 'about_the_ssp' %}">About the SSP</a></li>
+                    <li><a href="{% url 'about_rise' %}">About RISE</a></li>
                     {% if user and user.is_authenticated %}
                     <li><a href="{% url 'why_canvass' %}">Why Canvass?</a></li>
                     <li><a href="{% url 'why_leaflet' %}">Why Leaflet?</a></li>
