@@ -43,15 +43,22 @@
 //@import "foundation/components/tooltips";
 //@import "foundation/components/offcanvas";
 
-table, .full_width_button{
-  width:100%;
+table, .full_width_button {
+  width: 100%;
+}
+
+h1, h2, h3, h4, h5, h6, .breadcrumbs{
+  font-weight:bold;
+  //text-transform: capitalize;
+  text-transform: uppercase;
 }
 
 .dark-panel {
-  @include panel($bg: #801515, $padding: 20px, $adjust: true);
+  @include panel($bg: rgb(240, 89, 36), $padding: 20px, $adjust: true);
   a {
     color: lightgrey;
   }
+  color:$white;
 }
 
 pre {
@@ -136,9 +143,18 @@ tr {
 }
 
 body{
-  //background-color:red;
+  background-color:black;
 }
 
 .icon{
   width:25px;
+}
+
+.title-logo{
+  width:25px;
+}
+
+button{
+  font-family:$header-font-family;
+  text-transform: uppercase;
 }
