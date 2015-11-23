@@ -1,10 +1,9 @@
 # coding=utf-8
 from __future__ import print_function
-from functools import cmp_to_key
+
 from random import shuffle
 
 from django.contrib.gis.db import models
-from django.core.urlresolvers import reverse
 from django.contrib.gis.geos import Polygon
 from django.contrib.gis.utils import LayerMapping
 from django.db.models.aggregates import Count
@@ -77,9 +76,47 @@ class Domecile(models.Model):
 
     @staticmethod
     def get_sorted_addresses(postcode):
+        # queryset = Domecile.objects.filter(postcode=postcode).annotate(num_contacts=Count('contact'))
+        # data = [unicode(y) + " (%d)" % y.num_contacts for y in sorted(queryset, key=domecile_key)]
+        _, addresses, _ = Domecile.get_main_address(postcode)
+        return [x[1] for x in addresses]
+        # return data
+
+    @staticmethod
+    def get_main_address(postcode):
         queryset = Domecile.objects.filter(postcode=postcode).annotate(num_contacts=Count('contact'))
-        data = [unicode(y) + " (%d)" % y.num_contacts for y in sorted(queryset, key=domecile_key)]
-        return data
+        addresses = []
+        for domecile in queryset:
+            addresses.append([" ".join([getattr(domecile, x) for x in
+                                       ["address_1", "address_2", "address_3", "address_4", "address_5", "address_6",
+                                        "address_7", "address_8", "address_9"] if getattr(domecile, x)]).split(), domecile])
+        suffix = []
+        while True:
+            if all(x[0][-1] == addresses[0][0][-1] for x in addresses):
+                suffix.insert(0,addresses[0][0][-1])
+                for x in addresses:
+                    x[0].pop(-1)
+            else:
+                break
+        prefix = []
+        while True:
+            if all(x[0][0] == addresses[0][0][0] for x in addresses):
+                prefix.insert(0,addresses[0][0][0])
+                for x in addresses:
+                    x[0].pop(0)
+            else:
+                break
+
+        def cast_as_int(x):
+            print(x)
+            try:
+                return int(x)
+            except ValueError:
+                return x
+        for x in addresses:
+            x[0] = [cast_as_int(y) for y in x[0]]
+
+        return " ".join(prefix), sorted(addresses, key=lambda x:x[0]), " ".join(suffix)
 
     @staticmethod
     def get_summary_of_postcode(postcode):
