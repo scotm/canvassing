@@ -50,7 +50,7 @@ class CanvassRunFilter(django_filters.FilterSet):
         fields = ['name', 'ward__ward_name', 'ward__local_authority_name', 'created_by']
 
 
-class CanvassRunListView(FilterView):
+class CanvassRunListView(LoginRequiredMixin, FilterView):
     filterset_class = CanvassRunFilter
     template_name = 'leafleting/canvassrun_list.html'
     model = CanvassRun
