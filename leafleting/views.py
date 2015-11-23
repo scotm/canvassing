@@ -12,13 +12,14 @@ from core.models import Ward, Region
 from leafleting.models import LeafletRun, CanvassRun
 from postcode_locator.models import PostcodeMapping
 
+users = {k.pk:k for k in get_user_model().objects.all()}
 
 class UserFilter(django_filters.ChoiceFilter):
     @property
     def field(self):
         qs = self.model._default_manager.distinct()
         qs = qs.order_by(self.name).values_list(self.name, flat=True)
-        self.extra['choices'] = [("", "All")] + [(o, str(get_user_model().objects.get(pk=o))) for o in qs]
+        self.extra['choices'] = [("", "All")] + [(o, users[o]) for o in qs]
         return super(django_filters.ChoiceFilter, self).field
 
 
@@ -52,11 +53,10 @@ class CanvassRunFilter(django_filters.FilterSet):
 class CanvassRunListView(FilterView):
     filterset_class = CanvassRunFilter
     template_name = 'leafleting/canvassrun_list.html'
+    model = CanvassRun
 
-    def get_context_data(self, **kwargs):
-        context = super(CanvassRunListView, self).get_context_data(**kwargs)
-        return context
-
+    def get_queryset(self):
+        return super(CanvassRunListView, self).get_queryset().select_related('created_by', 'ward')
 
 class LeafletRunListView(LoginRequiredMixin, ListView):
     model = LeafletRun

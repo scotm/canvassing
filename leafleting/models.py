@@ -16,6 +16,8 @@ class BaseRun(models.Model):
     notes = models.TextField()
     ward = models.ForeignKey('core.Ward', on_delete=models.SET_NULL, null=True)
     intermediate_zone = models.ForeignKey('core.IntermediateZone', on_delete=models.SET_NULL, null=True)
+    count = models.IntegerField(default=0)
+    count_people = models.IntegerField(default=0)
     # datazone = models.ForeignKey('core.DataZone', on_delete=models.SET_NULL, null=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True)
 
@@ -33,6 +35,8 @@ class BaseRun(models.Model):
         #     self.datazone = self.get_datazone()
         # self.ward = self.get_ward()
         # self.intermediate_zone = self.get_zone()
+        self.count = self._calc_count()
+        self.count_people = self._calc_count_people()
         super(BaseRun, self).save(*args, **kwargs)
 
     def get_domeciles(self):
@@ -43,10 +47,10 @@ class BaseRun(models.Model):
             for domecile in list_of_domeciles:
                 yield domecile
 
-    def count(self):
+    def _calc_count(self):
         return sum(Domecile.objects.filter(postcode_point=x).count() for x in self.postcode_points.all())
 
-    def count_people(self):
+    def _calc_count_people(self):
         return sum(Contact.objects.filter(domecile__postcode_point=x).count() for x in self.postcode_points.all())
 
     def __unicode__(self):
