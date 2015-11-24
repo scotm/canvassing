@@ -90,6 +90,8 @@ class Domecile(models.Model):
             addresses.append([" ".join([getattr(domecile, x) for x in
                                        ["address_1", "address_2", "address_3", "address_4", "address_5", "address_6",
                                         "address_7", "address_8", "address_9"] if getattr(domecile, x)]).split(), domecile])
+        if len(addresses) < 2:
+            return '', sorted(addresses, key=lambda x:x[0]), ''
         suffix = []
         while True:
             if all(x[0][-1] == addresses[0][0][-1] for x in addresses):
