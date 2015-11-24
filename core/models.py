@@ -1,15 +1,19 @@
 # coding=utf-8
 from __future__ import print_function
 
+from collections import namedtuple
 from random import shuffle
 
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Polygon
 from django.contrib.gis.utils import LayerMapping
-from django.db.models.aggregates import Count
 
-from core.utilities.domecile_comparisons import domecile_list_to_string, domecile_key
+from core.utilities.domecile_comparisons import domecile_list_to_string
+from core.utilities.functions import cast_as_int
 from postcode_locator.models import PostcodeMapping
+
+AddressInfo = namedtuple('Person', 'prefix residue suffix')
+Residue = namedtuple('Residue', 'number_info domecile')
 
 
 class PoliticalParty(models.Model):
@@ -78,48 +82,35 @@ class Domecile(models.Model):
 
     @staticmethod
     def get_sorted_addresses(postcode):
-        # queryset = Domecile.objects.filter(postcode=postcode).annotate(num_contacts=Count('contact'))
-        # data = [unicode(y) + " (%d)" % y.num_contacts for y in sorted(queryset, key=domecile_key)]
-        _, addresses, _ = Domecile.get_main_address(postcode)
-        return [x[1] for x in addresses]
-        # return data
+        return [x.domecile for x in Domecile.get_main_address(postcode).residue]
 
     @staticmethod
     def get_main_address(postcode):
-        queryset = Domecile.objects.filter(postcode=postcode).annotate(num_contacts=Count('contact'))
-        addresses = []
-        for domecile in queryset:
-            addresses.append([" ".join([getattr(domecile, x) for x in
-                                       ["address_1", "address_2", "address_3", "address_4", "address_5", "address_6",
-                                        "address_7", "address_8", "address_9"] if getattr(domecile, x)]).split(), domecile])
+        queryset = Domecile.objects.filter(postcode=postcode)
+        addresses = [Residue(number_info=" ".join([getattr(domecile, "address_%d" % x) for x in range(1, 10) if
+                                                   getattr(domecile, "address_%d" % x)]).split(), domecile=domecile)
+                     for domecile in queryset]
         if len(addresses) < 2:
-            return '', sorted(addresses, key=lambda x:x[0]), ''
-        suffix = []
-        while True:
-            if all(x[0][-1] == addresses[0][0][-1] for x in addresses):
-                suffix.insert(0,addresses[0][0][-1])
-                for x in addresses:
-                    x[0].pop(-1)
-            else:
-                break
-        prefix = []
-        while True:
-            if all(x[0][0] == addresses[0][0][0] for x in addresses):
-                prefix.insert(0,addresses[0][0][0])
-                for x in addresses:
-                    x[0].pop(0)
-            else:
-                break
+            return AddressInfo(prefix='', residue=addresses, suffix=addresses[0].number_info)
 
-        def cast_as_int(x):
-            try:
-                return int(x)
-            except ValueError:
-                return x
+        suffix, prefix = [], []
+        while all(x.number_info[-1] == addresses[0].number_info[-1] for x in addresses):
+            suffix.insert(0, addresses[0].number_info[-1])
+            for x in addresses:
+                x.number_info.pop(-1)
+
+        while all(x.number_info[0] == addresses[0].number_info[0] for x in addresses):
+            prefix.insert(0, addresses[0].number_info[0])
+            for x in addresses:
+                x.number_info.pop(0)
+
         for x in addresses:
-            x[0] = [cast_as_int(y) for y in x[0]]
+            for index, y in enumerate(x.number_info):
+                x.number_info[index] = cast_as_int(y)
 
-        return " ".join(prefix), sorted(addresses, key=lambda x:x[0]), " ".join(suffix)
+        return AddressInfo(prefix=" ".join(prefix),
+                           residue=sorted(addresses, key=lambda x: x.number_info),
+                           suffix=" ".join(suffix))
 
     @staticmethod
     def get_summary_of_postcode(postcode):
