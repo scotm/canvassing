@@ -1,16 +1,19 @@
 # coding=utf-8
 from __future__ import print_function
-from functools import cmp_to_key
+
+from collections import namedtuple
 from random import shuffle
 
 from django.contrib.gis.db import models
-from django.core.urlresolvers import reverse
 from django.contrib.gis.geos import Polygon
 from django.contrib.gis.utils import LayerMapping
-from django.db.models.aggregates import Count
 
-from core.utilities.domecile_comparisons import domecile_list_to_string, domecile_key
+from core.utilities.domecile_comparisons import domecile_list_to_string
+from core.utilities.functions import cast_as_int
 from postcode_locator.models import PostcodeMapping
+
+AddressInfo = namedtuple('Person', 'prefix residue suffix')
+Residue = namedtuple('Residue', 'number_info domecile')
 
 
 class PoliticalParty(models.Model):
@@ -61,12 +64,14 @@ class Domecile(models.Model):
         from leafleting.models import LeafletRun, CanvassRun
         # Construct a bounding box
         # http://stackoverflow.com/questions/9466043/geodjango-within-a-ne-sw-box
-        geom = Polygon.from_bbox((southwest[0], southwest[1], northeast[0], northeast[1]))
-        queryset = Domecile.objects.filter(postcode_point__point__contained=geom)
+        bounding_box = Polygon.from_bbox((southwest[0], southwest[1], northeast[0], northeast[1]))
+        queryset = Domecile.objects.filter(postcode_point__point__contained=bounding_box)
         if query_type == 'leafleting':
-            queryset = queryset.exclude(postcode_point__in=LeafletRun.objects.filter(postcode_points__point__contained=geom).values_list('postcode_points', flat=True))
+            queryset = queryset.exclude(postcode_point__in=LeafletRun.objects.filter(
+                postcode_points__point__contained=bounding_box).values_list('postcode_points', flat=True))
         elif query_type == 'canvassing':
-            queryset = queryset.exclude(postcode_point__in=CanvassRun.objects.filter(postcode_points__point__contained=geom).values_list('postcode_points', flat=True))
+            queryset = queryset.exclude(postcode_point__in=CanvassRun.objects.filter(
+                postcode_points__point__contained=bounding_box).values_list('postcode_points', flat=True))
         if region:
             queryset = queryset.filter(postcode_point__point__within=region.geom)
         return queryset
@@ -77,9 +82,35 @@ class Domecile(models.Model):
 
     @staticmethod
     def get_sorted_addresses(postcode):
-        queryset = Domecile.objects.filter(postcode=postcode).annotate(num_contacts=Count('contact'))
-        data = [unicode(y) + " (%d)" % y.num_contacts for y in sorted(queryset, key=domecile_key)]
-        return data
+        return [x.domecile for x in Domecile.get_main_address(postcode).residue]
+
+    @staticmethod
+    def get_main_address(postcode):
+        queryset = Domecile.objects.filter(postcode=postcode)
+        addresses = [Residue(number_info=" ".join([getattr(domecile, "address_%d" % x) for x in range(1, 10) if
+                                                   getattr(domecile, "address_%d" % x)]).split(), domecile=domecile)
+                     for domecile in queryset]
+        if len(addresses) < 2:
+            return AddressInfo(prefix='', residue=addresses, suffix=addresses[0].number_info)
+
+        suffix, prefix = [], []
+        while all(x.number_info[-1] == addresses[0].number_info[-1] for x in addresses):
+            suffix.insert(0, addresses[0].number_info[-1])
+            for x in addresses:
+                x.number_info.pop(-1)
+
+        while all(x.number_info[0] == addresses[0].number_info[0] for x in addresses):
+            prefix.insert(0, addresses[0].number_info[0])
+            for x in addresses:
+                x.number_info.pop(0)
+
+        for x in addresses:
+            for index, y in enumerate(x.number_info):
+                x.number_info[index] = cast_as_int(y)
+
+        return AddressInfo(prefix=" ".join(prefix),
+                           residue=sorted(addresses, key=lambda x: x.number_info),
+                           suffix=" ".join(suffix))
 
     @staticmethod
     def get_summary_of_postcode(postcode):
