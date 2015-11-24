@@ -60,12 +60,14 @@ class Domecile(models.Model):
         from leafleting.models import LeafletRun, CanvassRun
         # Construct a bounding box
         # http://stackoverflow.com/questions/9466043/geodjango-within-a-ne-sw-box
-        geom = Polygon.from_bbox((southwest[0], southwest[1], northeast[0], northeast[1]))
-        queryset = Domecile.objects.filter(postcode_point__point__contained=geom)
+        bounding_box = Polygon.from_bbox((southwest[0], southwest[1], northeast[0], northeast[1]))
+        queryset = Domecile.objects.filter(postcode_point__point__contained=bounding_box)
         if query_type == 'leafleting':
-            queryset = queryset.exclude(postcode_point__in=LeafletRun.objects.filter(postcode_points__point__contained=geom).values_list('postcode_points', flat=True))
+            queryset = queryset.exclude(postcode_point__in=LeafletRun.objects.filter(
+                postcode_points__point__contained=bounding_box).values_list('postcode_points', flat=True))
         elif query_type == 'canvassing':
-            queryset = queryset.exclude(postcode_point__in=CanvassRun.objects.filter(postcode_points__point__contained=geom).values_list('postcode_points', flat=True))
+            queryset = queryset.exclude(postcode_point__in=CanvassRun.objects.filter(
+                postcode_points__point__contained=bounding_box).values_list('postcode_points', flat=True))
         if region:
             queryset = queryset.filter(postcode_point__point__within=region.geom)
         return queryset
