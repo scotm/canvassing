@@ -110,7 +110,6 @@ class Domecile(models.Model):
                 break
 
         def cast_as_int(x):
-            print(x)
             try:
                 return int(x)
             except ValueError:
