@@ -68,7 +68,7 @@ def baserun_post_save(sender, instance, created, *args, **kwargs):
         instance.save()
 
 def post_save_m2m_baserun(sender, instance, action, reverse, *args, **kwargs):
-    if isinstance(sender, BaseRun):
+    if isinstance(instance, BaseRun):
         instance.count = instance.calc_count()
         instance.count_people = instance.calc_count_people()
         instance.save()
