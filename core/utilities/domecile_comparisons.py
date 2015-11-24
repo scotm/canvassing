@@ -18,6 +18,12 @@ def consume_int(x):
 # return '28-48 (Evens) Whorterbank, Dundee, DD2 3AG'
 def domecile_list_to_string(domecile_list):
     domecile_list = sorted(domecile_list, key=domecile_key)
+
+    if len(domecile_list) == 1:
+        return unicode(domecile_list[0])
+    elif len(domecile_list) == 0:
+        return ''
+
     number_types = ''
     domecile_indices = [consume_int(x.address_2) for x in domecile_list]
     comparisons = [x % 2 for x in domecile_indices]
