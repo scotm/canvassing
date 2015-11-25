@@ -70,7 +70,7 @@
         /**
          * Created by scotm on 26/02/15.
          */
-        var data = {{ object.get_simplified_geom_json | safe}};
+        var geom_json_data = {{ object.get_simplified_geom_json | safe}};
         var markers = [];
         var selected_address_count = 0;
         var selected_postcodes = [];
@@ -133,7 +133,7 @@
         });
 
         // Draw a JSON polygon over the map. Piece of cake.
-        var geojson = L.geoJson(data, {});
+        var geojson = L.geoJson(geom_json_data, {});
         var map = L.map('map').addLayer(mapboxTiles);
         geojson.addTo(map);
         resetView();
