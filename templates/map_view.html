@@ -29,7 +29,7 @@
                     </label>
                 </div>
                 <div class="large-3 columns text-center">
-                    <button id="resetView">View Entire Ward</button>
+                    <button id="resetView">Show Entire Ward</button>
                 </div>
             </div>
         </form>
@@ -106,18 +106,17 @@
                 if (e.type == 'keypress') {
                     // Get the postcode point with AJAX.
                     $.ajax({
-                                url: '{% url "postcode_point" %}',
-                                cache: false,
-                                data: {'postcode': $('#postcode_input').val()},
-                                success: function (data) {
-                                    if (data['data']) {
-                                        // Assign the map view, and redraw the layer
-                                        map.setView([data['data'][1], data['data'][0]], 18);
-                                        redrawMarkers();
-                                    }
-                                }
+                        url: '{% url "postcode_point" %}',
+                        cache: false,
+                        data: {'postcode': $('#postcode_input').val()},
+                        success: function (data) {
+                            if (data['data']) {
+                                // Assign the map view, and redraw the layer
+                                map.setView([data['data'][1], data['data'][0]], 18);
+                                redrawMarkers();
                             }
-                    );
+                        }
+                    });
                 }
             }
         });
@@ -128,7 +127,7 @@
 {#            attribution: '<a href="http://www.mapbox.com/about/maps/" target="_blank">Terms &amp; Feedback</a>'#}
 {#        });#}
 
-        var mapboxTiles = L.tileLayer('	http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg?', {
+        var mapboxTiles = L.tileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg?', {
             attribution: '© OpenStreetMap contributors - <a href="http://www.opendatacommons.org/licenses/odbl">Terms</a>'
         });
 
@@ -146,41 +145,44 @@
             if ($.inArray(this.options.title, selected_postcodes) == -1) {
                 this.setIcon(red_icon);
                 $.ajax({
-                            url: '{% url "get_addresses" %}',
-                            cache: false,
-                            data: {'postcode': this.options.title},
-                            success: function (data) {
-                                var index_of_postcode = $.inArray(data['postcode'], selected_postcodes);
-                                if (index_of_postcode == -1) {
-                                    // Add the row to the table.
-                                    $('#postcodes_table').each(function () {
-                                        var tds = '<tr><td>' + data['postcode'] + '</td><td>' +
-                                                    //data['data'].join(':: ') +
-                                                '</td><td>' + data['summary'] + '</td><td>' +
-                                                data['buildings'] + '</td><td>'+data['contacts']+'</td></tr>';
-                                        if ($('tbody', this).length > 0) {
-                                            $('tbody', this).append(tds);
-                                        } else {
-                                            $(this).append(tds);
-                                        }
-                                        selected_address_count = selected_address_count + data['data'].length;
-                                        selected_postcodes.push(data['postcode']);
-                                    });
+                    url: '{% url "get_addresses" %}',
+                    cache: false,
+                    data: {'postcode': this.options.title},
+                    success: function (data) {
+                        var index_of_postcode = $.inArray(data['postcode'], selected_postcodes);
+                        if (index_of_postcode == -1) {
+                            $('#postcodes_table').each(function () {
+                                // Inject the row to the table.
+                                var tds = '<tr><td>' + data['postcode'] + '</td><td>' +
+                                            //data['data'].join(':: ') +
+                                        '</td><td>' + data['summary'] + '</td><td>' +
+                                        data['buildings'] + '</td><td>'+data['contacts']+'</td></tr>';
+
+                                // Fire it in.
+                                if ($('tbody', this).length > 0) {
+                                    $('tbody', this).append(tds);
+                                } else {
+                                    $(this).append(tds);
                                 }
-                                // Update the displayed count of addresses
-                                updateAddressCount();
-                            }
+                                selected_address_count = selected_address_count + data['data'].length;
+                                selected_postcodes.push(data['postcode']);
+                            });
                         }
-                );
+                        // Update the displayed count of addresses
+                        updateAddressCount();
+                    }
+                });
             } else {
                 this.setIcon(blue_icon);
                 postcode = this.options.title;
+
                 // Remove the row from the table
                 table = $('#postcodes_table');
                 var p = table.find('tr td').filter(function () {
                     return $(this).text() == postcode;
                 }).closest("tr");
                 p.remove();
+
                 // Set the counter correctly.
                 selected_address_count = 0;
                 table.find('tr td:nth-child(4)').each(function(){
@@ -214,7 +216,6 @@
             modal = $('#myModal');
             modal.html(html);
             modal.foundation('reveal', 'open');
-
         }
 
         // Add the event handlers
@@ -226,24 +227,37 @@
         });
 
         $("#save_run").click(function (e) {
+            // Stop it moving to another page, or refreshing
             e.preventDefault();
+
+            // Start verification - and display a modal if it fails.
             var error_messages = [];
             var run_name = $("#run_name").val();
             var run_notes = $("#run_notes").val();
+
+            // Needs a title
             if (run_name === '') {
                 error_messages.push('You must give this run a name.');
             }
+
+            // Needs some postcodes
             if (selected_postcodes.length == 0) {
                 error_messages.push("You must add some postcodes for this run.");
             }
+
+            // If there are errors, display them in a modal.
             if (error_messages.length > 0) {
                 displayModal("<h2>Errors:</h2>" + error_messages.join("<br />"));
                 error_messages = [];
             } else {
+                // If there are no errors - then create the run
+                // Gather the postcodes from the table.
                 var postcodes_to_send = [];
                 $('#postcodes_table').find('tr td:first-child').each(function () {
                     postcodes_to_send.push($(this).html());
                 });
+
+                // Fire up an AJAX request.
                 $.ajax({
                     url: '{% block run_create_url %}{% endblock %}',
                     cache: false,
@@ -255,50 +269,56 @@
                         resetPage();
                     },
                     error: function (data) {
-                        displayModal("<h2>Failure</h2><p>The run was not created</p>");
+                        displayModal("<h2>Failure</h2><p>The run was not created - the administrator has been notified.</p>");
                     },
                     complete: function (data) {
-
                     }
                 });
                 postcodes_to_send = []
             }
         });
 
+        function removeAllMarkers(){
+            markers.forEach(function (entry) {
+                map.removeLayer(entry)
+            });
+        }
+
         function redrawMarkers() {
+            // Redraws markers when the map is sufficiently zoomed.
             if (map.getZoom() >= 16) {
                 var m = map.getBounds();
                 $.ajax({
-                            url: '{% url "get_domeciles" %}',
-                            cache: false,
-                            data: {
-                                'BBox': m.toBBoxString(),
-                                '{% block object_type %}region{% endblock %}': {{object.pk}},
-                                'query_type': '{% block query_type %}leafleting{% endblock %}'
-                            },
-                            success: function (data) {
-                                markers.forEach(function (entry) {
-                                    map.removeLayer(entry)
-                                });
-                                data['data'].forEach(function (entry) {
-                                    var marker = L.marker([entry['point'][1], entry['point'][0]], {'title': entry['postcode']});
-                                    if ($.inArray(entry['postcode'], selected_postcodes) == -1) {
-                                        marker.setIcon(blue_icon);
-                                    } else {
-                                        marker.setIcon(red_icon);
-                                    }
-                                    marker.on('click', marker_click);
-                                    markers.push(marker);
-                                    map.addLayer(marker);
-                                });
-
+                    url: '{% url "get_domeciles" %}',
+                    cache: false,
+                    data: {
+                        'BBox': m.toBBoxString(),
+                        '{% block object_type %}region{% endblock %}': {{object.pk}},
+                        'query_type': '{% block query_type %}leafleting{% endblock %}'
+                    },
+                    success: function (data) {
+                        // Remove all markers, then re-plot them.
+                        removeAllMarkers();
+                        data['data'].forEach(function (entry) {
+                            // For each point returned, create a marker
+                            var marker = L.marker([entry['point'][1], entry['point'][0]], {'title': entry['postcode']});
+                            // Is it Red (already allocated) or Blue?
+                            if ($.inArray(entry['postcode'], selected_postcodes) == -1) {
+                                marker.setIcon(blue_icon);
+                            } else {
+                                marker.setIcon(red_icon);
                             }
-                        }
-                );
-            } else {
-                markers.forEach(function (entry) {
-                    map.removeLayer(entry)
+
+                            // Make it clickable
+                            marker.on('click', marker_click);
+                            markers.push(marker);
+                            map.addLayer(marker);
+                        });
+                    }
                 });
+            } else {
+                // It's not zoomed enough - so remove the previously placed markers.
+                removeAllMarkers();
             }
         }
     </script>

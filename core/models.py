@@ -274,7 +274,7 @@ class Region(GeomMixin, models.Model):
         keep_separate = highlands.pop(0)  # This one is huge, and will slow down processing. Unify it at the end.
         shuffle(highlands)
 
-        # Process pairs of geometry, join them together and repeat.
+        # Process pairs of geometry, join them together and repeat until there's one left.
         while True:
             if DEBUG == True:
                 print(len(highlands))
