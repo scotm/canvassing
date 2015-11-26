@@ -3,7 +3,7 @@ from django.conf import settings
 from django.contrib.gis.geos import MultiPoint
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.db.models.signals import post_save, m2m_changed
+from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 
 from sortedm2m.fields import SortedManyToManyField
@@ -63,18 +63,12 @@ class BaseRun(models.Model):
         return DataZone.objects.filter(geom__contains=self.get_points().centroid).first()
 
 
-@receiver(post_save)
-def baserun_post_save(sender, instance, created, *args, **kwargs):
-    if isinstance(instance, BaseRun) and created == True:
-        instance.intermediate_zone = instance.get_zone()
-        instance.datazone = instance.get_zone()
-        instance.ward = instance.get_ward()
-        instance.save()
-
-
 @receiver(m2m_changed)
 def post_save_m2m_baserun(sender, instance, action, reverse, *args, **kwargs):
     if isinstance(instance, BaseRun):
+        instance.intermediate_zone = instance.get_zone()
+        instance.datazone = instance.get_zone()
+        instance.ward = instance.get_ward()
         instance.count = instance.calc_count()
         instance.count_people = instance.calc_count_people()
         instance.save()
