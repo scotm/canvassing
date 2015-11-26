@@ -1,18 +1,18 @@
 # Create your views here.
+from django.core.urlresolvers import reverse_lazy
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.views.generic import ListView, DetailView, TemplateView, UpdateView
-
+from django.views.generic import ListView, DetailView, TemplateView, UpdateView, DeleteView
 import django_filters
 from django_filters.views import FilterView
 from braces.views import LoginRequiredMixin
 from json_views.views import JSONDataView
-
 from core.models import Ward, Region
 from leafleting.models import LeafletRun, CanvassRun
 from postcode_locator.models import PostcodeMapping
 
-users = {k.pk:k for k in get_user_model().objects.all()}
+users = {k.pk: k for k in get_user_model().objects.all()}
+
 
 class UserFilter(django_filters.ChoiceFilter):
     @property
@@ -57,6 +57,12 @@ class CanvassRunListView(LoginRequiredMixin, FilterView):
 
     def get_queryset(self):
         return super(CanvassRunListView, self).get_queryset().select_related('created_by', 'ward')
+
+
+class CanvassRunDelete(LoginRequiredMixin, DeleteView):
+    model = CanvassRun
+    success_url = reverse_lazy('canvass_list')
+
 
 class LeafletRunListView(LoginRequiredMixin, ListView):
     model = LeafletRun
@@ -108,6 +114,10 @@ class CanvassHomepage(LeafletHomepage):
 
 class RunDetailView(LoginRequiredMixin, DetailView):
     pass
+
+
+class PrintRunDetailView(LoginRequiredMixin, DetailView):
+    template_name = 'leafleting/print_canvassrun_detail.html'
 
 
 class RunPicker(LoginRequiredMixin, DetailView):
