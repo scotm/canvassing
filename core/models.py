@@ -159,12 +159,15 @@ class Contact(models.Model):
 class GeomMixin(object):
 
     def get_simplified_geom_json(self, simplify_factor=0.00003):
+        import json
         geom = self.geom.simplify(simplify_factor)
         try:
             geom[0] = [(round(x,6),round(y,6)) for x,y in geom[0]]
         except:
             pass
-        return geom.json
+        obj = json.loads(geom.json)
+        obj['properties'] = {'code':self.code}
+        return json.dumps(obj)
 
     def centre_point(self):
         centroid = self.geom.centroid
@@ -196,6 +199,10 @@ class Ward(GeomMixin, models.Model):
     @property
     def name(self):
         return self.ward_name
+
+    @property
+    def code(self):
+        return self.ward_code
 
     @staticmethod
     def fill_up_db(shapefile, verbose=False):
