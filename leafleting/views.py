@@ -1,16 +1,17 @@
 # Create your views here.
+from django.core.urlresolvers import reverse_lazy
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.views.generic import ListView, DetailView, TemplateView, UpdateView
-
+from django.views.generic import ListView, DetailView, TemplateView, UpdateView, DeleteView
 import django_filters
 from django_filters.views import FilterView
 from braces.views import LoginRequiredMixin
 from json_views.views import JSONDataView
-
 from core.models import Ward, Region
 from leafleting.models import LeafletRun, CanvassRun
 from postcode_locator.models import PostcodeMapping
+
+users = {k.pk: k for k in get_user_model().objects.all()}
 
 
 class UserFilter(django_filters.ChoiceFilter):
@@ -18,7 +19,7 @@ class UserFilter(django_filters.ChoiceFilter):
     def field(self):
         qs = self.model._default_manager.distinct()
         qs = qs.order_by(self.name).values_list(self.name, flat=True)
-        self.extra['choices'] = [("", "All")] + [(o, str(get_user_model().objects.get(pk=o))) for o in qs]
+        self.extra['choices'] = [("", "All")] + [(o, users[o]) for o in qs]
         return super(django_filters.ChoiceFilter, self).field
 
 
@@ -49,13 +50,18 @@ class CanvassRunFilter(django_filters.FilterSet):
         fields = ['name', 'ward__ward_name', 'ward__local_authority_name', 'created_by']
 
 
-class CanvassRunListView(FilterView):
+class CanvassRunListView(LoginRequiredMixin, FilterView):
     filterset_class = CanvassRunFilter
     template_name = 'leafleting/canvassrun_list.html'
+    model = CanvassRun
 
-    def get_context_data(self, **kwargs):
-        context = super(CanvassRunListView, self).get_context_data(**kwargs)
-        return context
+    def get_queryset(self):
+        return super(CanvassRunListView, self).get_queryset().select_related('created_by', 'ward')
+
+
+class CanvassRunDelete(LoginRequiredMixin, DeleteView):
+    model = CanvassRun
+    success_url = reverse_lazy('canvass_list')
 
 
 class LeafletRunListView(LoginRequiredMixin, ListView):
@@ -108,6 +114,10 @@ class CanvassHomepage(LeafletHomepage):
 
 class RunDetailView(LoginRequiredMixin, DetailView):
     pass
+
+
+class PrintRunDetailView(LoginRequiredMixin, DetailView):
+    template_name = 'leafleting/print_canvassrun_detail.html'
 
 
 class RunPicker(LoginRequiredMixin, DetailView):

@@ -3,10 +3,12 @@ from django.conf import settings
 from django.contrib.gis.geos import MultiPoint
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models.signals import m2m_changed
+from django.dispatch import receiver
+
 from sortedm2m.fields import SortedManyToManyField
 
 from core.utilities.domecile_comparisons import domecile_key
-
 from core.models import Domecile, Contact, IntermediateZone, Ward, DataZone
 
 
@@ -14,26 +16,16 @@ class BaseRun(models.Model):
     name = models.CharField(max_length=100)
     postcode_points = SortedManyToManyField('postcode_locator.PostcodeMapping')
     notes = models.TextField()
+    count = models.IntegerField(default=0)
+    count_people = models.IntegerField(default=0)
     ward = models.ForeignKey('core.Ward', on_delete=models.SET_NULL, null=True)
     intermediate_zone = models.ForeignKey('core.IntermediateZone', on_delete=models.SET_NULL, null=True)
-    # datazone = models.ForeignKey('core.DataZone', on_delete=models.SET_NULL, null=True)
+    datazone = models.ForeignKey('core.DataZone', on_delete=models.SET_NULL, null=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True)
 
     class Meta:
         abstract = True
         ordering = ('-pk',)
-
-    def save(self, *args, **kwargs):
-        # Fix this later
-        # if not self.ward:
-        #     self.ward = self.get_ward()
-        # if not self.intermediate_zone:
-        #     self.intermediate_zone = self.get_zone()
-        # if not self.datazone:
-        #     self.datazone = self.get_datazone()
-        # self.ward = self.get_ward()
-        # self.intermediate_zone = self.get_zone()
-        super(BaseRun, self).save(*args, **kwargs)
 
     def get_domeciles(self):
         for postcode_point in self.postcode_points.all():
@@ -43,10 +35,10 @@ class BaseRun(models.Model):
             for domecile in list_of_domeciles:
                 yield domecile
 
-    def count(self):
+    def calc_count(self):
         return sum(Domecile.objects.filter(postcode_point=x).count() for x in self.postcode_points.all())
 
-    def count_people(self):
+    def calc_count_people(self):
         return sum(Contact.objects.filter(domecile__postcode_point=x).count() for x in self.postcode_points.all())
 
     def __unicode__(self):
@@ -69,6 +61,17 @@ class BaseRun(models.Model):
 
     def get_datazone(self):
         return DataZone.objects.filter(geom__contains=self.get_points().centroid).first()
+
+
+@receiver(m2m_changed)
+def post_save_m2m_baserun(sender, instance, action, reverse, *args, **kwargs):
+    if isinstance(instance, BaseRun) and instance.postcode_points.all():
+        instance.intermediate_zone = instance.get_zone()
+        instance.datazone = instance.get_datazone()
+        instance.ward = instance.get_ward()
+        instance.count = instance.calc_count()
+        instance.count_people = instance.calc_count_people()
+        instance.save()
 
 
 class LeafletRun(BaseRun):

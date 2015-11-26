@@ -1,16 +1,14 @@
 # coding=utf-8
 from __future__ import print_function
-from functools import cmp_to_key
-from random import shuffle
-
+from collections import namedtuple
 from django.contrib.gis.db import models
-from django.core.urlresolvers import reverse
 from django.contrib.gis.geos import Polygon
 from django.contrib.gis.utils import LayerMapping
-from django.db.models.aggregates import Count
-
-from core.utilities.domecile_comparisons import domecile_list_to_string, domecile_key
+from core.utilities.functions import cast_as_int
 from postcode_locator.models import PostcodeMapping
+
+AddressInfo = namedtuple('Person', 'prefix residue suffix')
+Residue = namedtuple('Residue', 'number_info domecile')
 
 
 class PoliticalParty(models.Model):
@@ -18,6 +16,7 @@ class PoliticalParty(models.Model):
 
     def __unicode__(self):
         return self.name
+
 
 class ElectoralRegistrationOffice(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -48,9 +47,12 @@ class Domecile(models.Model):
     postcode_point = models.ForeignKey(PostcodeMapping, null=True)
 
     def __unicode__(self):
+        return self.get_address_only() + " " + self.postcode
+
+    def get_address_only(self):
         return ", ".join(getattr(self, x) for x in
                          ["address_1", "address_2", "address_3", "address_4", "address_5", "address_6", "address_7",
-                          "address_8", "address_9", "postcode"] if getattr(self, x))
+                          "address_8", "address_9"] if getattr(self, x))
 
     def save(self, *args, **kwargs):
         self.postcode_point = PostcodeMapping.match_postcode(self.postcode, raise_exceptions=False)
@@ -61,12 +63,14 @@ class Domecile(models.Model):
         from leafleting.models import LeafletRun, CanvassRun
         # Construct a bounding box
         # http://stackoverflow.com/questions/9466043/geodjango-within-a-ne-sw-box
-        geom = Polygon.from_bbox((southwest[0], southwest[1], northeast[0], northeast[1]))
-        queryset = Domecile.objects.filter(postcode_point__point__contained=geom)
+        bounding_box = Polygon.from_bbox((southwest[0], southwest[1], northeast[0], northeast[1]))
+        queryset = Domecile.objects.filter(postcode_point__point__contained=bounding_box)
         if query_type == 'leafleting':
-            queryset = queryset.exclude(postcode_point__in=LeafletRun.objects.filter(postcode_points__point__contained=geom).values_list('postcode_points', flat=True))
+            queryset = queryset.exclude(postcode_point__in=LeafletRun.objects.filter(
+                postcode_points__point__contained=bounding_box).values_list('postcode_points', flat=True))
         elif query_type == 'canvassing':
-            queryset = queryset.exclude(postcode_point__in=CanvassRun.objects.filter(postcode_points__point__contained=geom).values_list('postcode_points', flat=True))
+            queryset = queryset.exclude(postcode_point__in=CanvassRun.objects.filter(
+                postcode_points__point__contained=bounding_box).values_list('postcode_points', flat=True))
         if region:
             queryset = queryset.filter(postcode_point__point__within=region.geom)
         return queryset
@@ -77,16 +81,45 @@ class Domecile(models.Model):
 
     @staticmethod
     def get_sorted_addresses(postcode):
-        queryset = Domecile.objects.filter(postcode=postcode).annotate(num_contacts=Count('contact'))
-        data = [unicode(y) + " (%d)" % y.num_contacts for y in sorted(queryset, key=domecile_key)]
-        return data
+        return [x.domecile for x in Domecile.get_main_address(postcode).residue]
+
+    @staticmethod
+    def get_main_address(postcode):
+        p = PostcodeMapping.match_postcode(postcode)
+        queryset = Domecile.objects.filter(postcode_point=p)
+        addresses = [Residue(number_info=" ".join([getattr(domecile, "address_%d" % x) for x in range(1, 10) if
+                                                   getattr(domecile, "address_%d" % x)]).split(), domecile=domecile)
+                     for domecile in queryset]
+        if len(addresses) < 2:
+            return AddressInfo(prefix='', residue=addresses, suffix=addresses[0].number_info)
+
+        suffix, prefix = [], []
+        while all(x.number_info[-1] == addresses[0].number_info[-1] for x in addresses):
+            suffix.insert(0, addresses[0].number_info[-1])
+            for x in addresses:
+                x.number_info.pop(-1)
+
+        while all(x.number_info[0] == addresses[0].number_info[0] for x in addresses):
+            prefix.insert(0, addresses[0].number_info[0])
+            for x in addresses:
+                x.number_info.pop(0)
+
+        for x in addresses:
+            for index, y in enumerate(x.number_info):
+                x.number_info[index] = cast_as_int(y)
+
+        return AddressInfo(prefix=" ".join(prefix),
+                           residue=sorted(addresses, key=lambda x: x.number_info),
+                           suffix=" ".join(suffix))
 
     @staticmethod
     def get_summary_of_postcode(postcode):
+        from core.utilities.domecile_comparisons import domecile_list_to_string
         return domecile_list_to_string(Domecile.objects.filter(postcode=postcode))
 
     def get_contacts(self):
         return self.contact_set.all()
+
 
 class Contact(models.Model):
     pd = models.CharField(max_length=6, db_index=True)
@@ -118,22 +151,24 @@ class Contact(models.Model):
                 ['address_1', 'address_2', 'address_3', 'address_4', 'address_5', 'address_6', 'address_7', 'address_8',
                  'address_9', ] if getattr(self.domecile, x)]
 
-    def has_signed(self,campaign=None):
+    def has_signed(self, campaign=None):
         from campaigns.models import Campaign, Signature
         if not campaign:
             campaign = Campaign.get_latest_top_level_campaign()
-        return Signature.objects.filter(contact=self,campaign=campaign).exists()
+        return Signature.objects.filter(contact=self, campaign=campaign).exists()
 
 
 class GeomMixin(object):
-
     def get_simplified_geom_json(self, simplify_factor=0.00003):
+        import json
         geom = self.geom.simplify(simplify_factor)
         try:
-            geom[0] = [(round(x,6),round(y,6)) for x,y in geom[0]]
+            geom[0] = [(round(x, 6), round(y, 6)) for x, y in geom[0]]
         except:
             pass
-        return geom.json
+        obj = json.loads(geom.json)
+        obj['properties'] = {'code':self.code}
+        return json.dumps(obj)
 
     def centre_point(self):
         centroid = self.geom.centroid
@@ -165,6 +200,10 @@ class Ward(GeomMixin, models.Model):
     @property
     def name(self):
         return self.ward_name
+
+    @property
+    def code(self):
+        return self.ward_code
 
     @staticmethod
     def fill_up_db(shapefile, verbose=False):
@@ -221,6 +260,8 @@ class Region(GeomMixin, models.Model):
     @staticmethod
     def clean_up(DEBUG=False):
         import gc
+        from random import shuffle
+
         # We're only interested in Scottish constituencies - so delete the rest - their code begins with an "S".
         Region.objects.exclude(code__startswith="S").delete()
 
@@ -243,7 +284,7 @@ class Region(GeomMixin, models.Model):
         keep_separate = highlands.pop(0)  # This one is huge, and will slow down processing. Unify it at the end.
         shuffle(highlands)
 
-        # Process pairs of geometry, join them together and repeat.
+        # Process pairs of geometry, join them together and repeat until there's one left.
         while True:
             if DEBUG == True:
                 print(len(highlands))
@@ -277,6 +318,7 @@ class Region(GeomMixin, models.Model):
         # Nuke the residue - We've already got a decent geom of it.
         Region.objects.filter(name='Highlands and Islands').delete()
 
+
 class IntermediateZone(GeomMixin, models.Model):
     name = models.CharField(max_length=60)
     code = models.CharField(max_length=12)
@@ -287,14 +329,14 @@ class IntermediateZone(GeomMixin, models.Model):
     active = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ('local_authority_name', 'name', )
+        ordering = ('local_authority_name', 'name',)
 
     mapping = {
-        'code' : 'IZ_CODE',
-        'name' : 'IZ_NAME',
-        'council_are' : 'CouncilAre',
-        'local_authority_name' : 'NRSCouncil',
-        'geom' : 'MULTIPOLYGON',
+        'code': 'IZ_CODE',
+        'name': 'IZ_NAME',
+        'council_are': 'CouncilAre',
+        'local_authority_name': 'NRSCouncil',
+        'geom': 'MULTIPOLYGON',
     }
 
     def __unicode__(self):
@@ -305,6 +347,7 @@ class IntermediateZone(GeomMixin, models.Model):
         lm = LayerMapping(IntermediateZone, shapefile, IntermediateZone.mapping, transform=True, encoding='iso-8859-1')
         lm.save(strict=True, verbose=verbose)
         print("Regions imported")
+
 
 class DataZone(models.Model):
     code = models.CharField(max_length=12)
@@ -319,14 +362,14 @@ class DataZone(models.Model):
 
     # Auto-generated `LayerMapping` dictionary for DataZone model
     mapping = {
-        'code' : 'DZ_CODE',
-        'name' : 'DZ_NAME',
-        'gaelic' : 'DZ_GAELIC',
-        'council_are' : 'CouncilAre',
-        'intermedia' : 'Intermedia',
-        'councila_2' : 'CouncilA_2',
-        'nrscouncil' : 'NRSCouncil',
-        'geom' : 'MULTIPOLYGON',
+        'code': 'DZ_CODE',
+        'name': 'DZ_NAME',
+        'gaelic': 'DZ_GAELIC',
+        'council_are': 'CouncilAre',
+        'intermedia': 'Intermedia',
+        'councila_2': 'CouncilA_2',
+        'nrscouncil': 'NRSCouncil',
+        'geom': 'MULTIPOLYGON',
     }
 
     def __unicode__(self):
@@ -353,7 +396,7 @@ class DataZoneSIMDInfo(models.Model):
     datazone = models.OneToOneField(DataZone, related_name='info', db_index=True)
     population = models.IntegerField(blank=True, null=True)
     working_age_population = models.IntegerField(blank=True, null=True)
-    simd_score = models.DecimalField(max_digits=10, decimal_places=2,blank=True, null=True)
+    simd_score = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     simd_rank = models.IntegerField(blank=True, null=True, db_index=True)
     income_deprived_percent = models.FloatField(blank=True, null=True)
     income_deprived_persons = models.IntegerField(blank=True, null=True)

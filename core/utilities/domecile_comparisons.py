@@ -12,12 +12,21 @@ def consume_int(x):
             break
     return sum_total
 
+
 # Its intention is to turn a postcode into a readable summary.
 # Instead of a list of addresses - we get:
 # postcode: 'DD2 3AG'
 # return '28-48 (Evens) Whorterbank, Dundee, DD2 3AG'
 def domecile_list_to_string(domecile_list):
+    from core.models import Domecile
     domecile_list = sorted(domecile_list, key=domecile_key)
+
+    if len(domecile_list) == 1:
+        return unicode(domecile_list[0])
+    elif len(domecile_list) == 0:
+        return ''
+
+    # Find out if they're all even, or odd numbers
     number_types = ''
     domecile_indices = [consume_int(x.address_2) for x in domecile_list]
     comparisons = [x % 2 for x in domecile_indices]
@@ -33,11 +42,12 @@ def domecile_list_to_string(domecile_list):
             break
 
     first_domecile = domecile_list[first_index]
-    residue = ", ".join(y for y in [first_domecile.address_4, first_domecile.address_5, first_domecile.address_6,
-                                    first_domecile.postcode] if y)
-    return " ".join(
-        x for x in [str(consume_int(first_domecile.address_2)) + "-" + str(consume_int(domecile_list[-1].address_2)),
-                    number_types, residue,] if x), len(domecile_list)
+    suffix = Domecile.get_main_address(first_domecile.postcode).suffix
+    # suffix = ", ".join(y for y in [first_domecile.address_4, first_domecile.address_5, first_domecile.address_6,
+    #                                 first_domecile.postcode] if y)
+    return " ".join(x for x in
+                    [str(consume_int(first_domecile.address_2)) + "-" + str(consume_int(domecile_list[-1].address_2)),
+                     number_types, suffix, ] if x), len(domecile_list)
 
 
 def domecile_key(domecile):

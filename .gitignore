@@ -65,6 +65,7 @@ templates/fontfaceobserver.js
 templates/extra_font_logic.min.js
 templates/critical.min.css
 templates/extra_font_logic.js
+electoral_register/
 
 !data/reset.sh
 !js/.js_files_go_here
@@ -74,3 +75,4 @@ templates/extra_font_logic.js
 !data/Wards_GB_2014_Boundaries/dundee_maryfield.prj
 !data/Wards_GB_2014_Boundaries/dundee_maryfield.shp
 !data/Wards_GB_2014_Boundaries/dundee_maryfield.shx
+.DS_Store
