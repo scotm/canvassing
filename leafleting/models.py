@@ -65,9 +65,9 @@ class BaseRun(models.Model):
 
 @receiver(m2m_changed)
 def post_save_m2m_baserun(sender, instance, action, reverse, *args, **kwargs):
-    if isinstance(instance, BaseRun):
+    if isinstance(instance, BaseRun) and instance.postcode_points.all():
         instance.intermediate_zone = instance.get_zone()
-        instance.datazone = instance.get_zone()
+        instance.datazone = instance.get_datazone()
         instance.ward = instance.get_ward()
         instance.count = instance.calc_count()
         instance.count_people = instance.calc_count_people()
