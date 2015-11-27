@@ -20,6 +20,9 @@ class CanvassChoicesAvailable(models.Model):
     question = models.ForeignKey(CanvassQuestion)
     option = models.CharField(max_length=100)
 
+    def __unicode__(self):
+        return "%s -> %s" % (unicode(self.question), unicode(self.option))
+
 
 class CanvassResponse(models.Model):
     contact = models.ForeignKey('core.Contact', null=True)
