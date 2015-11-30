@@ -7,6 +7,7 @@ from django.conf.urls import patterns, url
 
 from leafleting.views import LeafletRunCreate, CanvassRunCreate, LeafletHomepage, CanvassHomepage, RunDetailView, \
     CanvassRunListView, LeafletRunListView, RunPicker, AreaPicker, PrintRunDetailView, CanvassRunDelete
+from polling.views import QuestionaireListView, QuestionaireCreateView
 
 urlpatterns = patterns('',
                        url(r'^leafleting/why_leaflet/$', TemplateView.as_view(template_name='why_leaflet.html'), name='why_leaflet'),
@@ -28,5 +29,8 @@ urlpatterns = patterns('',
                        url(r'^canvassing/run/delete/(?P<pk>[0-9]+)$', CanvassRunDelete.as_view(), name='canvass_run_delete'),
                        url(r'^canvassing/run/(?P<pk>[0-9]+)$', RunDetailView.as_view(model=CanvassRun), name='canvass_run'),
                        url(r'^canvassing/list/', CanvassRunListView.as_view(), name='canvass_list'),
+                       url(r'^canvassing/questionaires/create/', QuestionaireCreateView.as_view(), name='questionaire_list'),
+                       url(r'^canvassing/questionaires/', QuestionaireListView.as_view(), name='questionaire_list'),
+
                        url(r'^canvassing/$', CanvassHomepage.as_view(), name='canvass_homepage'),
                        )

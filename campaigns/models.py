@@ -20,7 +20,7 @@ class Campaign(models.Model):
         return Campaign.objects.filter(parent_campaign__isnull=True).order_by('-date_added').first()
 
     def __unicode__(self):
-        return "%s - started %s" % (self.name, unicode(self.date_added))
+        return "%s" % (self.name)
 
 
 class DownloadFile(models.Model):

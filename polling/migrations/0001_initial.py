@@ -66,7 +66,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('polling_question', models.CharField(max_length=200)),
-                ('ordering', models.IntegerField()),
+                ('ordering', models.IntegerField(null=True)),
                 ('type', models.CharField(default=b'binary', max_length=20, choices=[(b'True/False', b'binary'), (b'Multiple-choice', b'choice'), (b'Range', b'range'), (b'Detailed Answer', b'answer')])),
             ],
             options={

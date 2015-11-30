@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block page_title %}{{ block.super }} Questionnaires{% endblock %}
+{% block content %}
+    <div class="large-12 columns">
+        <h1>Questionnaires</h1>
+
+        <table id="questionaires">
+            <tr>
+                <th>Campaign</th>
+                <th>Questions</th>
+            </tr>
+            {% for questionaire in object_list %}
+                <tr>
+                    <td>{{ questionaire.campaign.name }}</td>
+                    <td>{{ questionaire | linebreaksbr }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        {% if is_paginated %}
+            <div class="pagination-centered">
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                        <li class="arrow"><a href="?page=1">&laquo;</a></li>
+                        <li class="arrow"><a
+                                href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+                        </li>
+                    {% endif %}
+                    <li class="current"><a href="">{{ page_obj.number }}</a></li>
+                    {% if page_obj.has_next %}
+                        <li><a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a></li>
+                        <li><a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+                        </li>
+                        <li><a href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}

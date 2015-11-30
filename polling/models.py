@@ -59,6 +59,9 @@ class CanvassQuestionaire(models.Model):
     campaign = models.ForeignKey(Campaign)
     questions = SortedManyToManyField(CanvassQuestion)
 
+    def __unicode__(self):
+        return "\n".join(unicode(x) for x in self.questions.all())
+
 
 class Conversation(models.Model):
     person = models.ForeignKey(Contact)
