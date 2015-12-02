@@ -150,6 +150,13 @@ body{
   width:25px;
 }
 
+#login table{
+  background-color: black;
+}
+
+#login table tr:nth-of-type(even) {
+    background-color: mix(black,white,85%);
+}
 .title-logo{
   width:25px;
 }
