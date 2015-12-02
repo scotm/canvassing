@@ -23,7 +23,7 @@
             {% regroup object.get_domeciles by postcode as postcode_list %}
                 {% for postcode in postcode_list %}
                     <div class="large-4 columns">
-                    <p>{{ postcode.grouper }}</p>
+                    <h4>{{ postcode.grouper }}</h4>
                     {% for domecile in postcode.list %}
                         {{ domecile.get_address_only }}<br />
                     {% endfor %}
