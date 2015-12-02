@@ -96,6 +96,7 @@ class CanvassRunCreate(LeafletRunCreate):
 
 
 class CanvassRunBook(RedirectView):
+    permanent = False
     def get_redirect_url(self, *args, **kwargs):
         c = CanvassRun.objects.get(pk=self.kwargs['pk'])
         c.book(self.request.user)
@@ -104,6 +105,7 @@ class CanvassRunBook(RedirectView):
 
 
 class CanvassRunUnbook(RedirectView):
+    permanent = False
     def get_redirect_url(self, *args, **kwargs):
         c = CanvassRun.objects.get(pk=self.kwargs['pk'])
         c.unbook()
