@@ -14,21 +14,27 @@
 {% block content %}
     <div class="large-9 columns">
         {% block mainblock %}
-            <h2>Canvass Run: {{ object.name }}</h2>
+            {% block mainblock_header %}<h2>Canvass Run: {{ object.name }}</h2>{% endblock %}
             <h5>{{ object.count }} buildings, {{ object.count_people }} registered voters</h5>
             <h6>{{ object.notes }}</h6>
 
             <div id="map"></div>
             <div class="row">
-            {% regroup object.get_domeciles by postcode as postcode_list %}
-                {% for postcode in postcode_list %}
-                    <div class="large-4 columns">
-                    <h4>{{ postcode.grouper }}</h4>
-                    {% for domecile in postcode.list %}
-                        {{ domecile.get_address_only }}<br />
-                    {% endfor %}
-                    </div>
-                {% endfor %}
+            {% for line in object.get_domeciles_better %}
+                <div class="large-4 columns">
+                    <h4>{{ line.grouper }}</h4>
+                    <p>{{ line.description }}</p>
+                </div>
+            {% endfor %}
+{#            {% regroup object.get_domeciles by postcode as postcode_list %}#}
+{#                {% for postcode in postcode_list %}#}
+{#                    <div class="large-4 columns">#}
+{#                    <h4>{{ postcode.grouper }}</h4>#}
+{#                    {% for domecile in postcode.list %}#}
+{#                        {{ domecile.get_address_only }}<br />#}
+{#                    {% endfor %}#}
+{#                    </div>#}
+{#                {% endfor %}#}
             </div>
         {% endblock %}
     </div>

@@ -1,6 +1,11 @@
-{% extends "base.html" %}
-{% block content %}
-{% for domecile in object.get_domeciles %}
-    {{ domecile }}
-{% endfor %}
+{% extends "leafleting/canvassrun_detail.html" %}
+{% block breadcrumbs %}
+    <nav class="breadcrumbs">
+        <a href="{% url 'homepage' %}">Home</a>
+        <a href="{% url 'leaflet_homepage' %}">Leafleting</a>
+        <a class="current">{{ object.name }}</a>
+    </nav>
 {% endblock %}
+
+{% block mainblock_header %}<h2>Leaflet Run: {{ object.name }}</h2>{% endblock %}
+{% block sidepanel %}{% endblock %}

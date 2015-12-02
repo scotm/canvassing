@@ -10,7 +10,7 @@ from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 from sortedm2m.fields import SortedManyToManyField
 
-from core.utilities.domecile_comparisons import domecile_key
+from core.utilities.domecile_comparisons import domecile_key, domecile_list_to_string
 from core.models import Domecile, Contact, IntermediateZone, Ward, DataZone
 
 
@@ -28,6 +28,19 @@ class BaseRun(models.Model):
     class Meta:
         abstract = True
         ordering = ('-pk',)
+
+    def get_domeciles_better(self):
+        data = []
+
+        for postcode_point in self.postcode_points.all():
+            d = Domecile.objects.filter(postcode_point=postcode_point)
+            if not d:
+                continue
+            row = {}
+            row['grouper'] = d[0].postcode
+            row['description'] = domecile_list_to_string(d)[0]
+            data.append(row)
+        return data
 
     def get_domeciles(self):
         for postcode_point in self.postcode_points.all():
