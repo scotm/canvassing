@@ -21,7 +21,7 @@ class UserFilter(django_filters.ChoiceFilter):
     def field(self):
         qs = self.model._default_manager.distinct()
         qs = qs.order_by(self.name).values_list(self.name, flat=True)
-        self.extra['choices'] = [("", "All")] + [(o, users[o]) for o in qs]
+        self.extra['choices'] = [("", "All")] + [(o, users[o]) for o in users]
         return super(django_filters.ChoiceFilter, self).field
 
 
