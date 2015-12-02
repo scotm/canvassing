@@ -6,7 +6,8 @@ __author__ = 'scotm'
 from django.conf.urls import patterns, url
 
 from leafleting.views import LeafletRunCreate, CanvassRunCreate, LeafletHomepage, CanvassHomepage, RunDetailView, \
-    CanvassRunListView, LeafletRunListView, RunPicker, AreaPicker, PrintRunDetailView, CanvassRunDelete
+    CanvassRunListView, LeafletRunListView, RunPicker, AreaPicker, PrintRunDetailView, CanvassRunDelete, CanvassRunBook, \
+    CanvassRunUnbook
 from polling.views import QuestionaireListView, QuestionaireCreateView
 
 urlpatterns = patterns('',
@@ -26,6 +27,8 @@ urlpatterns = patterns('',
                        url(r'^canvassing/ward/(?P<pk>[0-9]+)', RunPicker.as_view(template_name='canvassing_picker.html', model=Ward), name='canvass_ward_view'),
                        url(r'^canvassing/ward/$', AreaPicker.as_view(template_name='canvassing_ward_picker.html', model=Ward), name='canvass_ward_list'),
                        url(r'^canvassing/run/print/(?P<pk>[0-9]+)$', PrintRunDetailView.as_view(model=CanvassRun), name='canvass_run_print'),
+                       url(r'^canvassing/run/unbook/(?P<pk>[0-9]+)$', CanvassRunUnbook.as_view(), name='canvass_run_unbook'),
+                       url(r'^canvassing/run/book/(?P<pk>[0-9]+)$', CanvassRunBook.as_view(), name='canvass_run_book'),
                        url(r'^canvassing/run/delete/(?P<pk>[0-9]+)$', CanvassRunDelete.as_view(), name='canvass_run_delete'),
                        url(r'^canvassing/run/(?P<pk>[0-9]+)$', RunDetailView.as_view(model=CanvassRun), name='canvass_run'),
                        url(r'^canvassing/list/', CanvassRunListView.as_view(), name='canvass_list'),

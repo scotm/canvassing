@@ -37,6 +37,14 @@
             <div class="panel">
                 <h3>Operations</h3>
                 <p>
+                {% if object.bookedcanvassrun %}
+                    This run was booked on: {{ object.bookedcanvassrun.booked_from }} by {{ object.bookedcanvassrun.booked_by }}.<br />
+                    <a href="{% url 'canvass_run_unbook' object.pk %}">Release this run</a>
+                {% else %}
+                    <a href="{% url 'canvass_run_book' object.pk %}">Book this run</a>
+                {% endif %}
+                </p>
+                <p>
                     <a href="{% url 'canvass_run_print' object.pk %}">
                         <img class='icon' src="{% static 'images/print.svg' %}" alt="Printer icon"/> Print this run
                     </a>

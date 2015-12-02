@@ -1,8 +1,10 @@
 # Create your views here.
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.views.generic import ListView, DetailView, TemplateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, TemplateView, UpdateView, DeleteView, RedirectView
+from django.contrib import messages
+
 import django_filters
 from django_filters.views import FilterView
 from braces.views import LoginRequiredMixin
@@ -91,6 +93,22 @@ class LeafletRunCreate(LoginRequiredMixin, JSONDataView):
 
 class CanvassRunCreate(LeafletRunCreate):
     model = CanvassRun
+
+
+class CanvassRunBook(RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        c = CanvassRun.objects.get(pk=self.kwargs['pk'])
+        c.book(self.request.user)
+        messages.add_message(self.request, messages.INFO, 'CanvassRun: %s booked' % (unicode(c)))
+        return reverse('canvass_list')
+
+
+class CanvassRunUnbook(RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        c = CanvassRun.objects.get(pk=self.kwargs['pk'])
+        c.unbook()
+        messages.add_message(self.request, messages.INFO, 'CanvassRun: %s released' % (unicode(c)))
+        return reverse('canvass_list')
 
 
 # TODO: Unusable
