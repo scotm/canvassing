@@ -58,7 +58,7 @@ class CanvassRunListView(LoginRequiredMixin, FilterView):
     model = CanvassRun
 
     def get_queryset(self):
-        return super(CanvassRunListView, self).get_queryset().select_related('created_by', 'ward')
+        return CanvassRun.get_unbooked_available_runs(user=self.request.user).select_related('created_by', 'ward', 'bookedcanvassrun')
 
 
 class CanvassRunDelete(LoginRequiredMixin, DeleteView):
@@ -119,17 +119,24 @@ class LeafletRunEdit(LoginRequiredMixin, UpdateView):
 
 
 class LeafletHomepage(LoginRequiredMixin, TemplateView):
+    runs_limit = 5
     run_klass = LeafletRun
     template_name = 'leafleting_homepage.html'
 
+    def get_runs(self):
+        return self.run_klass.objects.all()[:self.runs_limit]
+
     def get_context_data(self, **kwargs):
-        kwargs.update({'runs': self.run_klass.objects.all()[:5]})
+        kwargs.update({'runs': self.get_runs()})
         return super(LeafletHomepage, self).get_context_data(**kwargs)
 
 
 class CanvassHomepage(LeafletHomepage):
     run_klass = CanvassRun
     template_name = 'canvassing_homepage.html'
+
+    def get_runs(self):
+        return self.run_klass.get_unbooked_available_runs()[:self.runs_limit]
 
 
 class RunDetailView(LoginRequiredMixin, DetailView):
