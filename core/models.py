@@ -1,9 +1,13 @@
 # coding=utf-8
 from __future__ import print_function
+
+import json
 from collections import namedtuple
+
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Polygon
 from django.contrib.gis.utils import LayerMapping
+
 from core.utilities.functions import cast_as_int
 from postcode_locator.models import PostcodeMapping
 
@@ -50,9 +54,7 @@ class Domecile(models.Model):
         return self.get_address_only() + " " + self.postcode
 
     def get_address_only(self):
-        return ", ".join(getattr(self, x) for x in
-                         ["address_1", "address_2", "address_3", "address_4", "address_5", "address_6", "address_7",
-                          "address_8", "address_9"] if getattr(self, x))
+        return ", ".join(filter(bool, (getattr(self, "address_%d" % z) for z in range(1, 10))))
 
     def save(self, *args, **kwargs):
         self.postcode_point = PostcodeMapping.match_postcode(self.postcode, raise_exceptions=False)
@@ -67,10 +69,10 @@ class Domecile(models.Model):
         queryset = Domecile.objects.filter(postcode_point__point__contained=bounding_box)
         if query_type == 'leafleting':
             queryset = queryset.exclude(postcode_point__in=LeafletRun.objects.filter(
-                postcode_points__point__contained=bounding_box).values_list('postcode_points', flat=True))
+                    postcode_points__point__contained=bounding_box).values_list('postcode_points', flat=True))
         elif query_type == 'canvassing':
             queryset = queryset.exclude(postcode_point__in=CanvassRun.objects.filter(
-                postcode_points__point__contained=bounding_box).values_list('postcode_points', flat=True))
+                    postcode_points__point__contained=bounding_box).values_list('postcode_points', flat=True))
         if region:
             queryset = queryset.filter(postcode_point__point__within=region.geom)
         return queryset
@@ -93,7 +95,10 @@ class Domecile(models.Model):
         if len(addresses) < 2:
             return AddressInfo(prefix='', residue=addresses, suffix=addresses[0].number_info)
 
+        # Get all the common data from the front and back of the address list
         suffix, prefix = [], []
+
+        # While the last word is all the same, store it, and remove them.
         while all(x.number_info[-1] == addresses[0].number_info[-1] for x in addresses):
             suffix.insert(0, addresses[0].number_info[-1])
             for x in addresses:
@@ -104,6 +109,7 @@ class Domecile(models.Model):
             for x in addresses:
                 x.number_info.pop(0)
 
+        # Cast the numbers as integers, so it's consistent and easier to sort.
         for x in addresses:
             for index, y in enumerate(x.number_info):
                 x.number_info[index] = cast_as_int(y)
@@ -160,14 +166,13 @@ class Contact(models.Model):
 
 class GeomMixin(object):
     def get_simplified_geom_json(self, simplify_factor=0.00003):
-        import json
         geom = self.geom.simplify(simplify_factor)
         try:
             geom[0] = [(round(x, 6), round(y, 6)) for x, y in geom[0]]
         except:
             pass
         obj = json.loads(geom.json)
-        obj['properties'] = {'code':self.code}
+        obj['properties'] = {'code': self.code}
         return json.dumps(obj)
 
     def centre_point(self):
@@ -189,7 +194,7 @@ class Ward(GeomMixin, models.Model):
     objects = models.GeoManager()
 
     mapping = {'ward_code': 'WD14CD', 'ward_name': 'WD14NM', 'wd14nmw': 'WD14NMW', 'local_authority_code': 'LAD14CD',
-               'local_authority_name': 'LAD14NM', 'geom': 'MULTIPOLYGON', }
+               'local_authority_name': 'LAD14NM', 'geom': 'MULTIPOLYGON',}
 
     class Meta:
         ordering = ('local_authority_name', 'ward_name',)
@@ -239,7 +244,7 @@ class Region(GeomMixin, models.Model):
     mapping = {'name': 'NAME', 'area_code': 'AREA_CODE', 'description': 'DESCRIPTIO', 'file_name': 'FILE_NAME',
                'number': 'NUMBER', 'number0': 'NUMBER0', 'polygon_id': 'POLYGON_ID', 'unit_id': 'UNIT_ID',
                'code': 'CODE', 'hectares': 'HECTARES', 'area': 'AREA', 'type_code': 'TYPE_CODE',
-               'descript0': 'DESCRIPT0', 'type_cod0': 'TYPE_COD0', 'descript1': 'DESCRIPT1', 'geom': 'POLYGON', }
+               'descript0': 'DESCRIPT0', 'type_cod0': 'TYPE_COD0', 'descript1': 'DESCRIPT1', 'geom': 'POLYGON',}
 
     class Meta:
         ordering = ('description', 'name',)
