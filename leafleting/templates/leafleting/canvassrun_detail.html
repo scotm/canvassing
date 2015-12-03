@@ -20,21 +20,21 @@
 
             <div id="map"></div>
             <div class="row">
-            {% for line in object.get_domeciles_better %}
-                <div class="large-4 columns">
-                    <h4>{{ line.grouper }}</h4>
-                    <p>{{ line.description }}</p>
-                </div>
-            {% endfor %}
-{#            {% regroup object.get_domeciles by postcode as postcode_list %}#}
-{#                {% for postcode in postcode_list %}#}
-{#                    <div class="large-4 columns">#}
-{#                    <h4>{{ postcode.grouper }}</h4>#}
-{#                    {% for domecile in postcode.list %}#}
-{#                        {{ domecile.get_address_only }}<br />#}
-{#                    {% endfor %}#}
-{#                    </div>#}
-{#                {% endfor %}#}
+                {% for line in object.get_domeciles_better %}
+                    <div class="large-4 columns">
+                        <h4>{{ line.grouper }}</h4>
+                        <p>{{ line.description }}</p>
+                    </div>
+                {% endfor %}
+                {#            {% regroup object.get_domeciles by postcode as postcode_list %}#}
+                {#                {% for postcode in postcode_list %}#}
+                {#                    <div class="large-4 columns">#}
+                {#                    <h4>{{ postcode.grouper }}</h4>#}
+                {#                    {% for domecile in postcode.list %}#}
+                {#                        {{ domecile.get_address_only }}<br />#}
+                {#                    {% endfor %}#}
+                {#                    </div>#}
+                {#                {% endfor %}#}
             </div>
         {% endblock %}
     </div>
@@ -43,20 +43,25 @@
             <div class="panel">
                 <h3>Operations</h3>
                 <p>
-                {% if object.bookedcanvassrun %}
-                    This run was booked on: {{ object.bookedcanvassrun.booked_from }} by {{ object.bookedcanvassrun.booked_by }}.<br />
-                    <a href="{% url 'canvass_run_unbook' object.pk %}">Release this run</a>
-                {% else %}
-                    <a href="{% url 'canvass_run_book' object.pk %}">Book this run</a>
-                {% endif %}
+                    {% if object.bookedcanvassrun %}
+                        This run was booked on: {{ object.bookedcanvassrun.booked_from }} by
+                        {{ object.bookedcanvassrun.booked_by }}.<br/>
+                        <a href="{% url 'canvass_run_unbook' object.pk %}">Release this run</a>
+                    {% else %}
+                        <a href="{% url 'canvass_run_book' object.pk %}">Book this run</a>
+                    {% endif %}
                 </p>
                 <p>
                     <a href="{% url 'canvass_run_print' object.pk %}">
                         <img class='icon' src="{% static 'images/print.svg' %}" alt="Printer icon"/> Print this run
                     </a>
                 </p>
-                <p><a href="{% url 'canvass_run_delete' object.pk %}"><img class="icon" src="{% static 'images/delete.svg' %}" alt="Delete"/> Delete this
-                    run</a></p>
+                <p><a href="{% url 'canvass_run_delete' object.pk %}">
+                    <img class="icon" src="{% static 'images/delete.svg' %}" alt="Delete"/> Delete this run</a>
+                </p>
+                {% if object.bookedcanvassrun %}
+                    <p><img class="icon" src="{% static 'images/input_data.svg' %}" alt="computer icon"/> Input Data</p>
+                {% endif %}
             </div>
         {% endblock %}
     </div>
@@ -64,15 +69,15 @@
 {% block before_body_close %}
     <script>
 
-                accessToken = 'pk.eyJ1Ijoic2NvdG0iLCJhIjoiMGh1dWtYYyJ9.1DmL5VwbNVjbbH3thY2qAw';
-                var mapboxTiles = L.tileLayer('https://{s}.tiles.mapbox.com/v4/scotm.o5567l3e/{z}/{x}/{y}.png?access_token=' + accessToken, {
-                    attribution: '<a href="http://www.mapbox.com/about/maps/" target="_blank">Terms &amp; Feedback</a>'
-                });
+        accessToken = 'pk.eyJ1Ijoic2NvdG0iLCJhIjoiMGh1dWtYYyJ9.1DmL5VwbNVjbbH3thY2qAw';
+        var mapboxTiles = L.tileLayer('https://{s}.tiles.mapbox.com/v4/scotm.o5567l3e/{z}/{x}/{y}.png?access_token=' + accessToken, {
+            attribution: '<a href="http://www.mapbox.com/about/maps/" target="_blank">Terms &amp; Feedback</a>'
+        });
 
         L.Icon.Default.imagePath = '{% static "images" %}';
-//        var mapboxTiles = L.tileLayer('	http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg?', {
-//            attribution: '© OpenStreetMap contributors - <a href="http://www.opendatacommons.org/licenses/odbl">Terms</a>'
-//        });
+        //        var mapboxTiles = L.tileLayer('	http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg?', {
+        //            attribution: '© OpenStreetMap contributors - <a href="http://www.opendatacommons.org/licenses/odbl">Terms</a>'
+        //        });
         var geojson = L.geoJson({{ object.get_points_json | safe}}, {});
 
         var map = L.map('map').addLayer(mapboxTiles);

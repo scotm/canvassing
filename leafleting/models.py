@@ -96,6 +96,7 @@ class LeafletRun(BaseRun):
 class CanvassRun(BaseRun):
     url_name = 'canvass_run'
     date_available = models.DateField(null=True)
+    questionaire = models.ForeignKey('polling.CanvassQuestionaire', null=True)
 
     def book(self, user):
         BookedCanvassRun.objects.create(canvass_run=self, booked_by=user)
@@ -122,6 +123,10 @@ class BookedCanvassRun(models.Model):
     canvass_run = models.OneToOneField(CanvassRun)
     booked_by = models.ForeignKey(User)
     booked_from = models.DateField(auto_now=True)
+
+    @property
+    def booked_on(self):
+        return self.booked_from
 
     def __unicode__(self):
         return u"'%s' has been booked by user: %s" % (unicode(self.canvass_run), unicode(self.booked_by))

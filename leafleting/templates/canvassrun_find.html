@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load static %}
+{% block breadcrumbs %}
+    <nav class="breadcrumbs">
+        <a href="{% url 'homepage' %}">Home</a>
+        <a href="{% url 'canvass_homepage' %}">Canvassing</a>
+        <a class="current">Canvass Data Input</a>
+    </nav>
+{% endblock %}
+{% block content %}
+    <div class="small-12 columns">
+        {% if object_list %}
+            <h2>Find a canvass run to input.</h2>
+            <table>
+                <tr>
+                    <th>Run Name</th>
+                    <th>Booked on</th>
+                    <th></th>
+                </tr>
+                {% for run in object_list %}
+                    <tr>
+                        <td><a href="{{ run.get_absolute_url }}">{{ run }}</a></td>
+                        <td>{{ run.bookedcanvassrun.booked_on }}</td>
+                        <td><img src="{% static 'images/input_data.svg' %}" alt="computer icon"/> Input Data</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <h2>No Runs Found</h2>
+            <p>You have booked no runs, yet. Book a canvass run <a href="{% url 'canvass_list' %}">from here</a>.</p>
+        {% endif %}
+    </div>
+{% endblock %}
+{% block credits %}"Input Data" icon created by Creative Stall from the Noun Project{% endblock %}

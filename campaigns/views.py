@@ -41,12 +41,12 @@ class CanvassDataInput(DetailView):
         return super(CanvassDataInput, self).get_context_data(**kwargs)
 
 
-class CanvassRunFind(LoginRequiredMixin, FilterView):
-    template_name = 'canvassrun_find.html'
-
-    def get_context_data(self, **kwargs):
-        kwargs.update({'user_runs': CanvassRun.objects.filter(booked_by=self.request.user)})
-        return super(CanvassRunFind, self).get_context_data(**kwargs)
+# class CanvassRunFind(LoginRequiredMixin, FilterView):
+#     template_name = 'canvassrun_find.html'
+#
+#     def get_context_data(self, **kwargs):
+#         kwargs.update({'user_runs': CanvassRun.objects.filter(booked_by=self.request.user)})
+#         return super(CanvassRunFind, self).get_context_data(**kwargs)
 
 
 class SignPetition(LoginRequiredMixin, JSONDataView):
