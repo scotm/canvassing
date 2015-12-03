@@ -157,3 +157,11 @@ class AreaPicker(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return super(AreaPicker, self).get_queryset().filter(active=True)
+
+
+class UserCanvassRunFind(LoginRequiredMixin, ListView):
+    model = CanvassRun
+    template_name = 'canvassrun_find.html'
+
+    def get_queryset(self):
+        return super(UserCanvassRunFind,self).get_queryset().filter(bookedcanvassrun__booked_by=self.request.user)

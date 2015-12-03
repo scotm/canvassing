@@ -7,7 +7,7 @@ from django.conf.urls import patterns, url
 
 from leafleting.views import LeafletRunCreate, CanvassRunCreate, LeafletHomepage, CanvassHomepage, RunDetailView, \
     CanvassRunListView, LeafletRunListView, RunPicker, AreaPicker, PrintRunDetailView, CanvassRunDelete, CanvassRunBook, \
-    CanvassRunUnbook
+    CanvassRunUnbook, UserCanvassRunFind
 from polling.views import QuestionaireListView, QuestionaireCreateView
 
 urlpatterns = patterns('',
@@ -31,6 +31,8 @@ urlpatterns = patterns('',
                        url(r'^canvassing/run/book/(?P<pk>[0-9]+)$', CanvassRunBook.as_view(), name='canvass_run_book'),
                        url(r'^canvassing/run/delete/(?P<pk>[0-9]+)$', CanvassRunDelete.as_view(), name='canvass_run_delete'),
                        url(r'^canvassing/run/(?P<pk>[0-9]+)$', RunDetailView.as_view(model=CanvassRun), name='canvass_run'),
+
+                       url(r'^canvassing/booked/$', UserCanvassRunFind.as_view(), name='booked_lists'),
                        url(r'^canvassing/list/', CanvassRunListView.as_view(), name='canvass_list'),
                        url(r'^canvassing/questionaires/create/', QuestionaireCreateView.as_view(), name='questionaire_list'),
                        url(r'^canvassing/questionaires/', QuestionaireListView.as_view(), name='questionaire_list'),
