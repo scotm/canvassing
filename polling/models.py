@@ -6,6 +6,7 @@ from core.models import Contact
 
 
 class CanvassQuestion(models.Model):
+    short_name = models.CharField(max_length=255)
     polling_question = models.CharField(max_length=200)
     type = models.CharField(max_length=20, choices=(
         ('True/False', 'binary'), ('Multiple-choice', 'choice'), ('Range', 'range'), ('Detailed Answer', 'answer')),

@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django import forms
-
 from polling.models import CanvassQuestion, CanvassChoicesAvailable, CanvassQuestionaire
 
 
@@ -22,6 +21,10 @@ class CanvassChoicesAdmin(admin.ModelAdmin):
     form = CanvassChoicesAdminForm
 
 
-admin.site.register(CanvassQuestion)
+class CanvassQuestionAdmin(admin.ModelAdmin):
+    list_display = ('short_name', 'polling_question')
+
+
+admin.site.register(CanvassQuestion, CanvassQuestionAdmin)
 admin.site.register(CanvassChoicesAvailable, CanvassChoicesAdmin)
 admin.site.register(CanvassQuestionaire)
