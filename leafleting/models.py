@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+from collections import namedtuple
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -13,6 +14,7 @@ from sortedm2m.fields import SortedManyToManyField
 from core.utilities.domecile_comparisons import domecile_key, domecile_list_to_string
 from core.models import Domecile, Contact, IntermediateZone, Ward, DataZone
 
+DomecilesDescriptor = namedtuple('DomecilesDescriptor', ['grouper', 'description'])
 
 class BaseRun(models.Model):
     name = models.CharField(max_length=100)
@@ -31,15 +33,10 @@ class BaseRun(models.Model):
 
     def get_domeciles_better(self):
         data = []
-
         for postcode_point in self.postcode_points.all():
             d = Domecile.objects.filter(postcode_point=postcode_point)
-            if not d:
-                continue
-            row = {}
-            row['grouper'] = d[0].postcode
-            row['description'] = domecile_list_to_string(d)[0]
-            data.append(row)
+            if d:
+                data.append(DomecilesDescriptor(grouper=d[0].postcode, description=domecile_list_to_string(d)[0]))
         return data
 
     def get_domeciles(self):
