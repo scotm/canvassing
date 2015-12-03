@@ -89,9 +89,9 @@ class Domecile(models.Model):
     def get_main_address(postcode):
         p = PostcodeMapping.match_postcode(postcode)
         queryset = Domecile.objects.filter(postcode_point=p)
-        addresses = [Residue(number_info=" ".join([getattr(domecile, "address_%d" % x) for x in range(1, 10) if
-                                                   getattr(domecile, "address_%d" % x)]).split(), domecile=domecile)
-                     for domecile in queryset]
+        addresses = [Residue(
+            number_info=" ".join([y for y in [getattr(domecile, "address_%d" % x) for x in range(1, 10)] if y]).split(),
+            domecile=domecile) for domecile in queryset]
         if len(addresses) < 2:
             return AddressInfo(prefix='', residue=addresses, suffix=addresses[0].number_info)
 
@@ -166,6 +166,7 @@ class Contact(models.Model):
 
 class GeomMixin(object):
     def get_simplified_geom_json(self, simplify_factor=0.00003):
+        import json
         geom = self.geom.simplify(simplify_factor)
         try:
             geom[0] = [(round(x, 6), round(y, 6)) for x, y in geom[0]]
