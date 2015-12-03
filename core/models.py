@@ -22,6 +22,7 @@ class PoliticalParty(models.Model):
     def __unicode__(self):
         return self.name
 
+
 class ElectoralRegistrationOffice(models.Model):
     name = models.CharField(max_length=100, unique=True)
     short_name = models.CharField(max_length=20)
@@ -51,9 +52,12 @@ class Domecile(models.Model):
     postcode_point = models.ForeignKey(PostcodeMapping, null=True)
 
     def __unicode__(self):
+        return self.get_address_only() + " " + self.postcode
+
+    def get_address_only(self):
         return ", ".join(getattr(self, x) for x in
                          ["address_1", "address_2", "address_3", "address_4", "address_5", "address_6", "address_7",
-                          "address_8", "address_9", "postcode"] if getattr(self, x))
+                          "address_8", "address_9"] if getattr(self, x))
 
     def save(self, *args, **kwargs):
         self.postcode_point = PostcodeMapping.match_postcode(self.postcode, raise_exceptions=False)
@@ -86,10 +90,11 @@ class Domecile(models.Model):
 
     @staticmethod
     def get_main_address(postcode):
-        queryset = Domecile.objects.filter(postcode=postcode)
-        addresses = [Residue(number_info=" ".join([getattr(domecile, "address_%d" % x) for x in range(1, 10) if
-                                                   getattr(domecile, "address_%d" % x)]).split(), domecile=domecile)
-                     for domecile in queryset]
+        p = PostcodeMapping.match_postcode(postcode)
+        queryset = Domecile.objects.filter(postcode_point=p)
+        addresses = [Residue(
+            number_info=" ".join([y for y in [getattr(domecile, "address_%d" % x) for x in range(1, 10)] if y]).split(),
+            domecile=domecile) for domecile in queryset]
         if len(addresses) < 2:
             return AddressInfo(prefix='', residue=addresses, suffix=addresses[0].number_info)
 
@@ -118,6 +123,7 @@ class Domecile(models.Model):
 
     def get_contacts(self):
         return self.contact_set.all()
+
 
 class Contact(models.Model):
     pd = models.CharField(max_length=6, db_index=True)
@@ -149,22 +155,24 @@ class Contact(models.Model):
                 ['address_1', 'address_2', 'address_3', 'address_4', 'address_5', 'address_6', 'address_7', 'address_8',
                  'address_9', ] if getattr(self.domecile, x)]
 
-    def has_signed(self,campaign=None):
+    def has_signed(self, campaign=None):
         from campaigns.models import Campaign, Signature
         if not campaign:
             campaign = Campaign.get_latest_top_level_campaign()
-        return Signature.objects.filter(contact=self,campaign=campaign).exists()
+        return Signature.objects.filter(contact=self, campaign=campaign).exists()
 
 
 class GeomMixin(object):
-
     def get_simplified_geom_json(self, simplify_factor=0.00003):
+        import json
         geom = self.geom.simplify(simplify_factor)
         try:
-            geom[0] = [(round(x,6),round(y,6)) for x,y in geom[0]]
+            geom[0] = [(round(x, 6), round(y, 6)) for x, y in geom[0]]
         except:
             pass
-        return geom.json
+        obj = json.loads(geom.json)
+        obj['properties'] = {'code':self.code}
+        return json.dumps(obj)
 
     def centre_point(self):
         centroid = self.geom.centroid
@@ -196,6 +204,10 @@ class Ward(GeomMixin, models.Model):
     @property
     def name(self):
         return self.ward_name
+
+    @property
+    def code(self):
+        return self.ward_code
 
     @staticmethod
     def fill_up_db(shapefile, verbose=False):
@@ -252,6 +264,8 @@ class Region(GeomMixin, models.Model):
     @staticmethod
     def clean_up(DEBUG=False):
         import gc
+        from random import shuffle
+
         # We're only interested in Scottish constituencies - so delete the rest - their code begins with an "S".
         Region.objects.exclude(code__startswith="S").delete()
 
@@ -274,7 +288,7 @@ class Region(GeomMixin, models.Model):
         keep_separate = highlands.pop(0)  # This one is huge, and will slow down processing. Unify it at the end.
         shuffle(highlands)
 
-        # Process pairs of geometry, join them together and repeat.
+        # Process pairs of geometry, join them together and repeat until there's one left.
         while True:
             if DEBUG == True:
                 print(len(highlands))
@@ -308,6 +322,7 @@ class Region(GeomMixin, models.Model):
         # Nuke the residue - We've already got a decent geom of it.
         Region.objects.filter(name='Highlands and Islands').delete()
 
+
 class IntermediateZone(GeomMixin, models.Model):
     name = models.CharField(max_length=60)
     code = models.CharField(max_length=12)
@@ -318,14 +333,14 @@ class IntermediateZone(GeomMixin, models.Model):
     active = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ('local_authority_name', 'name', )
+        ordering = ('local_authority_name', 'name',)
 
     mapping = {
-        'code' : 'IZ_CODE',
-        'name' : 'IZ_NAME',
-        'council_are' : 'CouncilAre',
-        'local_authority_name' : 'NRSCouncil',
-        'geom' : 'MULTIPOLYGON',
+        'code': 'IZ_CODE',
+        'name': 'IZ_NAME',
+        'council_are': 'CouncilAre',
+        'local_authority_name': 'NRSCouncil',
+        'geom': 'MULTIPOLYGON',
     }
 
     def __unicode__(self):
@@ -336,6 +351,7 @@ class IntermediateZone(GeomMixin, models.Model):
         lm = LayerMapping(IntermediateZone, shapefile, IntermediateZone.mapping, transform=True, encoding='iso-8859-1')
         lm.save(strict=True, verbose=verbose)
         print("Regions imported")
+
 
 class DataZone(models.Model):
     code = models.CharField(max_length=12)
@@ -350,14 +366,14 @@ class DataZone(models.Model):
 
     # Auto-generated `LayerMapping` dictionary for DataZone model
     mapping = {
-        'code' : 'DZ_CODE',
-        'name' : 'DZ_NAME',
-        'gaelic' : 'DZ_GAELIC',
-        'council_are' : 'CouncilAre',
-        'intermedia' : 'Intermedia',
-        'councila_2' : 'CouncilA_2',
-        'nrscouncil' : 'NRSCouncil',
-        'geom' : 'MULTIPOLYGON',
+        'code': 'DZ_CODE',
+        'name': 'DZ_NAME',
+        'gaelic': 'DZ_GAELIC',
+        'council_are': 'CouncilAre',
+        'intermedia': 'Intermedia',
+        'councila_2': 'CouncilA_2',
+        'nrscouncil': 'NRSCouncil',
+        'geom': 'MULTIPOLYGON',
     }
 
     def __unicode__(self):
@@ -384,7 +400,7 @@ class DataZoneSIMDInfo(models.Model):
     datazone = models.OneToOneField(DataZone, related_name='info', db_index=True)
     population = models.IntegerField(blank=True, null=True)
     working_age_population = models.IntegerField(blank=True, null=True)
-    simd_score = models.DecimalField(max_digits=10, decimal_places=2,blank=True, null=True)
+    simd_score = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     simd_rank = models.IntegerField(blank=True, null=True, db_index=True)
     income_deprived_percent = models.FloatField(blank=True, null=True)
     income_deprived_persons = models.IntegerField(blank=True, null=True)
