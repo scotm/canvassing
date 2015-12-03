@@ -1,6 +1,5 @@
 # coding=utf-8
 from __future__ import print_function
-
 from collections import namedtuple
 from random import shuffle
 
@@ -119,6 +118,7 @@ class Domecile(models.Model):
 
     @staticmethod
     def get_summary_of_postcode(postcode):
+        from core.utilities.domecile_comparisons import domecile_list_to_string
         return domecile_list_to_string(Domecile.objects.filter(postcode=postcode))
 
     def get_contacts(self):
@@ -264,7 +264,6 @@ class Region(GeomMixin, models.Model):
     @staticmethod
     def clean_up(DEBUG=False):
         import gc
-        from random import shuffle
 
         # We're only interested in Scottish constituencies - so delete the rest - their code begins with an "S".
         Region.objects.exclude(code__startswith="S").delete()

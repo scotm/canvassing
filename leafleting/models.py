@@ -3,10 +3,12 @@ from django.conf import settings
 from django.contrib.gis.geos import MultiPoint
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models.signals import m2m_changed
+from django.dispatch import receiver
+
 from sortedm2m.fields import SortedManyToManyField
 
 from core.utilities.domecile_comparisons import domecile_key
-
 from core.models import Domecile, Contact, IntermediateZone, Ward, DataZone
 
 
@@ -60,23 +62,16 @@ class BaseRun(models.Model):
     def get_datazone(self):
         return DataZone.objects.filter(geom__contains=self.get_points().centroid).first()
 
-def baserun_post_save(sender, instance, created, *args, **kwargs):
-    if isinstance(sender, BaseRun) and created == True:
-        instance.intermediate_zone = instance.get_zone()
-        instance.datazone = instance.datazone()
-        instance.ward = instance.get_ward()
-        instance.save()
 
+@receiver(m2m_changed)
 def post_save_m2m_baserun(sender, instance, action, reverse, *args, **kwargs):
-    if isinstance(instance, BaseRun):
+    if isinstance(instance, BaseRun) and instance.postcode_points.all():
+        instance.intermediate_zone = instance.get_zone()
+        instance.datazone = instance.get_datazone()
+        instance.ward = instance.get_ward()
         instance.count = instance.calc_count()
         instance.count_people = instance.calc_count_people()
         instance.save()
-
-
-from django.db.models.signals import post_save, m2m_changed
-post_save.connect(baserun_post_save)
-m2m_changed.connect(post_save_m2m_baserun)
 
 
 class LeafletRun(BaseRun):

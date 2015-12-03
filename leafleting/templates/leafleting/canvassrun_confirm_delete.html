@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Delete Run: {{ object }}{% endblock %}
+{% block content %}
+    <div class="large-12 columns" role="content">
+        {% block main_header %}
+            <h1>Delete: {{ object}}</h1>
+        {% endblock %}
+        {% block summary %}<h3>Are you sure you want to delete the canvass run "{{ object }}"?</h3>{% endblock %}
+
+        <form action="" method="post">{% csrf_token %}
+            <button type="submit" name="delete">
+                Confirm
+            </button>
+        </form>
+    </div>
+{% endblock %}

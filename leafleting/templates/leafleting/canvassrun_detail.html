@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load static %}
-{% block header %}{% endblock %}
 {% block extrahead %}
     <link rel="stylesheet" href="{% static 'leaflet.css' %}"/>
     <style>
@@ -14,73 +13,62 @@
     }
     </style>
 {% endblock %}
-{% block page_title %}{{ block.super }}{{ object.name }}{% endblock %}
-{% block breadcrumbs %}{% endblock %}
+{% block breadcrumbs %}
+    <nav class="breadcrumbs">
+        <a href="{% url 'homepage' %}">Home</a>
+        <a href="{% url 'canvass_homepage' %}">Canvassing</a>
+        <a class="current">{{ object.name }}</a>
+    </nav>
+{% endblock %}
+{% block page_title %}{{ block.super }} {{ object.name }}{% endblock %}
 {% block content %}
-    <div class="large-12 columns">
-        <h3>{{ object.name }}</h3>
-        {% if object.notes %}
-        <p><em>{{ object.notes }}</em></p>
-        {% endif %}
+    <div class="large-9 columns">
+        {% block mainblock %}
+            <h2>Canvass Run: {{ object.name }}</h2>
+            <h5>{{ object.count }} buildings, {{ object.count_people }} registered voters</h5>
+            <h6>{{ object.notes }}</h6>
 
-        <p><strong>Question 1</strong>: What are the most important issues facing you and your family today?<br/>
-            <strong>Question 2</strong>: Thinking about the upcoming council by-election, which candidate or party most
-            agrees with you?<br/>
-            <strong>Question 3</strong>: Which party will you support with your list vote in the 2016 Scottish
-            Parliament election? (give list of parties)<br/>
-            <strong>Response</strong> - <em>M</em>: Moved, <em>B</em>: Too busy, <em>U</em>: unavailable, <em>N</em>:
-            Not interested, <em>D</em>: Do Not Contact, <em>X</em>: Deceased</p>
-        <div id="map"></div>
-        {% for domecile in object.get_domeciles %}
-            <div class="domecile">
-                <div class="row">
-                    <div class="large-12 columns">
-                        <h5>{{ domecile }}</h5>
+            <div id="map"></div>
+            <div class="row">
+            {% regroup object.get_domeciles by postcode as postcode_list %}
+                {% for postcode in postcode_list %}
+                    <div class="large-4 columns">
+                    <p>{{ postcode.grouper }}</p>
+                    {% for domecile in postcode.list %}
+                        {{ domecile.get_address_only }}<br />
+                    {% endfor %}
                     </div>
-                </div>
-                {% for contact in domecile.get_contacts %}
-                    <div class="contact">
-                        <div class="row">
-                            <div class="large-2 columns">
-                                <strong>{{ contact }}</strong>
-                            </div>
-                            <div class="large-4 columns">
-                                Q1. <img src="{% static 'images/answerbox-small.svg' %}"/>
-                            </div>
-                            <div class="large-2 columns">
-                                Q2. <img src="{% static 'images/answerbox-small.svg' %}"/>
-                            </div>
-                            <div class="large-2 columns">
-                                Q3. <img src="{% static 'images/answerbox-small.svg' %}"/>
-                            </div>
-                            <div class="large-2 columns">
-                                Response. <img src="{% static 'images/checkbox.svg' %}"/>
-                            </div>
-                        </div>
-                    </div>
-                    {% if not forloop.last %}
-
-                    {% endif %}
-
                 {% endfor %}
             </div>
-        {% endfor %}
-
+        {% endblock %}
+    </div>
+    <div class="large-3 columns">
+        {% block sidepanel %}
+            <div class="panel">
+                <h3>Operations</h3>
+                <p>
+                    <a href="{% url 'canvass_run_print' object.pk %}">
+                        <img class='icon' src="{% static 'images/print.svg' %}" alt="Printer icon"/> Print this run
+                    </a>
+                </p>
+                <p><a href="{% url 'canvass_run_delete' object.pk %}"><img class="icon" src="{% static 'images/delete.svg' %}" alt="Delete"/> Delete this
+                    run</a></p>
+            </div>
+        {% endblock %}
     </div>
 {% endblock %}
-{% block footer %}{% endblock %}
 {% block before_body_close %}
     <script>
 
-        {#        accessToken = 'pk.eyJ1Ijoic2NvdG0iLCJhIjoiMGh1dWtYYyJ9.1DmL5VwbNVjbbH3thY2qAw';#}
-        {#        var mapboxTiles = L.tileLayer('https://{s}.tiles.mapbox.com/v4/scotm.lad5iljo/{z}/{x}/{y}.png?access_token=' + accessToken, {#}
-        {#            attribution: '<a href="http://www.mapbox.com/about/maps/" target="_blank">Terms &amp; Feedback</a>'#}
-        {#        });#}
+                accessToken = 'pk.eyJ1Ijoic2NvdG0iLCJhIjoiMGh1dWtYYyJ9.1DmL5VwbNVjbbH3thY2qAw';
+                var mapboxTiles = L.tileLayer('https://{s}.tiles.mapbox.com/v4/scotm.o5567l3e/{z}/{x}/{y}.png?access_token=' + accessToken, {
+                    attribution: '<a href="http://www.mapbox.com/about/maps/" target="_blank">Terms &amp; Feedback</a>'
+                });
 
         L.Icon.Default.imagePath = '{% static "images" %}';
-        var mapboxTiles = L.tileLayer('	http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg?', {
-            attribution: '© OpenStreetMap contributors - <a href="http://www.opendatacommons.org/licenses/odbl">Terms</a>'
-        });
+//        var mapboxTiles = L.tileLayer('	http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg?', {
+//            attribution: '© OpenStreetMap contributors - <a href="http://www.opendatacommons.org/licenses/odbl">Terms</a>'
+//        });
         var geojson = L.geoJson({{ object.get_points_json | safe}}, {});
 
         var map = L.map('map').addLayer(mapboxTiles);
@@ -88,6 +76,5 @@
         geojson.addTo(map);
 
         map.fitBounds(geojson);
-        map.setZoom(map.getZoom()-1);
     </script>
 {% endblock %}
