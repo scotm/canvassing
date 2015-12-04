@@ -12,14 +12,13 @@
         {% if object.notes %}
         <p><em>{{ object.notes }}</em></p>
         {% endif %}
-
-        <p><strong>Question 1</strong>: What are the most important issues facing you and your family today?<br/>
-            <strong>Question 2</strong>: Thinking about the upcoming council by-election, which candidate or party most
-            agrees with you?<br/>
-            <strong>Question 3</strong>: Which party will you support with your list vote in the 2016 Scottish
-            Parliament election? (give list of parties)<br/>
+        <p>
+            {% for question in object.questionaire.questions.all %}
+                <strong>Question {{ forloop.counter }}</strong>: {{ question.polling_question }}{% if question.type == 'Multiple-choice' %} ({{ question.choices }}){% endif %}<br/>
+            {% endfor %}
             <strong>Response</strong> - <em>M</em>: Moved, <em>B</em>: Too busy, <em>U</em>: unavailable, <em>N</em>:
-            Not interested, <em>D</em>: Do Not Contact, <em>X</em>: Deceased</p>
+            Not interested, <em>D</em>: Do Not Contact, <em>X</em>: Deceased
+        </p>
         <div id="map"></div>
         {% for domecile in object.get_domeciles %}
             <div class="domecile">
@@ -34,15 +33,11 @@
                             <div class="large-2 columns">
                                 <strong>{{ contact }}</strong>
                             </div>
-                            <div class="large-4 columns">
-                                Q1.
+                            {% for question in object.questionaire.questions.all %}
+                            <div class="large-{% if question.type == 'Detailed Answer' %}4{% else %}2{% endif%} columns">
+                                Q{{ forloop.counter }}. {% if question.type != 'Detailed Answer' %}<img src="{% static 'images/answerbox-small.svg' %}"/>{% endif %}
                             </div>
-                            <div class="large-2 columns">
-                                Q2. <img src="{% static 'images/answerbox-small.svg' %}"/>
-                            </div>
-                            <div class="large-2 columns">
-                                Q3. <img src="{% static 'images/answerbox-small.svg' %}"/>
-                            </div>
+                            {% endfor %}
                             <div class="large-2 columns">
                                 Response. <img src="{% static 'images/checkbox.svg' %}"/>
                             </div>
@@ -73,7 +68,7 @@
         });
         var geojson = L.geoJson({{ object.get_points_json | safe}}, {});
 
-        var map = L.map('map').addLayer(mapboxTiles);
+        var map = L.map('map',{'dragging':false}).addLayer(mapboxTiles);
 
         geojson.addTo(map);
 

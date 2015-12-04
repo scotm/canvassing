@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block page_title %}{{ block.super }}: Cereate Questionaire{% endblock %}
+{% block content %}
+    <div class="large-12 columns">
+        <h1>Create Questionaire</h1>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Create"/>
+        </form>
+
+    </div>
+
+{% endblock %}

@@ -6,6 +6,7 @@ from core.models import Contact
 
 
 class CanvassQuestion(models.Model):
+    short_name = models.CharField(max_length=255)
     polling_question = models.CharField(max_length=200)
     type = models.CharField(max_length=20, choices=(
         ('True/False', 'binary'), ('Multiple-choice', 'choice'), ('Range', 'range'), ('Detailed Answer', 'answer')),
@@ -13,6 +14,10 @@ class CanvassQuestion(models.Model):
 
     def __unicode__(self):
         return self.polling_question
+
+    def choices(self):
+        if self.type == 'Multiple-choice':
+            return ", ".join(x.option for x in self.canvasschoicesavailable_set.all())
 
 
 # Is it a multiple-choice question? If so, what choices do we have for this question?
@@ -58,6 +63,9 @@ class CanvassParty(CanvassResponse):
 class CanvassQuestionaire(models.Model):
     campaign = models.ForeignKey(Campaign)
     questions = SortedManyToManyField(CanvassQuestion)
+
+    def __unicode__(self):
+        return ", ".join(unicode(x.short_name) for x in self.questions.all())
 
 
 class Conversation(models.Model):

@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 {% block page_title %}{{ block.super }} Signature Input{% endblock %}
+{% block breadcrumbs %}
+    <nav class="breadcrumbs">
+        <a href="{% url 'homepage' %}">Home</a>
+        <a class="current">Signatures</a>
+    </nav>
+{% endblock %}
 {% block content %}
     <div class="large-12 columns">
         <h2>Petition Data Entry</h2>

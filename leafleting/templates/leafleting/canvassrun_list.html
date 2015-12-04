@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block page_title %}{{block.super}} Choose Canvass Run{% endblock %}
 {% block breadcrumbs %}
     <nav class="breadcrumbs">
@@ -15,6 +16,7 @@
         <table>
             <tr>
                 {% block table_header %}
+                    <th>Booked</th>
                     <th>{{ filter.form.name.errors }}
             <label for="{{ filter.form.name.id_for_label }}">{{ filter.form.name.label }}:</label>
             {{ filter.form.name }}</th>
@@ -34,6 +36,7 @@
             {% for object in object_list %}
                 <tr>
                     {% block line %}
+                        <td>{% if object.bookedcanvassrun %}<img src="{% static 'images/booked_optimised.svg' %}" alt="booked" />{% endif %}</td>
                         <td><a href="{% url 'canvass_run' object.pk %}">{{ object }}</a></td>
                         <td>{{ object.count_people }}</td>
                         <td>{{ object.ward.local_authority_name }}</td>
@@ -47,3 +50,5 @@
 
     </div>
 {% endblock %}
+
+{% block credits %}Notepad by Stanislav Levin from the Noun Project{% endblock %}

@@ -105,6 +105,7 @@
     {% endblock %}
 </div>
 {% block footer %}{% include "footer.html" %}{% endblock %}
+<div class="row"><div class="large-12 columns"><span style="font-style: italic;">{% block credits %}{% endblock %}</span></div></div>
 <script src="{% static "js/production.min.js" %}"></script>
 <script>
     $(document).foundation();

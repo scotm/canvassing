@@ -1,16 +1,20 @@
-from django.conf import settings
+from datetime import date, timedelta
+from collections import namedtuple
 
+from django.conf import settings
+from django.contrib.auth.models import User
 from django.contrib.gis.geos import MultiPoint
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
-
 from sortedm2m.fields import SortedManyToManyField
 
-from core.utilities.domecile_comparisons import domecile_key
+from core.utilities.domecile_comparisons import domecile_key, domecile_list_to_string
 from core.models import Domecile, Contact, IntermediateZone, Ward, DataZone
 
+DomecilesDescriptor = namedtuple('DomecilesDescriptor', ['grouper', 'description'])
 
 class BaseRun(models.Model):
     name = models.CharField(max_length=100)
@@ -27,11 +31,19 @@ class BaseRun(models.Model):
         abstract = True
         ordering = ('-pk',)
 
+    def get_domeciles_better(self):
+        data = []
+        for postcode_point in self.postcode_points.all():
+            d = Domecile.objects.filter(postcode_point=postcode_point)
+            if d:
+                data.append(DomecilesDescriptor(grouper=d[0].postcode, description=domecile_list_to_string(d)[0]))
+        return data
+
     def get_domeciles(self):
         for postcode_point in self.postcode_points.all():
             list_of_domeciles = sorted(
-                Domecile.objects.filter(postcode_point=postcode_point).prefetch_related('contact_set'),
-                key=domecile_key)
+                    Domecile.objects.filter(postcode_point=postcode_point).prefetch_related('contact_set'),
+                    key=domecile_key)
             for domecile in list_of_domeciles:
                 yield domecile
 
@@ -80,3 +92,38 @@ class LeafletRun(BaseRun):
 
 class CanvassRun(BaseRun):
     url_name = 'canvass_run'
+    date_available = models.DateField(null=True)
+    questionaire = models.ForeignKey('polling.CanvassQuestionaire', null=True)
+
+    def book(self, user):
+        BookedCanvassRun.objects.create(canvass_run=self, booked_by=user)
+
+    def unbook(self):
+        BookedCanvassRun.objects.get(canvass_run=self).delete()
+
+    @staticmethod
+    def get_unbooked_available_runs(user=None):
+        # Get those that are available, and have not yet been booked
+        booked = Q(bookedcanvassrun__isnull=True)
+        if user:
+            booked = booked | Q(bookedcanvassrun__booked_by=user)
+        return CanvassRun.objects.filter(Q(date_available__isnull=True) | Q(date_available__gte=date.today()), booked)
+
+    def archive(self, days=180):
+        # By default, make this run available in six months time.
+        self.unbook()
+        self.date_available = date.today() + timedelta(days=days)
+        self.save()
+
+
+class BookedCanvassRun(models.Model):
+    canvass_run = models.OneToOneField(CanvassRun)
+    booked_by = models.ForeignKey(User)
+    booked_from = models.DateField(auto_now=True)
+
+    @property
+    def booked_on(self):
+        return self.booked_from
+
+    def __unicode__(self):
+        return u"'%s' has been booked by user: %s" % (unicode(self.canvass_run), unicode(self.booked_by))
