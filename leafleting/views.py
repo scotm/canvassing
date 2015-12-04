@@ -2,7 +2,8 @@
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.views.generic import ListView, DetailView, TemplateView, UpdateView, DeleteView, RedirectView
+from django.http import HttpResponse
+from django.views.generic import ListView, DetailView, TemplateView, UpdateView, DeleteView, RedirectView, View
 from django.contrib import messages
 import django_filters
 from django_filters.views import FilterView
@@ -187,3 +188,8 @@ class UserCanvassRunFind(LoginRequiredMixin, ListView):
 class DataInput(PrintRunDetailView):
     model = CanvassRun
     template_name = 'data_input.html'
+
+def data_input_json_acceptor(request):
+    print request
+    print request.POST
+    return HttpResponse()

@@ -13,10 +13,12 @@
         <h1>Data Entry for {{ object }}</h1>
         <h3>Questions</h3>
         {% for question in object.questionaire.questions.all %}
-            <strong>Question {{ forloop.counter }}</strong>: {{ question.polling_question }}{% if question.type == 'Multiple-choice' %} ({{ question.choices }}){% endif %}<br/>
+            <strong>Question {{ forloop.counter }}</strong>:
+            {{ question.polling_question }}{% if question.type == 'Multiple-choice' %} ({{ question.choices }})
+            {% endif %}<br/>
         {% endfor %}
         <h3>Contacts</h3>
-        <form>
+        <form id="data">
             {% for domecile in object.get_domeciles %}
                 <strong>{{ domecile }}</strong>
                 {% for contact in domecile.get_contacts %}
@@ -42,38 +44,39 @@
                         </div>
 
                         {% for question in object.questionaire.questions.all %}
-                        <div class="medium-3 columns">
-                            <label>{{ question.short_name }}:
-                            {% if question.type == 'True/False' or question.type == 'Multiple-choice' or question.type == 'Range' %}
+                            <div class="medium-3 columns">
+                                <label>{{ question.short_name }}:
+                                    {% if question.type == 'True/False' or question.type == 'Multiple-choice' or question.type == 'Range' %}
 
-                                <select disabled="disabled" name="{{ contact.pk }}_question_{{ question.pk }}">
-                                    <option value="">-------</option>
-                                    {% if question.type == 'True/False' %}
-                                        <option value="True">True</option>
-                                        <option value="False">False</option>
-                                    {% elif question.type == 'Multiple-choice' %}
-                                        {% for choice in question.choices_objects %}
-                                            <option value="{{ choice.pk }}">{{ choice.option }}</option>
-                                        {% endfor %}
-                                    {% elif question.type == 'Range' %}
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                        <option value="6">6</option>
-                                        <option value="7">7</option>
-                                        <option value="8">8</option>
-                                        <option value="9">9</option>
-                                        <option value="10">10</option>
+                                        <select disabled="disabled" name="{{ contact.pk }}_question_{{ question.pk }}">
+                                            <option value="">-------</option>
+                                            {% if question.type == 'True/False' %}
+                                                <option value="True">True</option>
+                                                <option value="False">False</option>
+                                            {% elif question.type == 'Multiple-choice' %}
+                                                {% for choice in question.choices_objects %}
+                                                    <option value="{{ choice.pk }}">{{ choice.option }}</option>
+                                                {% endfor %}
+                                            {% elif question.type == 'Range' %}
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                                <option value="7">7</option>
+                                                <option value="8">8</option>
+                                                <option value="9">9</option>
+                                                <option value="10">10</option>
+                                            {% endif %}
+                                        </select>
                                     {% endif %}
-                                </select>
-                            {% endif %}
-                            {% if question.type == 'Detailed Answer' %}
-                                <textarea disabled="disabled" name="{{ contact.pk }}_answer_{{ question.pk }}"></textarea>
-                            {% endif %}
-                            </label>
-                        </div>
+                                    {% if question.type == 'Detailed Answer' %}
+                                        <textarea disabled="disabled"
+                                                  name="{{ contact.pk }}_answer_{{ question.pk }}"></textarea>
+                                    {% endif %}
+                                </label>
+                            </div>
                         {% endfor %}
 
                         <div class="medium-3 columns">
@@ -85,9 +88,9 @@
 
                 {% endfor %}
             {% endfor %}
-    <button type="submit" name="btnSubmit">Save</button>
-    <button type="submit" name="btnArchive">Archive</button>
-    </form>
+            <button type="submit" name="btnSubmit" id="save_data">Save Data</button>
+            <button type="submit" name="btnArchive" id="archive_run">Archive Run</button>
+        </form>
     </div>
 {% endblock %}
 
@@ -110,6 +113,13 @@
                     $(this).prop("disabled", true);
                 })
             }
+        });
+        $("#save_data").click(function (e) {
+            console.log(e);
+            // Stop it moving to another page, or refreshing
+            e.preventDefault();
+            console.log($(this).serialize());
+            console.log($("#form").serialize());
         });
     </script>
 {% endblock %}

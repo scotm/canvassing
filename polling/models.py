@@ -1,6 +1,6 @@
 from django.db import models
-from sortedm2m.fields import SortedManyToManyField
 from memoize import memoize
+from sortedm2m.fields import SortedManyToManyField
 
 from campaigns.models import Campaign
 from core.models import Contact
@@ -42,28 +42,54 @@ class CanvassResponse(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ('-date_added',)
+
+    def store_response(self, *args, **kwargs):
+        raise Exception("Cannot call store_response on a CanvassResponse object directly")
 
 
+# A choice made from the question's response set
 class CanvassChoice(CanvassResponse):
     choice = models.CharField(max_length=200)
 
+    def store_response(self, response):
+        # TODO: Fix this
+        pass
 
+
+# Binary response
 class CanvassTrueFalse(CanvassResponse):
     choice = models.NullBooleanField()
+
+    def store_response(self, response):
+        self.choice = True if response == 'True' else False
+        self.save()
 
 
 class CanvassLongAnswer(CanvassResponse):
     answer = models.TextField()
 
+    def store_response(self, response):
+        self.answer = response
+        self.save()
 
+
+# Scale of 1-10
 class CanvassRange(CanvassResponse):
     answer = models.IntegerField()
+
+    def store_response(self, response):
+        try:
+            self.answer = int(response)
+            self.save()
+        except:
+            pass
 
 
 class CanvassParty(CanvassResponse):
     answer = models.CharField(max_length=5, choices=(
-    ('Scottish Socialist Party', 'SSP'), ('SNP', 'SNP'), ('Scottish Labour', 'SLAB'), ('Scottish Green', 'GRN'),
-    ('Conservative', 'CON'), ('Liberal Democrat', 'LD'), ('Other', 'Other')))
+        ('Scottish Socialist Party', 'SSP'), ('SNP', 'SNP'), ('Scottish Labour', 'SLAB'), ('Scottish Green', 'GRN'),
+        ('Conservative', 'CON'), ('Liberal Democrat', 'LD'), ('Other', 'Other')))
 
 
 class CanvassQuestionaire(models.Model):

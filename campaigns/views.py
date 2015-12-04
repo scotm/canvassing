@@ -36,8 +36,10 @@ class CanvassDataInput(DetailView):
     template_name = 'data_input.html'
     model = CanvassRun
 
+    def get_queryset(self):
+        return super(CanvassDataInput, self).get_queryset()
+
     def get_context_data(self, **kwargs):
-        kwargs.update({'parties': PoliticalParty.objects.all()})
         return super(CanvassDataInput, self).get_context_data(**kwargs)
 
 
@@ -61,5 +63,8 @@ class SignPetition(LoginRequiredMixin, JSONDataView):
             signature.delete()
             return {'status': 'deleted'}
         else:
+            # TODO: Need to retrieve the campaign from the request, too.
+            # TODO: Stash the chosen campaign and store it in the session variable.
             Signature.objects.create(contact=contact, campaign=Campaign.get_latest_top_level_campaign())
             return {'status': 'signed'}
+
