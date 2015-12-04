@@ -68,7 +68,7 @@
         });
         var geojson = L.geoJson({{ object.get_points_json | safe}}, {});
 
-        var map = L.map('map').addLayer(mapboxTiles);
+        var map = L.map('map',{'dragging':false}).addLayer(mapboxTiles);
 
         geojson.addTo(map);
 
