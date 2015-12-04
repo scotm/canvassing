@@ -158,8 +158,10 @@ class PrintRunDetailView(LoginRequiredMixin, DetailView):
 class RunPicker(LoginRequiredMixin, DetailView):
     pass
 
+
 class CanvassPicker(RunPicker):
-    template_name='canvassing_picker.html'
+    template_name = 'canvassing_picker.html'
+
     def get_context_data(self, **kwargs):
         from polling.models import CanvassQuestionaire
         kwargs['questionaires'] = CanvassQuestionaire.objects.all()
