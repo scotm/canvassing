@@ -4,7 +4,6 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.views.generic import ListView, DetailView, TemplateView, UpdateView, DeleteView, RedirectView
 from django.contrib import messages
-
 import django_filters
 from django_filters.views import FilterView
 from braces.views import LoginRequiredMixin
@@ -58,7 +57,8 @@ class CanvassRunListView(LoginRequiredMixin, FilterView):
     model = CanvassRun
 
     def get_queryset(self):
-        return CanvassRun.get_unbooked_available_runs(user=self.request.user).select_related('created_by', 'ward', 'bookedcanvassrun')
+        return CanvassRun.get_unbooked_available_runs(user=self.request.user).select_related('created_by', 'ward',
+                                                                                             'bookedcanvassrun')
 
 
 class CanvassRunDelete(LoginRequiredMixin, DeleteView):
@@ -85,6 +85,9 @@ class LeafletRunCreate(LoginRequiredMixin, JSONDataView):
         for x in postcodes:
             leaflet_run.postcode_points.add(PostcodeMapping.match_postcode(x))
 
+        if 'questionaire' in self.request.GET:
+            leaflet_run.questionaire_id = int(self.request.GET['questionaire'])
+
         leaflet_run.ward = leaflet_run.get_ward()
         leaflet_run.save()
         context.update({'outcome': 'success'})
@@ -97,6 +100,7 @@ class CanvassRunCreate(LeafletRunCreate):
 
 class CanvassRunBook(RedirectView):
     permanent = False
+
     def get_redirect_url(self, *args, **kwargs):
         c = CanvassRun.objects.get(pk=self.kwargs['pk'])
         c.book(self.request.user)
@@ -106,6 +110,7 @@ class CanvassRunBook(RedirectView):
 
 class CanvassRunUnbook(RedirectView):
     permanent = False
+
     def get_redirect_url(self, *args, **kwargs):
         c = CanvassRun.objects.get(pk=self.kwargs['pk'])
         c.unbook()
@@ -127,7 +132,7 @@ class LeafletHomepage(LoginRequiredMixin, TemplateView):
         return self.run_klass.objects.all()[:self.runs_limit]
 
     def get_context_data(self, **kwargs):
-        kwargs.update({'runs': self.get_runs()})
+        kwargs['runs'] = self.get_runs()
         return super(LeafletHomepage, self).get_context_data(**kwargs)
 
 
@@ -150,6 +155,13 @@ class PrintRunDetailView(LoginRequiredMixin, DetailView):
 class RunPicker(LoginRequiredMixin, DetailView):
     pass
 
+class CanvassPicker(RunPicker):
+    template_name='canvassing_picker.html'
+    def get_context_data(self, **kwargs):
+        from polling.models import CanvassQuestionaire
+        kwargs['questionaires'] = CanvassQuestionaire.objects.all()
+        return super(RunPicker, self).get_context_data(**kwargs)
+
 
 class AreaPicker(LoginRequiredMixin, ListView):
     model = Ward
@@ -164,4 +176,4 @@ class UserCanvassRunFind(LoginRequiredMixin, ListView):
     template_name = 'canvassrun_find.html'
 
     def get_queryset(self):
-        return super(UserCanvassRunFind,self).get_queryset().filter(bookedcanvassrun__booked_by=self.request.user)
+        return super(UserCanvassRunFind, self).get_queryset().filter(bookedcanvassrun__booked_by=self.request.user)

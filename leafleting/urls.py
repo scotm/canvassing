@@ -7,7 +7,7 @@ from django.conf.urls import patterns, url
 
 from leafleting.views import LeafletRunCreate, CanvassRunCreate, LeafletHomepage, CanvassHomepage, RunDetailView, \
     CanvassRunListView, LeafletRunListView, RunPicker, AreaPicker, PrintRunDetailView, CanvassRunDelete, CanvassRunBook, \
-    CanvassRunUnbook, UserCanvassRunFind
+    CanvassRunUnbook, UserCanvassRunFind, CanvassPicker
 from polling.views import QuestionaireListView, QuestionaireCreateView
 
 urlpatterns = patterns('',
@@ -22,9 +22,9 @@ urlpatterns = patterns('',
 
                        url(r'^canvassing/why_canvass/$', TemplateView.as_view(template_name="why_canvass.html"), name='why_canvass'),
                        url(r'^canvassing/canvass_run_create', CanvassRunCreate.as_view(), name='canvass_run_create'),
-                       url(r'^canvassing/region/(?P<pk>[0-9]+)', RunPicker.as_view(template_name='canvassing_picker.html', model=Region), name='canvass_region_view'),
+                       url(r'^canvassing/region/(?P<pk>[0-9]+)', CanvassPicker.as_view(model=Region), name='canvass_region_view'),
                        url(r'^canvassing/region/$', AreaPicker.as_view(template_name='canvassing_region_picker.html', model=Region), name='canvass_region_list'),
-                       url(r'^canvassing/ward/(?P<pk>[0-9]+)', RunPicker.as_view(template_name='canvassing_picker.html', model=Ward), name='canvass_ward_view'),
+                       url(r'^canvassing/ward/(?P<pk>[0-9]+)', CanvassPicker.as_view(model=Ward), name='canvass_ward_view'),
                        url(r'^canvassing/ward/$', AreaPicker.as_view(template_name='canvassing_ward_picker.html', model=Ward), name='canvass_ward_list'),
                        url(r'^canvassing/run/print/(?P<pk>[0-9]+)$', PrintRunDetailView.as_view(model=CanvassRun), name='canvass_run_print'),
                        url(r'^canvassing/run/unbook/(?P<pk>[0-9]+)$', CanvassRunUnbook.as_view(), name='canvass_run_unbook'),

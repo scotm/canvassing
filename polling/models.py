@@ -15,6 +15,10 @@ class CanvassQuestion(models.Model):
     def __unicode__(self):
         return self.polling_question
 
+    def choices(self):
+        if self.type == 'Multiple-choice':
+            return ", ".join(x.option for x in self.canvasschoicesavailable_set.all())
+
 
 # Is it a multiple-choice question? If so, what choices do we have for this question?
 class CanvassChoicesAvailable(models.Model):
@@ -61,7 +65,7 @@ class CanvassQuestionaire(models.Model):
     questions = SortedManyToManyField(CanvassQuestion)
 
     def __unicode__(self):
-        return "\n".join(unicode(x) for x in self.questions.all())
+        return ", ".join(unicode(x.short_name) for x in self.questions.all())
 
 
 class Conversation(models.Model):

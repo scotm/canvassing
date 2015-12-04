@@ -19,7 +19,7 @@
         <p>Zoom the map, and pick off the postcodes you'd like to add to this run.</p>
 
         <div id="map"></div>
-
+        <h6>Move To:</h6>
         <form id="postcode_form">
             <div class="row">
                 <div class="large-9 columns">
@@ -45,10 +45,19 @@
             <th>Contacts</th>
             </thead>
             <tbody>
-
             </tbody>
         </table>
+    <h3>Additional Details</h3>
         <form id="run_information">
+            {% if questionaires %}
+            <label>Select a questionaire:
+                <select name="questionaire" id="questionaire">
+                    {% for questionaire in questionaires %}
+                        <option value="{{ questionaire.pk }}">{{ questionaire }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            {% endif %}
             <label>A name for this run:
                 <input type="text" placeholder="Give this run a memorable title."
                        id="run_name"/>
@@ -234,6 +243,7 @@
             var error_messages = [];
             var run_name = $("#run_name").val();
             var run_notes = $("#run_notes").val();
+            var run_questionaire = $("#questionaire").val();
 
             // Needs a title
             if (run_name === '') {
@@ -262,7 +272,10 @@
                     url: '{% block run_create_url %}{% endblock %}',
                     cache: false,
                     type: 'GET',
-                    data: {'run_name': run_name, 'selected_postcodes[]': postcodes_to_send, 'run_notes': run_notes},
+                    data: {'run_name': run_name, 'selected_postcodes[]': postcodes_to_send, 'run_notes': run_notes,
+                {% if questionaires %}
+                    'questionaire':run_questionaire,
+                {% endif %}},
                     success: function (data) {
                         displayModal("<h2>Success</h2><p>The run was created and stored successfully</p>");
                         redrawMarkers();
