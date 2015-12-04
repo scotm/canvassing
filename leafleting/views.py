@@ -151,6 +151,9 @@ class RunDetailView(LoginRequiredMixin, DetailView):
 class PrintRunDetailView(LoginRequiredMixin, DetailView):
     template_name = 'leafleting/print_canvassrun_detail.html'
 
+    def get_queryset(self):
+        return super(PrintRunDetailView, self).get_queryset().prefetch_related('questionaire__questions')
+
 
 class RunPicker(LoginRequiredMixin, DetailView):
     pass
