@@ -1,18 +1,21 @@
 {% extends "base.html" %}
+{% block page_title %}COMRADE: Data Input for {{ object }}{% endblock %}
 {% block breadcrumbs %}
     <nav class="breadcrumbs">
         <a href="{% url 'homepage' %}">Home</a>
         <a href="{% url 'canvass_homepage' %}">Canvassing</a>
         <a href="{% url 'booked_lists' %}">Booked Lists</a>
-        <a class="current">{{ object }}</a>
+        <a class="current">{{ object }} Input</a>
     </nav>
 {% endblock %}
 {% block content %}
     <div class="small-12 columns">
-        <h2>Data Entry for {{ object }}</h2>
+        <h1>Data Entry for {{ object }}</h1>
+        <h3>Questions</h3>
         {% for question in object.questionaire.questions.all %}
             <strong>Question {{ forloop.counter }}</strong>: {{ question.polling_question }}{% if question.type == 'Multiple-choice' %} ({{ question.choices }}){% endif %}<br/>
         {% endfor %}
+        <h3>Contacts</h3>
         <form>
             {% for domecile in object.get_domeciles %}
                 <strong>{{ domecile }}</strong>
@@ -24,7 +27,6 @@
                     </div>
                     <div class="row">
                         <div class="medium-3 columns">
-
                             <label>Status:
                                 <select name="{{ contact.pk }}_response">
                                     <option value="">---------</option>
