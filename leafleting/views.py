@@ -182,3 +182,8 @@ class UserCanvassRunFind(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return super(UserCanvassRunFind, self).get_queryset().filter(bookedcanvassrun__booked_by=self.request.user)
+
+
+class DataInput(PrintRunDetailView):
+    model = CanvassRun
+    template_name = 'data_input.html'

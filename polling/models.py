@@ -1,5 +1,6 @@
 from django.db import models
 from sortedm2m.fields import SortedManyToManyField
+from memoize import memoize
 
 from campaigns.models import Campaign
 from core.models import Contact
@@ -15,9 +16,14 @@ class CanvassQuestion(models.Model):
     def __unicode__(self):
         return self.polling_question
 
+    @memoize(timeout=10)
     def choices(self):
         if self.type == 'Multiple-choice':
             return ", ".join(x.option for x in self.canvasschoicesavailable_set.all())
+
+    @memoize(timeout=10)
+    def choices_objects(self):
+        return [x for x in self.canvasschoicesavailable_set.all()]
 
 
 # Is it a multiple-choice question? If so, what choices do we have for this question?
