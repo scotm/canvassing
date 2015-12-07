@@ -1,19 +1,23 @@
 {% extends "base.html" %}
+{% block page_title %}COMRADE: Data Input for {{ object }}{% endblock %}
 {% block breadcrumbs %}
     <nav class="breadcrumbs">
         <a href="{% url 'homepage' %}">Home</a>
-        <a href="{% url 'data_find' %}">Canvass Data Input</a>
-        <a class="current">{{ object }}</a>
+        <a href="{% url 'canvass_homepage' %}">Canvassing</a>
+        <a href="{% url 'booked_lists' %}">Booked Lists</a>
+        <a class="current">{{ object }} Input</a>
     </nav>
 {% endblock %}
 {% block content %}
     <div class="small-12 columns">
-        <h2>Data Entry for {{ object }}</h2>
-
-        <p>Run Code: {{ object.run_code }}</p>
-
+        <h1>Data Entry for {{ object }}</h1>
+        <h3>Questions</h3>
+        {% for question in object.questionaire.questions.all %}
+            <strong>Question {{ forloop.counter }}</strong>: {{ question.polling_question }}{% if question.type == 'Multiple-choice' %} ({{ question.choices }}){% endif %}<br/>
+        {% endfor %}
+        <h3>Contacts</h3>
         <form>
-            {% for domecile in object.canvass_run.get_domeciles %}
+            {% for domecile in object.get_domeciles %}
                 <strong>{{ domecile }}</strong>
                 {% for contact in domecile.get_contacts %}
                     <div class="row">
@@ -23,7 +27,6 @@
                     </div>
                     <div class="row">
                         <div class="medium-3 columns">
-
                             <label>Status:
                                 <select name="{{ contact.pk }}_response">
                                     <option value="">---------</option>
@@ -38,27 +41,40 @@
                             </label>
                         </div>
 
+                        {% for question in object.questionaire.questions.all %}
                         <div class="medium-3 columns">
-                            <label>Westminster:
-                                <select disabled="disabled" name="{{ contact.pk }}_westminster">
-                                    <option value="">-------</option>
-                                    {% for party in parties %}
-                                        <option value="{{ party }}">{{ party }}</option>
-                                    {% endfor %}
-                                </select>
-                            </label>
-                        </div>
+                            <label>{{ question.short_name }}:
+                            {% if question.type == 'True/False' or question.type == 'Multiple-choice' or question.type == 'Range' %}
 
-                        <div class="medium-3 columns">
-                            <label>Holyrood list vote:
-                                <select disabled="disabled" name="{{ contact.pk }}_holyrood">
+                                <select disabled="disabled" name="{{ contact.pk }}_question_{{ question.pk }}">
                                     <option value="">-------</option>
-                                    {% for party in parties %}
-                                        <option value="{{ party }}">{{ party }}</option>
-                                    {% endfor %}
+                                    {% if question.type == 'True/False' %}
+                                        <option value="True">True</option>
+                                        <option value="False">False</option>
+                                    {% elif question.type == 'Multiple-choice' %}
+                                        {% for choice in question.choices_objects %}
+                                            <option value="{{ choice.pk }}">{{ choice.option }}</option>
+                                        {% endfor %}
+                                    {% elif question.type == 'Range' %}
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    {% endif %}
                                 </select>
+                            {% endif %}
+                            {% if question.type == 'Detailed Answer' %}
+                                <textarea disabled="disabled" name="{{ contact.pk }}_answer_{{ question.pk }}"></textarea>
+                            {% endif %}
                             </label>
                         </div>
+                        {% endfor %}
 
                         <div class="medium-3 columns">
                             <label>Notes:

@@ -73,6 +73,7 @@ INSTALLED_APPS = (
     'leafleting',
     'reporting',
     'django_filters',
+    'memoize',
 )
 
 MIDDLEWARE_CLASSES = (
