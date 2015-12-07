@@ -74,6 +74,7 @@ INSTALLED_APPS = (
     'reporting',
     'django_filters',
     'memoize',
+    'bugtracker',
 )
 
 MIDDLEWARE_CLASSES = (

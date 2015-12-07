@@ -15,4 +15,4 @@ django-filter
 django-htmlmin
 django-flat-theme
 django-memoize
-
+django-bugtracker
