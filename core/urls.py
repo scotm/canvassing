@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, url
+
 from core.views import ContactView, ContactListView
 
 __author__ = 'scotm'

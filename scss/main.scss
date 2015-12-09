@@ -50,6 +50,13 @@
   }
 }
 
+pre {
+    padding: 17px;
+    background-color: #DDD;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
 .light-panel {
   @include panel($bg: #D46A6A, $padding: 20px, $adjust: true);
 }
