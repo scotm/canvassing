@@ -13,18 +13,29 @@
         <hr>
         {% if object_list %}
             <form>
+                <label>
+                    <select>
+                        <option>
+
+                        </option>
+                    </select>
+                </label>
                 <table>
                     <thead>
-                    <th>Name</th>
-                    <th>Address</th>
-                    <th>Signed</th>
+                    <tr>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Signed</th>
+                    </tr>
                     </thead>
                     {% for object in object_list %}
                         <tr>
                             <td>{{ object }}</td>
                             <td>{{ object.domecile }}</td>
                             <td>
-                                <button id="contact_sign_{{ object.pk }}">{% if object.has_signed %}Signed{% else %}Sign Petition{% endif %}</button>
+                                <button class="full_width_button" id="contact_sign_{{ object.pk }}">
+                                    {% if object.has_signed %}Signed{% else %}Sign
+                                        Petition{% endif %}</button>
                             </td>
                         </tr>
                     {% endfor %}
@@ -43,7 +54,7 @@
             $.ajax({
                         url: '{% url "sign_petition_ajax" %}',
                         cache: false,
-                        data: {'contact':contact_pk},
+                        data: {'contact': contact_pk},
                         success: function (data) {
                             if (data['status'] == 'signed') {
                                 button.html("Signed");

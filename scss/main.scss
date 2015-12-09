@@ -43,6 +43,10 @@
 //@import "foundation/components/tooltips";
 //@import "foundation/components/offcanvas";
 
+table, .full_width_button{
+  width:100%;
+}
+
 .dark-panel {
   @include panel($bg: #801515, $padding: 20px, $adjust: true);
   a {
@@ -55,6 +59,7 @@ pre {
     background-color: #DDD;
     margin-top: 10px;
     margin-bottom: 10px;
+    overflow:auto;
 }
 
 .light-panel {
