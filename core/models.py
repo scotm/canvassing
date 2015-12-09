@@ -182,7 +182,7 @@ class GeomMixin(object):
 
 class Ward(GeomMixin, models.Model):
     # Based on the ward shape files available from:
-    # https://geoportal.statistics.gov.uk/Docs/Boundaries/Wards_(GB)_2014_Boundaries_(Full_Extent).zi
+    # https://geoportal.statistics.gov.uk/Docs/Boundaries/Wards_(GB)_2014_Boundaries_(Full_Extent).zip
 
     ward_code = models.CharField(max_length=9)
     ward_name = models.CharField(max_length=56)
