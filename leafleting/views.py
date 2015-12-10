@@ -13,8 +13,10 @@ from core.models import Ward, Region
 from leafleting.models import LeafletRun, CanvassRun
 from postcode_locator.models import PostcodeMapping
 
-users = {k.pk: k for k in get_user_model().objects.all()}
-
+try:
+    users = {k.pk: k for k in get_user_model().objects.all()}
+except:
+    users = {}
 
 class UserFilter(django_filters.ChoiceFilter):
     @property

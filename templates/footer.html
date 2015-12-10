@@ -11,6 +11,7 @@
             </div>
             <div class="small-12 medium-8 columns">
                 <ul class="inline-list right">
+                    <li><a href="{% url 'bugs' %}">Bugs, Features and Building</a></li>
                     <li><a href="{% url 'about_the_ssp' %}">About the SSP</a></li>
                     {% if user and user.is_authenticated %}
                     <li><a href="{% url 'why_canvass' %}">Why Canvass?</a></li>

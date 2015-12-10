@@ -1,4 +1,4 @@
-Django
+Django==1.8.7
 argparse
 django-extensions
 ipython
@@ -15,4 +15,4 @@ django-filter
 django-htmlmin
 django-flat-theme
 django-memoize
-
+django-bugtracker
