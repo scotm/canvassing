@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
+{% block page_title %}{{ block.super }} Bugs, and building{% endblock %}
+{% block breadcrumbs %}
+    <nav class="breadcrumbs">
+        <a href="{% url 'homepage' %}">Home</a>
+        <a class="current">Bugs and Building</a>
+    </nav>
+{% endblock %}
 {% block content %}
     <div class="large-9 columns">
         <h1>How you can help</h1>
@@ -119,14 +126,15 @@ lzcat comrade.pgsql.lzma | psql comrade
         <p>The test data includes a superuser - the username is "test", and the password is "test"</p>
     </div>
     <div class="large-3 columns">
-        <h4>Free and open source software used:</h4>
-        <p><img src="{% static 'images/bugs/ubuntu-logo.svg' %}" alt="" style="max-width:100%;"></p>
-        <p><img src="{% static 'images/bugs/python-logo.svg' %}" alt="" style="min-width:100%;max-width:100%;"></p>
-        <p><img src="{% static 'images/bugs/bower-logo.svg' %}" alt="" style="max-width:100%;"></p>
-        <p><img src="{% static 'images/bugs/grunt-logo.svg' %}" alt="" style="max-width:100%;"></p>
-        <p><img src="{% static 'images/bugs/npm-logo.svg' %}" alt="" style="max-width:100%;"></p>
-        <p><img src="{% static 'images/bugs/postgresql-logo.svg' %}" alt="" style="max-width:100%;"></p>
-
+        <div class="panel">
+            <h4>Free and open source software used:</h4>
+            <p><a href="http://www.ubuntu.com/"><img src="{% static 'images/bugs/ubuntu-logo.svg' %}" alt="" style="max-width:100%;"></a></p>
+            <p><a href="https://www.python.org/"><img src="{% static 'images/bugs/python-logo.svg' %}" alt="" style="min-width:100%;max-width:100%;"></a></p>
+            <p><a href="http://bower.io/"><img src="{% static 'images/bugs/bower-logo.svg' %}" alt="" style="max-width:100%;"></a></p>
+            <p><a href="http://gruntjs.com/"><img src="{% static 'images/bugs/grunt-logo.svg' %}" alt="" style="max-width:100%;"></a></p>
+            <p><a href="https://www.npmjs.com/"><img src="{% static 'images/bugs/npm-logo.svg' %}" alt="" style="max-width:100%;"></a></p>
+            <p><a href="http://www.postgresql.org/"><img src="{% static 'images/bugs/postgresql-logo.svg' %}" alt="" style="max-width:100%;"></a></p>
+        </div>
     </div>
 {% endblock %}
 {% block before_body_close %}
