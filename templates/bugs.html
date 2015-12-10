@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
+{% block page_title %}{{ block.super }} Reporting Bugs & Building{% endblock %}
+{% block breadcrumbs %}
+    <nav class="breadcrumbs">
+        <a href="{% url 'homepage' %}">Home</a>
+        <a class="current">Bugs & Building</a>
+    </nav>
+{% endblock %}
 {% block content %}
     <div class="large-9 columns">
         <h1>How you can help</h1>
@@ -126,7 +133,6 @@ lzcat comrade.pgsql.lzma | psql comrade
         <p><img src="{% static 'images/bugs/grunt-logo.svg' %}" alt="" style="max-width:100%;"></p>
         <p><img src="{% static 'images/bugs/npm-logo.svg' %}" alt="" style="max-width:100%;"></p>
         <p><img src="{% static 'images/bugs/postgresql-logo.svg' %}" alt="" style="max-width:100%;"></p>
-
     </div>
 {% endblock %}
 {% block before_body_close %}
