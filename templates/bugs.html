@@ -103,13 +103,14 @@ createdb comrade</pre>
                 href="https://github.com/scotm/canvassing/raw/master/comrade.pgsql.lzma">fake data</a> - covering one
             ward in Dundee - fake names, initials, and adding and removing a few fake people.
         </p>
-        <div data-alert class="alert-box" style="font-weight:700;">Under no circumstance is this to be used for a real
-            canvass.
+        <div data-alert class="alert-box" style="font-weight:700;">HEALTH WARNING: Under no circumstance is this to be
+            used for a real canvass.
         </div>
-        <p>Download, decompress and inject it into your pre-prepared database using the following:</p>
+        <p>Download, decompress and inject the fake data into your pre-prepared database using the following:</p>
 
 <pre>wget https://github.com/scotm/canvassing/raw/master/comrade.pgsql.lzma
-lzcat comrade.pgsql.lzma | psql comrade</pre>
+lzcat comrade.pgsql.lzma | psql comrade
+./manage.py migrate</pre>
 
         <p>Run the development webserver to use COMRADE.</p>
 
