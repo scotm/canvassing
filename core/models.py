@@ -3,6 +3,7 @@ from __future__ import print_function
 
 import json
 from collections import namedtuple
+from random import shuffle
 
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Polygon
@@ -266,7 +267,6 @@ class Region(GeomMixin, models.Model):
     @staticmethod
     def clean_up(DEBUG=False):
         import gc
-        from random import shuffle
 
         # We're only interested in Scottish constituencies - so delete the rest - their code begins with an "S".
         Region.objects.exclude(code__startswith="S").delete()
