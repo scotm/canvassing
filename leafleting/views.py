@@ -1,22 +1,28 @@
-# Create your views here.
+from collections import defaultdict
+from urlparse import parse_qs
+
+import django_filters
+from braces.views import LoginRequiredMixin
+from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.db import models
-from django.contrib.auth import get_user_model
-from django.http import HttpResponse
-from django.views.generic import ListView, DetailView, TemplateView, UpdateView, DeleteView, RedirectView, View
-from django.contrib import messages
-import django_filters
+from django.views.generic import ListView, DetailView, TemplateView, UpdateView, DeleteView, RedirectView
 from django_filters.views import FilterView
-from braces.views import LoginRequiredMixin
 from json_views.views import JSONDataView
-from core.models import Ward, Region
+
+from core.models import Ward, Contact
 from leafleting.models import LeafletRun, CanvassRun
+from polling.models import CanvassQuestion, CanvassChoice, CanvassTrueFalse, CanvassLongAnswer, CanvassRange
 from postcode_locator.models import PostcodeMapping
 
 try:
     users = {k.pk: k for k in get_user_model().objects.all()}
 except:
     users = {}
+
+binary_dict = {'True': True, 'False': False}
+
 
 class UserFilter(django_filters.ChoiceFilter):
     @property
@@ -83,8 +89,8 @@ class LeafletRunCreate(LoginRequiredMixin, JSONDataView):
             raise Exception("A list of postcodes is required.")
 
         leaflet_run = self.model.objects.create(
-            **{'name': self.request.GET['run_name'], 'notes': self.request.GET['run_notes'],
-               'created_by': self.request.user})
+                **{'name': self.request.GET['run_name'], 'notes': self.request.GET['run_notes'],
+                   'created_by': self.request.user})
         for x in postcodes:
             leaflet_run.postcode_points.add(PostcodeMapping.match_postcode(x))
 
@@ -191,7 +197,45 @@ class DataInput(PrintRunDetailView):
     model = CanvassRun
     template_name = 'data_input.html'
 
-def data_input_json_acceptor(request):
-    print request
-    print request.POST
-    return HttpResponse()
+
+class PostCompatibleJSONDataView(JSONDataView):
+    def post(self, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
+
+
+class DataInputJSONAcceptor(LoginRequiredMixin, PostCompatibleJSONDataView):
+    def get_context_data(self, **kwargs):
+        context = super(DataInputJSONAcceptor, self).get_context_data(**kwargs)
+        old_data = self.request.POST['data']
+        data = parse_qs(old_data)
+        parsed_data = defaultdict(dict)
+        for key, value in data.iteritems():
+            contact_pk, argument = tuple(key.split('_', 1))
+            parsed_data[contact_pk][argument] = value[0]
+
+        delete_values = []
+        errors = []
+        for contact_pk, value in parsed_data.iteritems():
+            contact = Contact.objects.get(pk=contact_pk)
+            try:
+                for descriptor, argument in value.iteritems():
+                    if descriptor.startswith('question_'):
+                        question_pk = int(descriptor.replace('question_', ''))
+                        question = CanvassQuestion.objects.get(pk=question_pk)
+                        if question.type == 'Multiple-choice':
+                            CanvassChoice.objects.create(contact=contact, question=question, choice=argument)
+                        elif question.type == 'True/False':
+                            print argument
+                            choice = binary_dict[argument]
+                            CanvassTrueFalse.objects.create(contact=contact, question=question, choice=choice)
+                        elif question.type == 'Detailed Answer':
+                            CanvassLongAnswer.objects.create(contact=contact, question=question, answer=argument)
+                        elif question.type == 'Range':
+                            CanvassRange.objects.create(contact=contact, question=question, answer=int(argument))
+                        print question.type
+                delete_values.append(contact.pk)
+            except Exception as e:
+                errors.append(e.message)
+        context.update({'data': delete_values, 'errors': errors})
+        return context
