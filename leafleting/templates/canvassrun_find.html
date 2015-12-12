@@ -21,7 +21,7 @@
                     <tr>
                         <td><a href="{{ run.get_absolute_url }}">{{ run }}</a></td>
                         <td>{{ run.bookedcanvassrun.booked_on }}</td>
-                        <td><img src="{% static 'images/input_data.svg' %}" alt="computer icon"/> Input Data</td>
+                        <td><a href="{% url 'canvass_run_input' run.pk %}"><img src="{% static 'images/input_data.svg' %}" alt="computer icon"/> Input Data</a></td>
                     </tr>
                 {% endfor %}
             </table>
