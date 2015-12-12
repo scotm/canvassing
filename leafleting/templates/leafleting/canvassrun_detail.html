@@ -69,7 +69,9 @@
                     <img class="icon" src="{% static 'images/delete.svg' %}" alt="Delete"/> Delete this run</a>
                 </p>
                 {% if object.bookedcanvassrun %}
-                    <p><img class="icon" src="{% static 'images/input_data.svg' %}" alt="computer icon"/> Input Data</p>
+                    <p><a href="{% url 'canvass_run_input' object.pk %}">
+                        <img class="icon" src="{% static 'images/input_data.svg' %}" alt="computer icon"/> Input Data
+                    </a></p>
                 {% endif %}
             </div>
         {% endblock %}

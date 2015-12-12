@@ -1,6 +1,14 @@
 {% extends "base.html" %}
+{% load static %}
+{% block page_title %}{{ block.super }} Bugs, and building{% endblock %}
+{% block breadcrumbs %}
+    <nav class="breadcrumbs">
+        <a href="{% url 'homepage' %}">Home</a>
+        <a class="current">Bugs and Building</a>
+    </nav>
+{% endblock %}
 {% block content %}
-    <div class="large-12 columns">
+    <div class="large-9 columns">
         <h1>How you can help</h1>
         <em>by Scott Macdonald</em>
         <h2>Reporting bugs and Feature Requests</h2>
@@ -62,36 +70,39 @@ pip install -r requirements/local.txt</pre>
         <h4>Prepare the database:</h4>
         <p>Create the user and database.</p>
 
-<pre>sudo su postgres -c "createuser -s comrade"
+<pre>sudo su postgres -c "createuser -s &lt;your username&gt;"
 createdb comrade</pre>
-        <div data-alert class="alert-box" style="font-weight:700;"><a href="#end_of"
-                                                                      style="color:#fff;text-decoration: underline">SKIP
-            TO THE END</a> OF THIS SECTION IF YOU DON'T HAVE AN ELECTORAL REGISTER TO USE.
-        </div>
-        <p>Install the PostGIS, and topology extensions.</p>
+        <a id="reveal-1">Show full details of DB setup</a>
+        <div id="reveal-1-text" style="display:none;">
+            <div data-alert class="alert-box" style="font-weight:700;">
+                <a href="#end_of" style="color:#fff;text-decoration: underline">DONT BOTHER WITH</a> THIS SECTION IF YOU
+                DON'T HAVE AN ELECTORAL REGISTER TO USE.
+            </div>
+            <p>Install the PostGIS, and topology extensions.</p>
 
-        <pre>psql -d comrade -c "CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;"</pre>
-        <p>Now create the database tables:</p>
+            <pre>psql -d comrade -c "CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;"</pre>
+            <p>Now create the database tables:</p>
 
-        <pre>./manage.py syncdb</pre>
-        <p>You'll be asked to add a superuser - fill out the username, email address and password.</p>
-        <p>Obtain the Code-Point® Open and Boundary-Line™ packages from the <a
-                href="https://www.ordnancesurvey.co.uk/opendatadownload/products.html">Ordnance Survey OpenData</a> page.
-            And the ward boundary lines from <a
-                    href="https://geoportal.statistics.gov.uk/Docs/Boundaries/Wards_(GB)_2014_Boundaries_(Full_Extent).zip">geoportal.statistics.gov.uk</a>.
-            Unzip them.</p>
-        <p>You'll find a CSV file with all the postcode points in the Code-Point® Open package. Import it using this
-            command:</p>
+            <pre>./manage.py syncdb</pre>
+            <p>You'll be asked to add a superuser - fill out the username, email address and password.</p>
+            <p>Obtain the Code-Point® Open and Boundary-Line™ packages from the <a
+                    href="https://www.ordnancesurvey.co.uk/opendatadownload/products.html">Ordnance Survey OpenData</a> page.
+                And the ward boundary lines from <a
+                        href="https://geoportal.statistics.gov.uk/Docs/Boundaries/Wards_(GB)_2014_Boundaries_(Full_Extent).zip">geoportal.statistics.gov.uk</a>.
+                Unzip them.</p>
+            <p>You'll find a CSV file with all the postcode points in the Code-Point® Open package. Import it using this
+                command:</p>
 
-        <pre>./manage.py fill_up_db &lt;path to postcode CSV file&gt;</pre>
-        <p>The ward and region shape files are part of the respective packages. Import them with these commands.</p>
+            <pre>./manage.py fill_up_db &lt;path to postcode CSV file&gt;</pre>
+            <p>The ward and region shape files are part of the respective packages. Import them with these commands.</p>
 
 <pre>./manage.py load_wards &lt;path to&gt;/WD_DEC_2014_GB_BFE.shp
 ./manage.py load_regions &lt;path to&gt;/scotland_and_wales_const_region.shp &lt;path to&gt;/scotland_and_wales_region_region.shp &lt;path to&gt;/scottish_westminster_const.shp</pre>
-        <p>That's as far as we can go without getting the electoral registers. And these are only available to nominated
-            individuals under the Representation of the People (Scotland) Regulations 2001 as amended by the
-            Representation of the People (Scotland) (Amendment) Regulations 2002 and the Representation of the People
-            (Scotland) Amendment Regulations 2006.</p>
+            <p>That's as far as we can go without getting the electoral registers. And these are only available to
+                nominated individuals under the Representation of the People (Scotland) Regulations 2001 as amended by
+                the Representation of the People (Scotland) (Amendment) Regulations 2002 and the Representation of the
+                People (Scotland) Amendment Regulations 2006.</p>
+        </div>
         <a name="end_of"></a>
         <hr/>
         <h4>Fake Data</h4>
@@ -99,14 +110,14 @@ createdb comrade</pre>
                 href="https://github.com/scotm/canvassing/raw/master/comrade.pgsql.lzma">fake data</a> - covering one
             ward in Dundee - fake names, initials, and adding and removing a few fake people.
         </p>
-        <div data-alert class="alert-box" style="font-weight:700;">Under no circumstance is this to be used for a real
-            canvass.
+        <div data-alert class="alert-box" style="font-weight:700;">HEALTH WARNING: Under no circumstance is this to be
+            used for a real canvass.
         </div>
-        <p>Download, decompress and inject it into your pre-prepared database using the following:</p>
+        <p>Download, decompress and inject the fake data into your pre-prepared database using the following:</p>
 
 <pre>wget https://github.com/scotm/canvassing/raw/master/comrade.pgsql.lzma
-lzma -d comrade.pgsql.lzma
-psql comrade &lt; comrade.pgsql</pre>
+lzcat comrade.pgsql.lzma | psql comrade
+./manage.py migrate</pre>
 
         <p>Run the development webserver to use COMRADE.</p>
 
@@ -114,4 +125,22 @@ psql comrade &lt; comrade.pgsql</pre>
         <p>Finally, go to <a href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a></p>
         <p>The test data includes a superuser - the username is "test", and the password is "test"</p>
     </div>
+    <div class="large-3 columns">
+        <div class="panel">
+            <h4>Free and open source software used:</h4>
+            <p><a href="http://www.ubuntu.com/"><img src="{% static 'images/bugs/ubuntu-logo.svg' %}" alt="" style="max-width:100%;"></a></p>
+            <p><a href="https://www.python.org/"><img src="{% static 'images/bugs/python-logo.svg' %}" alt="" style="min-width:100%;max-width:100%;"></a></p>
+            <p><a href="http://bower.io/"><img src="{% static 'images/bugs/bower-logo.svg' %}" alt="" style="max-width:100%;"></a></p>
+            <p><a href="http://gruntjs.com/"><img src="{% static 'images/bugs/grunt-logo.svg' %}" alt="" style="max-width:100%;"></a></p>
+            <p><a href="https://www.npmjs.com/"><img src="{% static 'images/bugs/npm-logo.svg' %}" alt="" style="max-width:100%;"></a></p>
+            <p><a href="http://www.postgresql.org/"><img src="{% static 'images/bugs/postgresql-logo.svg' %}" alt="" style="max-width:100%;"></a></p>
+        </div>
+    </div>
+{% endblock %}
+{% block before_body_close %}
+    <script>
+        $("#reveal-1").click(function () {
+            $('#reveal-1-text').toggle("slow");
+        });
+    </script>
 {% endblock %}

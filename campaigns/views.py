@@ -25,20 +25,34 @@ class FindContactList(ListView):
 
     def get_context_data(self, **kwargs):
         kwargs['form'] = self.form(self.request.GET) if self.request.GET else self.form()
+        kwargs['campaigns'] = Campaign.objects.all()
         return super(FindContactList, self).get_context_data(**kwargs)
+
+
+class GetPetition(LoginRequiredMixin, JSONDataView):
+    def get_context_data(self, **kwargs):
+        try:
+            signature = Signature.objects.filter(contact__pk=self.request.GET['contact'],
+                                                 campaign__pk=self.request.GET['campaign']).first()
+        except:
+            return
+        return {'result': True if signature else False}
 
 
 class SignPetition(LoginRequiredMixin, JSONDataView):
     def get_context_data(self, **kwargs):
         try:
-            contact_pk = int(self.request.GET['contact'])
-            contact = Contact.objects.get(pk=contact_pk)
+            campaign = Campaign.objects.get(pk=self.request.GET['campaign'])
+            contact = Contact.objects.get(pk=int(self.request.GET['contact']))
+            self.request.session['campaign'] = int(self.request.GET['campaign'])
         except:
             return
-        signature = Signature.objects.filter(contact=contact).first()
+        signature = Signature.objects.filter(contact=contact, campaign=campaign).first()
         if signature:
             signature.delete()
             return {'status': 'deleted'}
         else:
-            Signature.objects.create(contact=contact, campaign=Campaign.get_latest_top_level_campaign())
+            # TODO: Need to retrieve the campaign from the request, too.
+            # TODO: Stash the chosen campaign and store it in the session variable.
+            Signature.objects.create(contact=contact, campaign=campaign)
             return {'status': 'signed'}

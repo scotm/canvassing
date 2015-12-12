@@ -11,16 +11,20 @@
         <h2>Petition Data Entry</h2>
         {% include "petition_form.html" %}
         <hr>
-        {% if object_list %}
+        {% if object_list and campaigns %}
             <form>
                 <label>
-                    <select>
-                        <option>
-
-                        </option>
+                    Which campaign?
+                    <select id="campaign_select">
+                        {% for campaign in campaigns %}
+                            <option value="{{ campaign.pk }}" {% if campaign.pk == request.session.campaign %}
+                                    selected{% endif %}>
+                                {{ campaign }}
+                            </option>
+                        {% endfor %}
                     </select>
                 </label>
-                <table>
+                <table id="residents">
                     <thead>
                     <tr>
                         <th>Name</th>
@@ -46,24 +50,46 @@
 {% endblock %}
 {% block before_body_close %}
     <script>
+        var campaign = $("#campaign_select");
+        campaign.change(function () {
+            $('button[id^="contact_sign_"]').each(function () {
+                contact_pk = $(this).prop("id").replace("contact_sign_", '');
+                button = $(this);
+                $.ajax({
+                    url: '{% url "get_petition_ajax" %}',
+                    cache: false,
+                    data: {'contact': contact_pk, 'campaign': campaign.val()},
+                    success: function (data) {
+                        console.log(data);
+                        console.log("POO");
+                        if (data['result']) {
+                            button.html("Signed");
+                        } else {
+                            button.html("Sign Petition");
+                        }
+                    }
+                });
+            })
+        });
+
         $('button[id^="contact_sign_"]').click(function (e) {
             e.preventDefault();
             contact_pk = $(this).prop("id").replace("contact_sign_", '');
             button = $(this);
+            console.log(campaign.val());
 
             $.ajax({
-                        url: '{% url "sign_petition_ajax" %}',
-                        cache: false,
-                        data: {'contact': contact_pk},
-                        success: function (data) {
-                            if (data['status'] == 'signed') {
-                                button.html("Signed");
-                            } else if (data['status'] == 'deleted') {
-                                button.html("Sign Petition");
-                            }
-                        }
+                url: '{% url "sign_petition_ajax" %}',
+                cache: false,
+                data: {'contact': contact_pk, 'campaign': campaign.val()},
+                success: function (data) {
+                    if (data['status'] == 'signed') {
+                        button.html("Signed");
+                    } else if (data['status'] == 'deleted') {
+                        button.html("Sign Petition");
                     }
-            );
+                }
+            });
 
         })
     </script>
