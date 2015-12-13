@@ -12,19 +12,28 @@
             <section class="top-bar-section">
                 <!-- Right Nav Section -->
                 <ul class="right">
-                    <li><a href="{% if user and user.is_authenticated %}{% url 'canvass_homepage' %}{% else %}#{% endif %}">Canvass</a></li>
-                    <li><a href="{% if user and user.is_authenticated %}{% url 'leaflet_homepage' %}{% else %}#{% endif %}">Leaflet</a></li>
                     {% if user and user.is_authenticated %}
-                    <li><a href="{% url 'find_contact' %}">Signatures</a></li>
-                    <li class="has-dropdown">
-                        <a href="#">Account</a>
-                        <ul class="dropdown">
-                            {% if request.user.bookedcanvassrun_set.all %}<li><a href="{% url 'booked_lists' %}">My Booked Lists</a></li>{% endif %}
-                            <li><a href="{% url 'reporting' %}">Reports</a></li>
-                            <li><a href="{% url 'password_change' %}">Change Password</a></li>
-                            <li><a href="{% url 'logout' %}">Log out</a></li>
-                        </ul>
-                    </li>
+                        <li class="has-dropdown">
+                            <a href="{% url 'canvass_homepage' %}">Canvass</a>
+                            <ul class="dropdown">
+                                <li><a href="{% url 'questionaire_list' %}">Questionaires</a></li>
+                                {% if request.user.bookedcanvassrun_set.all %}
+                                    <li><a href="{% url 'booked_lists' %}">Booked Lists</a></li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                        <li><a href="{% url 'leaflet_homepage' %}">Leaflet</a></li>
+                    {% endif %}
+                    {% if user and user.is_authenticated %}
+                        <li><a href="{% url 'find_contact' %}">Signatures</a></li>
+                        <li class="has-dropdown">
+                            <a href="#">Account</a>
+                            <ul class="dropdown">
+                                <li><a href="{% url 'reporting' %}">Reports</a></li>
+                                <li><a href="{% url 'password_change' %}">Change Password</a></li>
+                                <li><a href="{% url 'logout' %}">Log out</a></li>
+                            </ul>
+                        </li>
                     {% endif %}
                 </ul>
 
