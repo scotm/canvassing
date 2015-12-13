@@ -37,8 +37,6 @@ urlpatterns = patterns('',
 
                        url(r'^canvassing/booked/$', UserCanvassRunFind.as_view(), name='booked_lists'),
                        url(r'^canvassing/list/', CanvassRunListView.as_view(), name='canvass_list'),
-                       url(r'^canvassing/questionaires/create/', QuestionaireCreateView.as_view(), name='questionaire_list'),
-                       url(r'^canvassing/questionaires/', QuestionaireListView.as_view(), name='questionaire_list'),
 
                        url(r'^canvassing/$', CanvassHomepage.as_view(), name='canvass_homepage'),
                        )

@@ -1,14 +1,13 @@
 {% extends "base.html" %}
-{% block page_title %}{{ block.super }}: Cereate Questionaire{% endblock %}
+{% block page_title %}COMRADE: Create Questionaire{% endblock %}
 {% block content %}
     <div class="large-12 columns">
-        <h1>Create Questionaire</h1>
+        <h1>{% block heading %}Create Questionaire{% endblock %}</h1>
+        {% block addition %}<a href="{% url 'question_create' %}" class="button">Add a question</a>{% endblock %}
         <form action="" method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <input type="submit" value="Create"/>
+            <button type="submit">{% block submit_button_text %}Create Questionaire{% endblock %}</button>
         </form>
-
     </div>
-
 {% endblock %}
