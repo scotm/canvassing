@@ -1,13 +1,6 @@
-import random
-from django.contrib.auth import authenticate, logout
-from django.contrib.auth import login
-from django.core.urlresolvers import reverse_lazy
-from django.conf import settings
-from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 from braces.views import LoginRequiredMixin
 from braces.views._access import AccessMixin
+from django.conf import settings
 from django.views.generic import DetailView, ListView, TemplateView
 from json_views.views import JSONDataView
 
@@ -61,8 +54,10 @@ class DomecileAddressView(LoginRequiredMixin, JSONDataView):
         postcode = self.request.GET['postcode']
         data = Domecile.get_sorted_addresses(postcode)
         summary = Domecile.get_summary_of_postcode(postcode)
-        contacts_count = Contact.objects.filter(domecile__postcode_point=PostcodeMapping.match_postcode(postcode)).count()
-        context.update({'data': data, 'postcode': postcode, 'summary': summary[0], 'buildings': summary[1], 'contacts': contacts_count})
+        contacts_count = Contact.objects.filter(
+            domecile__postcode_point=PostcodeMapping.match_postcode(postcode)).count()
+        context.update({'data': data, 'postcode': postcode, 'summary': summary[0], 'buildings': summary[1],
+                        'contacts': contacts_count})
         return context
 
 
