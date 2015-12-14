@@ -42,7 +42,7 @@ class DomecileFactory(factory.DjangoModelFactory):
     address_8 = ''
     address_9 = ''
     postcode = 'DD1 9XE'
-    postcode_point = factory.SubFactory(PostcodeMappingFactory, postcode=factory.SelfAttribute('..postcode'))
+    postcode_point = factory.SubFactory(PostcodeMappingFactory, postcode='DD19XE')
     electoral_registration_office = factory.SubFactory(EROFactory)
 
 
