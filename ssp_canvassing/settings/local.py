@@ -30,6 +30,7 @@ DEBUG_TOOLBAR_PANELS = [
 
 if 'test' in sys.argv:
     import platform
+    SPATIALITE_LIBRARY_PATH = 'mod_spatialite'
     if platform.system() == 'Darwin':
         SPATIALITE_LIBRARY_PATH='/usr/local/lib/mod_spatialite.dylib'
 

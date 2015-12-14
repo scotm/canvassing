@@ -30,10 +30,10 @@ class EROFactory(factory.DjangoModelFactory):
 class DomecileFactory(factory.DjangoModelFactory):
     class Meta:
         model = Domecile
-    django_get_or_create = ('address_2', 'address_4', 'address_6',)
+        django_get_or_create = ('address_2', 'address_4', 'address_6',)
 
     address_1 = ''
-    address_2 = '%d' % randint(1, 40)
+    address_2 = factory.LazyAttribute(lambda x: str(randint(1, 40)))
     address_3 = ''
     address_4 = 'Snookit Street'
     address_5 = ''
@@ -41,8 +41,9 @@ class DomecileFactory(factory.DjangoModelFactory):
     address_7 = ''
     address_8 = ''
     address_9 = ''
-    postcode = ''
-    postcode_point = factory.SubFactory(PostcodeMappingFactory, postcode='DD19XE')
+    postcode = 'DD1 9XE'
+    postcode_point = factory.SubFactory(PostcodeMappingFactory, postcode=factory.SelfAttribute('..postcode'))
+    electoral_registration_office = factory.SubFactory(EROFactory)
 
 
 class UserFactory(factory.DjangoModelFactory):
