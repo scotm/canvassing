@@ -1,5 +1,5 @@
-from datetime import date, timedelta
 from collections import namedtuple
+from datetime import date, timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -11,10 +11,11 @@ from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 from sortedm2m.fields import SortedManyToManyField
 
-from core.utilities.domecile_comparisons import domecile_key, domecile_list_to_string
 from core.models import Domecile, Contact, IntermediateZone, Ward, DataZone
+from core.utilities.domecile_comparisons import domecile_key, domecile_list_to_string
 
 DomecilesDescriptor = namedtuple('DomecilesDescriptor', ['grouper', 'description'])
+
 
 class BaseRun(models.Model):
     name = models.CharField(max_length=100)

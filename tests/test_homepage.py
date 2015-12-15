@@ -48,3 +48,21 @@ class HomepageTest(TestCase):
         self.client.login(username=self.user.username, password=self.user_password)
         response = self.client.get(reverse('bugs'))
         self.assertTrue(response.status_code == 200)
+
+    def test_leaflet_barepages(self):
+        response = self.client.get(reverse('why_leaflet'))
+        self.assertTrue(response.status_code == 200)
+
+    def test_leaflet_barepages_logged_in(self):
+        self.client.login(username=self.user.username, password=self.user_password)
+        response = self.client.get(reverse('why_leaflet'))
+        self.assertTrue(response.status_code == 200)
+
+    def test_canvass_barepages(self):
+        response = self.client.get(reverse('why_canvass'))
+        self.assertTrue(response.status_code == 200)
+
+    def test_canvass_barepages_logged_in(self):
+        self.client.login(username=self.user.username, password=self.user_password)
+        response = self.client.get(reverse('why_canvass'))
+        self.assertTrue(response.status_code == 200)
