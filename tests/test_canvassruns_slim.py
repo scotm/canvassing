@@ -1,8 +1,10 @@
 import json
 
 from django.core.urlresolvers import reverse
+from django.db import IntegrityError
 from django.test import TestCase
 
+from leafleting.models import BookedCanvassRun
 from postcode_locator.tests.factories import PostcodeMappingFactory
 from tests.factories import UserFactory, ContactFactory, DomecileFactory, CanvassRunFactory
 
@@ -81,13 +83,22 @@ class CanvassRunsSlimTest(TestCase):
         self.assertTrue(response.status_code == 200)
         self.assertNotIn(self.canvass_run, response.context['object_list'])
 
-    def book_twice(self):
-        self.canvass_run.book(user=self.seconduser)
-        self.canvass_run.book(user=self.seconduser)
+    def test_book_twice(self):
+        with self.assertRaises(IntegrityError):
+            self.canvass_run.book(user=self.seconduser)
+            self.canvass_run.book(user=self.seconduser)
 
-    def book_run(self):
+    def test_book_run(self):
         self.client.login(username=self.user.username, password=self.user_password)
         response = self.client.get(reverse('canvass_run_book', args=(self.canvass_run.pk,)))
         self.assertTrue(response.status_code == 302)
         self.assertTrue(reverse('canvass_list') in response.url)
         self.assertEqual(unicode(self.canvass_run.bookedcanvassrun), "'%s' has been booked by user: john" % unicode(self.canvass_run))
+
+    def test_unbook_run(self):
+        self.canvass_run.book(user=self.user)
+        self.client.login(username=self.user.username, password=self.user_password)
+        response = self.client.get(reverse('canvass_run_unbook', args=(self.canvass_run.pk,)))
+        self.assertTrue(response.status_code == 302)
+        self.assertTrue(reverse('canvass_list') in response.url)
+        self.assertFalse(BookedCanvassRun.objects.all())
