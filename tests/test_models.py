@@ -25,7 +25,7 @@ class ModelsTest(TestCase):
 
     def test_domecile_lists(self):
         d = Domecile.get_sorted_addresses(self.contact.domecile.postcode)
-        ContactFactory.create_batch(20)
+        ContactFactory.create_batch(5)
         self.assertEqual(d, Domecile.get_sorted_addresses(self.contact.domecile.postcode))
 
     def test_domecile(self):

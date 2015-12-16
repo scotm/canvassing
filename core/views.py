@@ -51,13 +51,20 @@ class DomecileAddressView(LoginRequiredMixin, JSONDataView):
     def get_context_data(self, **kwargs):
         from postcode_locator.models import PostcodeMapping
         context = super(DomecileAddressView, self).get_context_data(**kwargs)
-        postcode = self.request.GET['postcode']
-        data = Domecile.get_sorted_addresses(postcode)
-        summary = Domecile.get_summary_of_postcode(postcode)
-        contacts_count = Contact.objects.filter(
-            domecile__postcode_point=PostcodeMapping.match_postcode(postcode)).count()
-        context.update({'data': data, 'postcode': postcode, 'summary': summary[0], 'buildings': summary[1],
-                        'contacts': contacts_count})
+        try:
+            postcode = self.request.GET['postcode']
+        except:
+            return context
+        try:
+            data = Domecile.get_sorted_addresses(postcode)
+            summary = Domecile.get_summary_of_postcode(postcode)
+            contacts_count = Contact.objects.filter(
+                    domecile__postcode_point=PostcodeMapping.match_postcode(postcode)).count()
+            context.update({'data': data, 'postcode': postcode, 'summary': summary[0], 'buildings': summary[1],
+                            'contacts': contacts_count})
+        except:
+            context.update(
+                    {'data': None, 'postcode': postcode, 'summary': 'No data found', 'buildings': 0, 'contacts': 0})
         return context
 
 
