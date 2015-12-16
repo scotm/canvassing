@@ -100,7 +100,10 @@ class CanvassRun(BaseRun):
         BookedCanvassRun.objects.create(canvass_run=self, booked_by=user)
 
     def unbook(self):
-        BookedCanvassRun.objects.get(canvass_run=self).delete()
+        try:
+            BookedCanvassRun.objects.get(canvass_run=self).delete()
+        except BookedCanvassRun.DoesNotExist:
+            pass
 
     @staticmethod
     def get_unbooked_available_runs(user=None):
@@ -108,7 +111,7 @@ class CanvassRun(BaseRun):
         booked = Q(bookedcanvassrun__isnull=True)
         if user:
             booked = booked | Q(bookedcanvassrun__booked_by=user)
-        return CanvassRun.objects.filter(Q(date_available__isnull=True) | Q(date_available__gte=date.today()), booked)
+        return CanvassRun.objects.filter(Q(date_available__isnull=True) | Q(date_available__lte=date.today()), booked)
 
     def archive(self, days=180):
         # By default, make this run available in six months time.

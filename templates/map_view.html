@@ -19,6 +19,7 @@
         <p>Zoom the map, and pick off the postcodes you'd like to add to this run.</p>
 
         <div id="map"></div>
+    <div id="coordinates"></div>
         <h6>Move To:</h6>
         <form id="postcode_form">
             <div class="row">
@@ -299,6 +300,7 @@
 
         function redrawMarkers() {
             // Redraws markers when the map is sufficiently zoomed.
+            // $("#coordinates").html(map.getBounds().toBBoxString());
             if (map.getZoom() >= 16) {
                 var m = map.getBounds();
                 $.ajax({
