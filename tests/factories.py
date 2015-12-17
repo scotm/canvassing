@@ -13,7 +13,7 @@ from factory import fuzzy
 from django.contrib.auth.models import User, Group
 from django.contrib.gis.geos import Polygon, MultiPolygon
 
-from postcode_locator.tests.factories import PostcodeMappingFactory, northeast, northwest, southeast, southwest
+from postcode_locator.tests.factories import PostcodeMappingFactory, northeast, southwest
 from core.models import Contact, Domecile, ElectoralRegistrationOffice, Ward
 from .names import male_first_names, female_first_names, last_names
 
@@ -34,7 +34,7 @@ class WardFactory(factory.DjangoModelFactory):
     local_authority_name = 'Dundee City'
     active = True
     geom = factory.LazyAttribute(
-        lambda x: MultiPolygon(Polygon((northwest, northeast, southeast, southwest, northwest))))
+        lambda x: MultiPolygon(Polygon.from_bbox((southwest[0], southwest[1], northeast[0], northeast[1]))))
 
 
 class EROFactory(factory.DjangoModelFactory):

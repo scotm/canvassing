@@ -35,13 +35,39 @@ def domecile_map_view(request):
         return JsonResponse(data={})
     bbox = request.GET['BBox'].split(',')
     query_type = request.GET['query_type']
-    data = Domecile.get_postcode_points(southwest=(bbox[0], bbox[1]), northeast=(bbox[2], bbox[3]),
+    queryset = Domecile.get_postcode_points(southwest=(bbox[0], bbox[1]), northeast=(bbox[2], bbox[3]),
                                             region=klass.objects.get(pk=int(area)), query_type=query_type)
 
+    data = [{'postcode': x.postcode, 'point': x.postcode_point.point} for x in queryset]
     for i in data:
         i['point'][0] = round(i['point'][0], 7)
         i['point'][1] = round(i['point'][1], 7)
     return JsonResponse(data={'data': data})
+
+
+class DomecileMapView(LoginRequiredMixin, JSONDataView):
+    def get_context_data(self, **kwargs):
+        context = super(DomecileMapView, self).get_context_data(**kwargs)
+        if 'region' in self.request.GET:
+            klass = Region
+            area = self.request.GET['region']
+        elif 'ward' in self.request.GET:
+            klass = Ward
+            area = self.request.GET['ward']
+        else:
+            return context
+        bbox = self.request.GET['BBox'].split(',')
+        query_type = self.request.GET['query_type']
+        queryset = Domecile.get_postcode_points(southwest=(bbox[0], bbox[1]), northeast=(bbox[2], bbox[3]),
+                                                region=klass.objects.get(pk=int(area)), query_type=query_type)
+
+        data = [{'postcode': x.postcode, 'point': x.postcode_point.point} for x in queryset]
+        for i in data:
+            i['point'][0] = round(i['point'][0], 7)
+            i['point'][1] = round(i['point'][1], 7)
+        context.update({'data': data})
+        return context
+
 
 class DomecileAddressView(LoginRequiredMixin, JSONDataView):
     def get_context_data(self, **kwargs):
