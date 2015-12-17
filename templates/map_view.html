@@ -93,6 +93,8 @@
             shadowUrl: '{% static "images/marker-shadow.png" %}'
         });
 
+        {% include "get_csrftoken.js" %}
+
         // Return a helper with preserved width of cells
         var fixHelper = function (e, ui) {
             ui.children().each(function () {
@@ -272,15 +274,17 @@
                 $.ajax({
                     url: '{% block run_create_url %}{% endblock %}',
                     cache: false,
-                    type: 'GET',
+                    type: 'POST',
                     data: {'run_name': run_name, 'selected_postcodes[]': postcodes_to_send, 'run_notes': run_notes,
                 {% if questionaires %}
                     'questionaire':run_questionaire,
                 {% endif %}},
                     success: function (data) {
-                        displayModal("<h2>Success</h2><p>The run was created and stored successfully</p>");
-                        redrawMarkers();
-                        resetPage();
+                        if (data['outcome'] == 'success') {
+                            displayModal("<h2>Success</h2><p>The run was created and stored successfully</p>");
+                            redrawMarkers();
+                            resetPage();
+                        }
                     },
                     error: function (data) {
                         displayModal("<h2>Failure</h2><p>The run was not created - the administrator has been notified.</p>");
@@ -300,7 +304,7 @@
 
         function redrawMarkers() {
             // Redraws markers when the map is sufficiently zoomed.
-            // $("#coordinates").html(map.getBounds().toBBoxString());
+            $("#coordinates").html(map.getBounds().toBBoxString());
             if (map.getZoom() >= 16) {
                 var m = map.getBounds();
                 $.ajax({

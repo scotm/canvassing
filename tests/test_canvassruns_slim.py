@@ -4,7 +4,8 @@ from datetime import date
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 
-from leafleting.models import BookedCanvassRun
+from core.models import Contact, Domecile
+from leafleting.models import BookedCanvassRun, CanvassRun
 from postcode_locator.tests.factories import PostcodeMappingFactory
 from tests.factories import UserFactory, ContactFactory, DomecileFactory, CanvassRunFactory, WardFactory
 from tests.testcase import LazyTestCase
@@ -15,7 +16,8 @@ class CanvassRunsSlimTest(LazyTestCase):
         self.seconduser = UserFactory(username='scotm', password='pump')
         self.postcodemappings = []
         self.domeciles = []
-        for street, postcode in [('Lilybank Terrace', 'DD4 6BQ'), ('Graham Place', 'DD4 6EH'), ]:
+        self.addresses_and_postcodes = [('Lilybank Terrace', 'DD4 6BQ'), ('Graham Place', 'DD4 6EH'), ]
+        for street, postcode in self.addresses_and_postcodes:
             postcodemapping = PostcodeMappingFactory(postcode=postcode.replace(' ', ''))
             self.postcodemappings.append(postcodemapping)
             self.domeciles += DomecileFactory.create_batch(2, address_4=street, postcode=postcode,
@@ -105,3 +107,27 @@ class CanvassRunsSlimTest(LazyTestCase):
             response = self.get('canvass_run_unbook', None, self.canvass_run.pk)
             self.assertRedirectsTo(response, reverse('canvass_list'))
             self.assertFalse(BookedCanvassRun.objects.all())
+
+    def test_create_run(self):
+        import json
+        with self.login():
+            data = {'run_name': 'A test run', 'selected_postcodes[]': [x[1] for x in self.addresses_and_postcodes], 'run_notes': 'Tenements'}
+            response = self.post('canvass_run_create', data)
+            self.assertTrue(response.status_code == 200)
+            returned_data = json.loads(response.content)
+            self.assertTrue(returned_data['outcome'] == 'success')
+            canvassrun = CanvassRun.objects.get(name=data['run_name'])
+            self.assertTrue(canvassrun.count_people == Contact.objects.all().count())
+            self.assertTrue(canvassrun.count == Domecile.objects.all().count())
+
+    def test_create_run_no_postcodes(self):
+        with self.login():
+            data = {'run_name': 'A test run', 'selected_postcodes[]': [], 'run_notes': 'Tenements'}
+            response = self.post('canvass_run_create', data)
+            self.assertTrue(response.status_code == 404)
+
+
+    def test_page_create(self):
+        with self.login():
+            response = self.get('canvass_ward_view', None, self.ward.pk)
+            self.assertTrue(response.status_code == 200)

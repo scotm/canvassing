@@ -3,7 +3,7 @@ from django.views.generic import TemplateView
 
 from core.models import Ward, Region
 from leafleting.models import LeafletRun, CanvassRun
-from leafleting.views import LeafletRunCreate, CanvassRunCreate, LeafletHomepage, CanvassHomepage, RunDetailView, \
+from leafleting.views import LeafletRunCreate, LeafletHomepage, CanvassHomepage, RunDetailView, \
     CanvassRunListView, LeafletRunListView, RunPicker, AreaPicker, PrintRunDetailView, CanvassRunDelete, CanvassRunBook, \
     CanvassRunUnbook, UserCanvassRunFind, CanvassPicker, DataInput, DataInputJSONAcceptor
 
@@ -23,7 +23,7 @@ urlpatterns = [
     url(r'^leafleting/$', LeafletHomepage.as_view(), name='leaflet_homepage'),
 
     url(r'^canvassing/why_canvass/$', TemplateView.as_view(template_name="why_canvass.html"), name='why_canvass'),
-    url(r'^canvassing/canvass_run_create', CanvassRunCreate.as_view(), name='canvass_run_create'),
+    url(r'^canvassing/canvass_run_create', 'leafleting.views.canvass_run_create', name='canvass_run_create'),
     url(r'^canvassing/region/(?P<pk>[0-9]+)', CanvassPicker.as_view(model=Region), name='canvass_region_view'),
     url(r'^canvassing/region/$', AreaPicker.as_view(template_name='canvassing_region_picker.html', model=Region),
         name='canvass_region_list'),

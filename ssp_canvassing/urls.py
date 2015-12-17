@@ -1,7 +1,7 @@
 from django.conf.urls import include, url
 from django.contrib import admin
 
-from core.views import DomecileMapView, DomecileAddressView, HomepageView, TemplateView
+from core.views import DomecileAddressView, HomepageView, TemplateView
 
 urlpatterns = [
     url(r'^$', HomepageView.as_view(), name='homepage'),
@@ -16,7 +16,7 @@ urlpatterns = [
     url(r'^postcode/', include('postcode_locator.urls')),
     url(r'reports/', include('reporting.urls')),
     url(r'', include('campaigns.urls')),
-    url(r'^ajax/get_domeciles$', DomecileMapView.as_view(), name='get_domeciles'),
+    url(r'^ajax/get_domeciles$', 'core.views.domecile_map_view', name='get_domeciles'),
     url(r'^ajax/get_addresses$', DomecileAddressView.as_view(), name='get_addresses'),
 
     url('^', include('django.contrib.auth.urls')),

@@ -52,3 +52,9 @@ class HomepageTest(LazyTestCase):
         with self.login():
             response = self.get('why_canvass')
             self.assertTrue(response.status_code == 200)
+
+    def test_reporting(self):
+        with self.login():
+            response = self.get('reporting')
+            self.assertTrue(response.status_code == 200)
+

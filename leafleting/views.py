@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.db import models
+from django.http import Http404, JsonResponse, HttpResponseNotFound
 from django.views.generic import ListView, DetailView, TemplateView, UpdateView, DeleteView, RedirectView
 from django_filters.views import FilterView
 from json_views.views import JSONDataView
@@ -86,25 +87,39 @@ class LeafletRunCreate(LoginRequiredMixin, JSONDataView):
         context = super(LeafletRunCreate, self).get_context_data(**kwargs)
         postcodes = self.request.GET.getlist('selected_postcodes[]')
         if not postcodes:
-            raise Exception("A list of postcodes is required.")
+            raise Http404("A list of postcodes is required.")
+        else:
+            run = self.model.objects.create(**{'name': self.request.GET['run_name'],
+                                               'notes': self.request.GET['run_notes'], 'created_by': self.request.user})
+            for x in postcodes:
+                run.postcode_points.add(PostcodeMapping.match_postcode(x))
 
-        leaflet_run = self.model.objects.create(
-                **{'name': self.request.GET['run_name'], 'notes': self.request.GET['run_notes'],
-                   'created_by': self.request.user})
-        for x in postcodes:
-            leaflet_run.postcode_points.add(PostcodeMapping.match_postcode(x))
+            if 'questionaire' in self.request.GET:
+                run.questionaire_id = int(self.request.GET['questionaire'])
 
-        if 'questionaire' in self.request.GET:
-            leaflet_run.questionaire_id = int(self.request.GET['questionaire'])
-
-        leaflet_run.ward = leaflet_run.get_ward()
-        leaflet_run.save()
-        context.update({'outcome': 'success'})
+            run.ward = run.get_ward()
+            run.save()
+            context.update({'outcome': 'success'})
         return context
 
 
-class CanvassRunCreate(LeafletRunCreate):
-    model = CanvassRun
+def canvass_run_create(request, model=CanvassRun):
+    postcodes = request.POST.getlist('selected_postcodes[]')
+    if not postcodes:
+        return HttpResponseNotFound('<h1>A list of postcodes is required</h1>')
+    else:
+        run = model.objects.create(
+                **{'name': request.POST['run_name'], 'notes': request.POST['run_notes'], 'created_by': request.user})
+        for x in postcodes:
+            run.postcode_points.add(PostcodeMapping.match_postcode(x))
+
+        if 'questionaire' in request.POST:
+            run.questionaire_id = int(request.POST['questionaire'])
+
+        run.ward = run.get_ward()
+        run.save()
+        return JsonResponse(data={'outcome': 'success'})
+
 
 
 class CanvassRunBook(RedirectView):
