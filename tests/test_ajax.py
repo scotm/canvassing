@@ -6,12 +6,11 @@ from django.test import TestCase
 
 from core.models import Domecile, Contact
 from tests.factories import UserFactory, DomecileFactory, ContactFactory
+from tests.testcase import LazyTestCase
 
 
-class CanvassRunsTest(TestCase):
-    def setUp(self):
-        self.user_password = 'top_secret'
-        self.user = UserFactory(password=self.user_password)
+class CanvassRunsTest(LazyTestCase):
+    def load_data(self):
         for street, postcode in [('Lilybank Terrace', 'DD4 6BQ'), ('Graham Place', 'DD4 6EH'),
                                  ('Thorter Way', 'DD1 3DF'), ]:
             DomecileFactory.create_batch(5, address_4=street, postcode=postcode,
@@ -21,24 +20,24 @@ class CanvassRunsTest(TestCase):
             ContactFactory.create_batch(batch, domecile=domecile)
 
     def test_get_addresses(self):
-        self.client.login(username=self.user.username, password=self.user_password)
-        response = self.client.get(reverse('get_addresses'), {'postcode': 'DD4 6BQ'})
-        data = json.loads(response.content)
-        self.assertEqual(data['buildings'], Domecile.objects.filter(postcode='DD4 6BQ').count())
-        self.assertEqual(data['contacts'], Contact.objects.filter(domecile__postcode='DD4 6BQ').count())
+        with self.login():
+            response = self.client.get(reverse('get_addresses'), {'postcode': 'DD4 6BQ'})
+            data = json.loads(response.content)
+            self.assertEqual(data['buildings'], Domecile.objects.filter(postcode='DD4 6BQ').count())
+            self.assertEqual(data['contacts'], Contact.objects.filter(domecile__postcode='DD4 6BQ').count())
 
     def test_get_addresses_not_in(self):
-        self.client.login(username=self.user.username, password=self.user_password)
-        response = self.client.get(reverse('get_addresses'), {'postcode': 'EH6 4SZ'})
-        data = json.loads(response.content)
-        self.assertEqual(data['buildings'], Domecile.objects.filter(postcode='EH6 4SZ').count())
-        self.assertEqual(data['contacts'], Contact.objects.filter(domecile__postcode='EH6 4SZ').count())
+        with self.login():
+            response = self.client.get(reverse('get_addresses'), {'postcode': 'EH6 4SZ'})
+            data = json.loads(response.content)
+            self.assertEqual(data['buildings'], Domecile.objects.filter(postcode='EH6 4SZ').count())
+            self.assertEqual(data['contacts'], Contact.objects.filter(domecile__postcode='EH6 4SZ').count())
 
     def test_get_addresses_blank(self):
-        self.client.login(username=self.user.username, password=self.user_password)
-        response = self.client.get(reverse('get_addresses'), {})
-        data = json.loads(response.content)
-        self.assertFalse(data)
+        with self.login():
+            response = self.client.get(reverse('get_addresses'), {})
+            data = json.loads(response.content)
+            self.assertFalse(data)
 
     def test_get_addresses_no_login(self):
         response = self.client.get(reverse('get_addresses'), {'postcode': 'DD4 6BQ'})

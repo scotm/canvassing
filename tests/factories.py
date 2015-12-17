@@ -33,9 +33,8 @@ class WardFactory(factory.DjangoModelFactory):
     local_authority_code = 'S12000042'
     local_authority_name = 'Dundee City'
     active = True
-    geom = factory.LazyAttribute(lambda x: MultiPolygon(Polygon((northwest, northeast, southeast, southwest, northwest))))
-
-
+    geom = factory.LazyAttribute(
+        lambda x: MultiPolygon(Polygon((northwest, northeast, southeast, southwest, northwest))))
 
 
 class EROFactory(factory.DjangoModelFactory):
