@@ -3,6 +3,7 @@ from datetime import date
 from campaigns.models import Campaign, DownloadFile, Signature
 from leafleting.models import CanvassRun
 from leafleting.models import LeafletRun
+from polling.models import CanvassQuestion
 
 __author__ = 'scotm'
 from random import randint, choice
@@ -10,9 +11,10 @@ from random import randint, choice
 import factory
 from factory import fuzzy
 from django.contrib.auth.models import User, Group
+from django.contrib.gis.geos import Polygon, MultiPolygon
 
-from postcode_locator.tests.factories import PostcodeMappingFactory
-from core.models import Contact, Domecile, ElectoralRegistrationOffice
+from postcode_locator.tests.factories import PostcodeMappingFactory, northeast, northwest, southeast, southwest
+from core.models import Contact, Domecile, ElectoralRegistrationOffice, Ward
 from .names import male_first_names, female_first_names, last_names
 
 
@@ -20,6 +22,21 @@ from .names import male_first_names, female_first_names, last_names
 # logger = logging.getLogger('factory')
 # logger.addHandler(logging.StreamHandler())
 # logger.setLevel(logging.DEBUG)
+
+class WardFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = Ward
+
+    ward_code = 'S13002548'
+    ward_name = 'Coldside'
+    wd14nmw = ''
+    local_authority_code = 'S12000042'
+    local_authority_name = 'Dundee City'
+    active = True
+    geom = factory.LazyAttribute(lambda x: MultiPolygon(Polygon((northwest, northeast, southeast, southwest, northwest))))
+
+
+
 
 class EROFactory(factory.DjangoModelFactory):
     class Meta:
@@ -122,14 +139,20 @@ class CanvassRunFactory(factory.DjangoModelFactory):
 
     @factory.post_generation
     def postcode_points(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
+        if create and extracted:
+            # A list of points were passed in, use them
+            for point in extracted:
+                self.postcode_points.add(point)
 
-        if extracted:
-            # A list of groups were passed in, use them
-            for group in extracted:
-                self.postcode_points.add(group)
+
+class CanvassQuestionFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = CanvassQuestion
+
+    short_name = factory.Iterator(['Independence', 'Heard of Org', ''])
+    polling_question = factory.Iterator(
+            ['Should Scotland be an independent country?', 'Have you heard of our organisation?', ''])
+    type = factory.Iterator(['True/False', 'True/False'])
 
 
 class SuperuserFactory(UserFactory):

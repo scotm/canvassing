@@ -1,4 +1,5 @@
 import json
+from datetime import date
 
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
@@ -6,7 +7,7 @@ from django.test import TestCase
 
 from leafleting.models import BookedCanvassRun
 from postcode_locator.tests.factories import PostcodeMappingFactory
-from tests.factories import UserFactory, ContactFactory, DomecileFactory, CanvassRunFactory
+from tests.factories import UserFactory, ContactFactory, DomecileFactory, CanvassRunFactory, WardFactory
 
 
 class CanvassRunsSlimTest(TestCase):
@@ -25,6 +26,11 @@ class CanvassRunsSlimTest(TestCase):
         for domecile in self.domeciles:
             ContactFactory(domecile=domecile)
         self.canvass_run = CanvassRunFactory(postcode_points=self.postcodemappings, created_by=self.seconduser)
+        self.ward = WardFactory()
+
+    def test_date(self):
+        self.canvass_run.book(self.user)
+        self.assertEqual(self.canvass_run.bookedcanvassrun.booked_from, date.today())
 
     def test_name(self):
         self.assertIn(unicode(self.canvass_run), {'This is a test', 'Another Test', 'One more test'})
@@ -45,6 +51,11 @@ class CanvassRunsSlimTest(TestCase):
     def test_page_login(self):
         self.client.login(username=self.user.username, password=self.user_password)
         response = self.client.get(self.canvass_run.get_absolute_url())
+        self.assertTrue(response.status_code == 200)
+
+    def test_canvass_homepage(self):
+        self.client.login(username=self.user.username, password=self.user_password)
+        response = self.client.get(reverse('canvass_homepage'))
         self.assertTrue(response.status_code == 200)
 
     def test_print_page_login(self):
