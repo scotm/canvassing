@@ -65,8 +65,7 @@ class HomepageView(CustomLoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         from campaigns.models import Campaign
-
-        kwargs.update({'current_campaign': Campaign.get_latest_top_level_campaign()})
+        kwargs['current_campaign'] = Campaign.get_latest_top_level_campaign()
         return super(HomepageView, self).get_context_data(**kwargs)
 
 
