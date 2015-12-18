@@ -33,6 +33,7 @@ if 'test' in sys.argv:
     apps_to_remove = {'flat', 'django.contrib.admin', 'django_extensions', 'OpenStreetMap', }
     INSTALLED_APPS = tuple(filter(lambda x: x not in apps_to_remove, INSTALLED_APPS))
 
+
     # Don't bother testing migrations - https://gist.github.com/NotSqrt/5f3c76cd15e40ef62d09
     class DisableMigrations(object):
         def __contains__(self, item):

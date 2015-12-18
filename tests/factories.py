@@ -34,7 +34,7 @@ class WardFactory(factory.DjangoModelFactory):
     local_authority_name = 'Dundee City'
     active = True
     geom = factory.LazyAttribute(
-        lambda x: MultiPolygon(Polygon.from_bbox((southwest[0], southwest[1], northeast[0], northeast[1]))))
+            lambda x: MultiPolygon(Polygon.from_bbox((southwest[0], southwest[1], northeast[0], northeast[1]))))
 
 
 class EROFactory(factory.DjangoModelFactory):
@@ -158,6 +158,7 @@ class CanvassQuestionFactory(factory.DjangoModelFactory):
 class CanvassChoicesAvailableFactory(factory.DjangoModelFactory):
     class Meta:
         model = CanvassChoicesAvailable
+
     question = factory.SubFactory(CanvassQuestionFactory)
     option = factory.LazyAttributeSequence(lambda _, n: 'Answer %d' % n)
 

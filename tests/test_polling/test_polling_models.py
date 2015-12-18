@@ -4,7 +4,7 @@ from tests.testcase import LazyTestCase
 
 class ModelsTest(LazyTestCase):
     def load_data(self):
-        self.question = CanvassQuestionFactory.create(short_name='Holyrood 2016',
+        self.question = CanvassQuestionFactory(short_name='Holyrood 2016',
                                                polling_question='Which party will you vote for on the list in 2016?',
                                                type='Multiple-choice')
 
