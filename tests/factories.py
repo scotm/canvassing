@@ -3,7 +3,7 @@ from datetime import date
 from campaigns.models import Campaign, DownloadFile, Signature
 from leafleting.models import CanvassRun
 from leafleting.models import LeafletRun
-from polling.models import CanvassQuestion
+from polling.models import CanvassQuestion, CanvassChoicesAvailable
 
 __author__ = 'scotm'
 from random import randint, choice
@@ -147,11 +147,19 @@ class CanvassRunFactory(factory.DjangoModelFactory):
 class CanvassQuestionFactory(factory.DjangoModelFactory):
     class Meta:
         model = CanvassQuestion
+        django_get_or_create = ('short_name',)
 
     short_name = factory.Iterator(['Independence', 'Heard of Org', ''])
     polling_question = factory.Iterator(
             ['Should Scotland be an independent country?', 'Have you heard of our organisation?', ''])
     type = factory.Iterator(['True/False', 'True/False'])
+
+
+class CanvassChoicesAvailableFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = CanvassChoicesAvailable
+    question = factory.SubFactory(CanvassQuestionFactory)
+    option = factory.LazyAttributeSequence(lambda _, n: 'Answer %d' % n)
 
 
 class SuperuserFactory(UserFactory):

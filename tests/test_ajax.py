@@ -46,6 +46,6 @@ class CanvassRunsTest(LazyTestCase):
         with self.login():
             data = {'BBox': '-2.937769889831543,56.4740473445564,-2.9126644134521484,56.47997257534551',
                     'ward': self.ward.pk, 'query_type': 'canvassing'}
-            print data
             response = self.get('get_domeciles', data)
-            print response.content
+
+
