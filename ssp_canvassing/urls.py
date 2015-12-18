@@ -16,9 +16,6 @@ urlpatterns = [
     url(r'^postcode/', include('postcode_locator.urls')),
     url(r'reports/', include('reporting.urls')),
     url(r'', include('campaigns.urls')),
-    url(r'^ajax/get_domeciles$', 'core.views.domecile_map_view', name='get_domeciles'),
-    url(r'^ajax/get_addresses$', 'core.views.domecile_address_view', name='get_addresses'),
-
     url('^', include('django.contrib.auth.urls')),
     # url(r'^ward/(?P<slug>[a-z\-_]+)', WardView.as_view()),
 ]

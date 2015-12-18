@@ -44,4 +44,6 @@ urlpatterns = [
     url(r'^canvassing/list/', CanvassRunListView.as_view(), name='canvass_list'),
 
     url(r'^canvassing/$', CanvassHomepage.as_view(), name='canvass_homepage'),
+    url(r'^ajax/get_domeciles$', 'core.views.domecile_map_view', name='get_domeciles'),
+    url(r'^ajax/get_addresses$', 'core.views.domecile_address_view', name='get_addresses'),
 ]
