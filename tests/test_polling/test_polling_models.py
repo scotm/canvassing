@@ -1,4 +1,4 @@
-from tests.factories import CanvassQuestionFactory, CanvassChoicesAvailableFactory
+from tests.factories import CanvassQuestionFactory, CanvassChoicesAvailableFactory, CanvassQuestionaireFactory
 from tests.testcase import LazyTestCase
 
 
@@ -18,3 +18,8 @@ class ModelsTest(LazyTestCase):
         for i in objects:
             self.assertIn(i, compare)
         self.assertEqual(unicode(objects[0]), 'Which party will you vote for on the list in 2016? -> Answer 0')
+
+    def test_questionaire(self):
+        questions = CanvassQuestionFactory.create_batch(3)
+        questionaire = CanvassQuestionaireFactory(questions=questions)
+        self.assertEqual(unicode(questionaire), "Independence, Heard of Org, West Lothian Hospital")

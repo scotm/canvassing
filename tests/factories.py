@@ -3,7 +3,7 @@ from datetime import date
 from campaigns.models import Campaign, DownloadFile, Signature
 from leafleting.models import CanvassRun
 from leafleting.models import LeafletRun
-from polling.models import CanvassQuestion, CanvassChoicesAvailable
+from polling.models import CanvassQuestion, CanvassChoicesAvailable, CanvassQuestionaire
 
 __author__ = 'scotm'
 from random import randint, choice
@@ -149,10 +149,10 @@ class CanvassQuestionFactory(factory.DjangoModelFactory):
         model = CanvassQuestion
         django_get_or_create = ('short_name',)
 
-    short_name = factory.Iterator(['Independence', 'Heard of Org', ''])
+    short_name = factory.Iterator(['Independence', 'Heard of Org', 'West Lothian Hospital'])
     polling_question = factory.Iterator(
-            ['Should Scotland be an independent country?', 'Have you heard of our organisation?', ''])
-    type = factory.Iterator(['True/False', 'True/False'])
+            ['Should Scotland be an independent country?', 'Have you heard of our organisation?', "Are you concerned about future of the children's ward at St John's Hospital"])
+    type = factory.Iterator(['True/False', 'True/False', 'True/False'])
 
 
 class CanvassChoicesAvailableFactory(factory.DjangoModelFactory):
@@ -161,6 +161,20 @@ class CanvassChoicesAvailableFactory(factory.DjangoModelFactory):
 
     question = factory.SubFactory(CanvassQuestionFactory)
     option = factory.LazyAttributeSequence(lambda _, n: 'Answer %d' % n)
+
+
+class CanvassQuestionaireFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = CanvassQuestionaire
+
+    campaign = factory.SubFactory(CampaignFactory)
+
+    @factory.post_generation
+    def questions(self, create, extracted, **kwargs):
+        if create and extracted:
+            # A list of points were passed in, use them
+            for point in extracted:
+                self.questions.add(point)
 
 
 class SuperuserFactory(UserFactory):
