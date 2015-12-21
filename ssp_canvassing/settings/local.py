@@ -23,7 +23,6 @@ if 'test' in sys.argv:
 
     # Disable redirection when testing. https://code.djangoproject.com/ticket/12227
     PREPEND_WWW = False
-    TEMPLATE_DEBUG = False
     DEBUG = False
     PASSWORD_HASHERS = (
         'django.contrib.auth.hashers.MD5PasswordHasher',
