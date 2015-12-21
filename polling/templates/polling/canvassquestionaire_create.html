@@ -1,5 +1,8 @@
 {% extends "base.html" %}
+{% load static %}
 {% block page_title %}COMRADE: Create Questionaire{% endblock %}
+{% block before_body_close %}{{ block.super }}<script src="{% static 'sortedm2m/widget.js' %}"></script>
+<script src="{% static 'sortedm2m/jquery-ui.js' %}"></script> {% endblock %}
 {% block content %}
     <div class="large-12 columns">
         <h1>{% block heading %}Create Questionaire{% endblock %}</h1>
