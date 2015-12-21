@@ -66,21 +66,24 @@ class Domecile(models.Model):
         from leafleting.models import LeafletRun, CanvassRun
         # Construct a bounding box
         # http://stackoverflow.com/questions/9466043/geodjango-within-a-ne-sw-box
+
         bounding_box = Polygon.from_bbox((southwest[0], southwest[1], northeast[0], northeast[1]))
         queryset = Domecile.objects.filter(postcode_point__point__contained=bounding_box)
-        if query_type == 'leafleting':
-            queryset = queryset.exclude(postcode_point__in=LeafletRun.objects.filter(
-                    postcode_points__point__contained=bounding_box).values_list('postcode_points', flat=True))
-        elif query_type == 'canvassing':
-            queryset = queryset.exclude(postcode_point__in=CanvassRun.objects.filter(
-                    postcode_points__point__contained=bounding_box).values_list('postcode_points', flat=True))
         if region:
             queryset = queryset.filter(postcode_point__point__within=region.geom)
+        if query_type in ['leafleting', 'canvassing']:
+            inner_klass = LeafletRun
+            if query_type == 'canvassing':
+                inner_klass = CanvassRun
+            queryset = queryset.exclude(postcode_point__in=inner_klass.objects.filter(
+                    postcode_points__point__contained=bounding_box).values_list('postcode_points', flat=True))
         return queryset
 
     @staticmethod
     def get_postcode_points(*args, **kwargs):
-        return Domecile.get_domeciles(*args, **kwargs).distinct('postcode')
+        # return Domecile.get_domeciles(*args, **kwargs).distinct('postcode')
+        return [{'postcode': x[0], 'point': [x[1].x, x[1].y]} for x in
+                Domecile.get_domeciles(*args, **kwargs).values_list('postcode', 'postcode_point__point').distinct()]
 
     @staticmethod
     def get_sorted_addresses(postcode):

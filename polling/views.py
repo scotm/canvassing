@@ -9,11 +9,13 @@ __author__ = 'scotm'
 class QuestionaireListView(ListView):
     model = CanvassQuestionaire
 
+
 class QuestionaireCreateView(CreateView):
     template_name = 'polling/canvassquestionaire_create.html'
     model = CanvassQuestionaire
     fields = ['campaign', 'questions']
     success_url = reverse_lazy('questionaire_list')
+
 
 class QuestionCreateView(CreateView):
     template_name = 'polling/canvassquestion_create.html'

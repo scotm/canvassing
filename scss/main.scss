@@ -43,14 +43,25 @@
 //@import "foundation/components/tooltips";
 //@import "foundation/components/offcanvas";
 
-table, .full_width_button {
-  width: 100%;
-}
-
-h1, h2, h3, h4, h5, h6, .breadcrumbs{
-  font-weight:bold;
+h1, h2, h3, h4, h5, h6, .breadcrumbs {
+  font-weight: bold;
   //text-transform: capitalize;
   text-transform: uppercase;
+}
+
+.sortedm2m-container{
+  border:1px solid #000;
+  padding:0.5em;
+}
+
+.selector-filter input[type="text"] {
+    width: 90%;
+    display: inline;
+    margin-bottom: 0;
+}
+
+table, .full_width_button{
+  width:100%;
 }
 
 .dark-panel {

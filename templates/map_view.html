@@ -19,6 +19,7 @@
         <p>Zoom the map, and pick off the postcodes you'd like to add to this run.</p>
 
         <div id="map"></div>
+    <div id="coordinates"></div>
         <h6>Move To:</h6>
         <form id="postcode_form">
             <div class="row">
@@ -91,6 +92,8 @@
             iconUrl: '{% static "images/marker-set.png" %}',
             shadowUrl: '{% static "images/marker-shadow.png" %}'
         });
+
+        {% include "get_csrftoken.js" %}
 
         // Return a helper with preserved width of cells
         var fixHelper = function (e, ui) {
@@ -165,7 +168,7 @@
                                 var tds = '<tr><td>' + data['postcode'] + '</td><td>' +
                                             //data['data'].join(':: ') +
                                         '</td><td>' + data['summary'] + '</td><td>' +
-                                        data['buildings'] + '</td><td>'+data['contacts']+'</td></tr>';
+                                        data['buildings'] + '</td><td>' + data['contacts'] + '</td></tr>';
 
                                 // Fire it in.
                                 if ($('tbody', this).length > 0) {
@@ -173,7 +176,7 @@
                                 } else {
                                     $(this).append(tds);
                                 }
-                                selected_address_count = selected_address_count + data['data'].length;
+                                selected_address_count = selected_address_count + data['buildings'];
                                 selected_postcodes.push(data['postcode']);
                             });
                         }
@@ -194,7 +197,7 @@
 
                 // Set the counter correctly.
                 selected_address_count = 0;
-                table.find('tr td:nth-child(4)').each(function(){
+                table.find('tr td:nth-child(4)').each(function () {
                     selected_address_count += parseInt($(this).text());
                 });
 
@@ -214,9 +217,13 @@
         function resetPage() {
             selected_postcodes = [];
             selected_address_count = 0;
-            $('#postcodes_table').find('tr').each(function () {
-                this.remove();
-            });
+            // Remove all non-header rows from the table
+            // http://stackoverflow.com/questions/9420203/how-to-remove-all-rows-of-the-table-but-keep-the-header
+            $('#postcodes_table').find('tr').not(function () {
+                if ($(this).has('th').length) {
+                    return true
+                }
+            }).remove();
             $("#run_name").val('');
             $("#run_notes").val('');
         }
@@ -271,15 +278,18 @@
                 $.ajax({
                     url: '{% block run_create_url %}{% endblock %}',
                     cache: false,
-                    type: 'GET',
-                    data: {'run_name': run_name, 'selected_postcodes[]': postcodes_to_send, 'run_notes': run_notes,
-                {% if questionaires %}
-                    'questionaire':run_questionaire,
-                {% endif %}},
+                    type: 'POST',
+                    data: {
+                        'run_name': run_name, 'selected_postcodes[]': postcodes_to_send, 'run_notes': run_notes,
+                        {% if questionaires %}
+                            'questionaire': run_questionaire,
+                        {% endif %}},
                     success: function (data) {
-                        displayModal("<h2>Success</h2><p>The run was created and stored successfully</p>");
-                        redrawMarkers();
-                        resetPage();
+                        if (data['outcome'] == 'success') {
+                            displayModal("<h2>Success</h2><p>The run was created and stored successfully</p>");
+                            redrawMarkers();
+                            resetPage();
+                        }
                     },
                     error: function (data) {
                         displayModal("<h2>Failure</h2><p>The run was not created - the administrator has been notified.</p>");
@@ -291,7 +301,7 @@
             }
         });
 
-        function removeAllMarkers(){
+        function removeAllMarkers() {
             markers.forEach(function (entry) {
                 map.removeLayer(entry)
             });
@@ -299,6 +309,7 @@
 
         function redrawMarkers() {
             // Redraws markers when the map is sufficiently zoomed.
+            // $("#coordinates").html(map.getBounds().toBBoxString());
             if (map.getZoom() >= 16) {
                 var m = map.getBounds();
                 $.ajax({

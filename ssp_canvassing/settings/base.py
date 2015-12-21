@@ -21,8 +21,6 @@ except ImportError:
 
     compat.register()
 
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
-
 BASE_DIR = Path(os.path.dirname(__file__)).parent.parent
 
 ADMINS = (
@@ -47,10 +45,7 @@ try:
 except ImportError:
     pass
 
-TEMPLATE_DEBUG = True
-
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -77,7 +72,7 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'htmlmin.middleware.HtmlMinifyMiddleware',
+    # 'htmlmin.middleware.HtmlMinifyMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -90,7 +85,6 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'ssp_canvassing.urls'
 
 WSGI_APPLICATION = 'ssp_canvassing.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
@@ -118,14 +112,29 @@ USE_L10N = True
 
 USE_TZ = True
 
-TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',
-                    'django.template.loaders.app_directories.Loader')
-
-TEMPLATE_DIRS = (Path(BASE_DIR, "templates"), )
-
-TEMPLATE_CONTEXT_PROCESSORS = TCP + (
-    'django.core.context_processors.request',
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            Path(BASE_DIR, "templates"),
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
+                # list if you haven't customized them:
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+            ],
+            'debug': True,
+        },
+    },
+]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/

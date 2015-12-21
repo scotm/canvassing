@@ -1,5 +1,5 @@
-from datetime import date, timedelta
 from collections import namedtuple
+from datetime import date, timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -11,10 +11,11 @@ from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 from sortedm2m.fields import SortedManyToManyField
 
-from core.utilities.domecile_comparisons import domecile_key, domecile_list_to_string
 from core.models import Domecile, Contact, IntermediateZone, Ward, DataZone
+from core.utilities.domecile_comparisons import domecile_key, domecile_list_to_string
 
 DomecilesDescriptor = namedtuple('DomecilesDescriptor', ['grouper', 'description'])
+
 
 class BaseRun(models.Model):
     name = models.CharField(max_length=100)
@@ -99,7 +100,10 @@ class CanvassRun(BaseRun):
         BookedCanvassRun.objects.create(canvass_run=self, booked_by=user)
 
     def unbook(self):
-        BookedCanvassRun.objects.get(canvass_run=self).delete()
+        try:
+            BookedCanvassRun.objects.get(canvass_run=self).delete()
+        except BookedCanvassRun.DoesNotExist:
+            pass
 
     @staticmethod
     def get_unbooked_available_runs(user=None):
@@ -107,7 +111,7 @@ class CanvassRun(BaseRun):
         booked = Q(bookedcanvassrun__isnull=True)
         if user:
             booked = booked | Q(bookedcanvassrun__booked_by=user)
-        return CanvassRun.objects.filter(Q(date_available__isnull=True) | Q(date_available__gte=date.today()), booked)
+        return CanvassRun.objects.filter(Q(date_available__isnull=True) | Q(date_available__lte=date.today()), booked)
 
     def archive(self, days=180):
         # By default, make this run available in six months time.
