@@ -5,6 +5,7 @@ class HomepageTest(LazyTestCase):
     def test_homepage(self):
         # Without a logged-in user
         response = self.get('homepage')
+        self.assertEqual(response.status_code,302)
         self.assertRedirectsTo(response, '/login/?next=/')
 
     def test_homepage_logged_in(self):

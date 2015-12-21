@@ -13,6 +13,7 @@ class ModelsTest(LazyTestCase):
 
     def test_multiple_choice(self):
         objects = CanvassChoicesAvailableFactory.create_batch(3, question=self.question)
+
         self.assertEqual(self.question.choices(), 'Answer 0, Answer 1, Answer 2')
         compare = self.question.choices_objects()
         for i in objects:
