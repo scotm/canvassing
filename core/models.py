@@ -102,15 +102,21 @@ class Domecile(models.Model):
         suffix, prefix = [], []
 
         # While the last word is all the same, store it, and remove them.
-        while all(x.number_info[-1] == addresses[0].number_info[-1] for x in addresses):
-            suffix.insert(0, addresses[0].number_info[-1])
-            for x in addresses:
-                x.number_info.pop(-1)
+        try:
+            while all(x.number_info[-1] == addresses[0].number_info[-1] for x in addresses):
+                suffix.insert(0, addresses[0].number_info[-1])
+                for x in addresses:
+                    x.number_info.pop(-1)
+        except IndexError:
+            pass
 
-        while all(x.number_info[0] == addresses[0].number_info[0] for x in addresses):
-            prefix.insert(0, addresses[0].number_info[0])
-            for x in addresses:
-                x.number_info.pop(0)
+        try:
+            while all(x.number_info[0] == addresses[0].number_info[0] for x in addresses):
+                prefix.insert(0, addresses[0].number_info[0])
+                for x in addresses:
+                    x.number_info.pop(0)
+        except IndexError:
+            pass
 
         # Cast the numbers as integers, so it's consistent and easier to sort.
         for x in addresses:

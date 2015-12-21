@@ -1,4 +1,5 @@
 from collections import defaultdict
+from functools import partial
 from urlparse import parse_qs
 
 import django_filters
@@ -81,29 +82,6 @@ class LeafletRunListView(LoginRequiredMixin, ListView):
     model = LeafletRun
 
 
-class LeafletRunCreate(LoginRequiredMixin, JSONDataView):
-    model = LeafletRun
-
-    def get_context_data(self, **kwargs):
-        context = super(LeafletRunCreate, self).get_context_data(**kwargs)
-        postcodes = self.request.GET.getlist('selected_postcodes[]')
-        if not postcodes:
-            raise Http404("A list of postcodes is required.")
-        else:
-            run = self.model.objects.create(**{'name': self.request.GET['run_name'],
-                                               'notes': self.request.GET['run_notes'], 'created_by': self.request.user})
-            for x in postcodes:
-                run.postcode_points.add(PostcodeMapping.match_postcode(x))
-
-            if 'questionaire' in self.request.GET:
-                run.questionaire_id = int(self.request.GET['questionaire'])
-
-            run.ward = run.get_ward()
-            run.save()
-            context.update({'outcome': 'success'})
-        return context
-
-
 def canvass_run_create(request, model=CanvassRun):
     postcodes = request.POST.getlist('selected_postcodes[]')
     if not postcodes:
@@ -121,6 +99,7 @@ def canvass_run_create(request, model=CanvassRun):
         run.save()
         return JsonResponse(data={'outcome': 'success'})
 
+leaflet_run_create = partial(canvass_run_create, model=LeafletRun)
 
 
 class CanvassRunBook(RedirectView):

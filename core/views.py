@@ -1,11 +1,9 @@
 from braces.views import LoginRequiredMixin
 from braces.views._access import AccessMixin
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
 from django.views.generic import DetailView, ListView, TemplateView
 
-from core.models import Contact, Domecile, Ward, Region
+from core.models import Contact
 
 
 class CustomLoginRequiredMixin(AccessMixin):

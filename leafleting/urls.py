@@ -3,16 +3,16 @@ from django.views.generic import TemplateView
 
 from core.models import Ward, Region
 from leafleting.models import LeafletRun, CanvassRun
-from leafleting.views import LeafletRunCreate, LeafletHomepage, CanvassHomepage, RunDetailView, \
+from leafleting.views import LeafletHomepage, CanvassHomepage, RunDetailView, \
     CanvassRunListView, LeafletRunListView, RunPicker, AreaPicker, PrintRunDetailView, CanvassRunDelete, CanvassRunBook, \
     CanvassRunUnbook, UserCanvassRunFind, CanvassPicker, DataInput, DataInputJSONAcceptor, canvass_run_create, \
-    domecile_map_view, domecile_address_view
+    domecile_map_view, domecile_address_view, leaflet_run_create
 
 __author__ = 'scotm'
 
 urlpatterns = [
     url(r'^leafleting/why_leaflet/$', TemplateView.as_view(template_name='why_leaflet.html'), name='why_leaflet'),
-    url(r'^leafleting/leaflet_run_create', LeafletRunCreate.as_view(), name='leaflet_run_create'),
+    url(r'^leafleting/leaflet_run_create', leaflet_run_create, name='leaflet_run_create'),
     url(r'^leafleting/region/(?P<pk>[0-9]+)', RunPicker.as_view(template_name='leafleting_picker.html', model=Region),
         name='leaflet_region_view'),
     url(r'^leafleting/ward/(?P<pk>[0-9]+)', RunPicker.as_view(model=Ward, template_name='leafleting_picker.html'),

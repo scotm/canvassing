@@ -96,7 +96,16 @@ class CanvassRun(BaseRun):
     date_available = models.DateField(null=True)
     questionaire = models.ForeignKey('polling.CanvassQuestionaire', null=True)
 
+    @property
+    def booked_by(self):
+        try:
+            b = BookedCanvassRun.objects.get(canvass_run=self)
+            return b.booked_by
+        except BookedCanvassRun.DoesNotExist:
+            return
+
     def book(self, user):
+        self.unbook()
         BookedCanvassRun.objects.create(canvass_run=self, booked_by=user)
 
     def unbook(self):
