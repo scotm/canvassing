@@ -16,13 +16,13 @@ class HomepageTest(LazyTestCase):
 
     def test_about_page(self):
         # Without a logged-in user
-        response = self.get('about_the_ssp')
+        response = self.get('about_us')
         self.assertTrue(response.status_code == 200)
 
     def test_about_page_logged_in(self):
         # With a logged-in user
         with self.login():
-            response = self.get('about_the_ssp')
+            response = self.get('about_us')
             self.assertTrue(response.status_code == 200)
 
     def test_bugs_page(self):
