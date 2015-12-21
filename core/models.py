@@ -90,8 +90,8 @@ class Domecile(models.Model):
 
     @staticmethod
     def get_main_address(postcode):
-        p = PostcodeMapping.match_postcode(postcode)
-        queryset = Domecile.objects.filter(postcode_point=p)
+        #p = PostcodeMapping.match_postcode(postcode)
+        queryset = Domecile.objects.filter(postcode=postcode)
         addresses = [Residue(number_info=" ".join([getattr(domecile, "address_%d" % x) for x in range(1, 10) if
                                                    getattr(domecile, "address_%d" % x)]).split(), domecile=domecile)
                      for domecile in queryset]
