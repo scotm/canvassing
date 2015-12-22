@@ -31,6 +31,13 @@ class ModelSlim(TestCase):
             self.assertEqual(test_result.prefix, '')
             self.assertEqual(test_result.suffix, 'Snookit Street Dundee')
 
+    def test_get_main_address_none(self):
+        with mock.patch('core.models.Domecile.objects.filter') as my_mock:
+            my_mock.return_value = []
+            test_result = Domecile.get_main_address('EH6 4SZ')
+            self.assertEqual(test_result, None)
+            my_mock.assert_called_with(postcode='EH6 4SZ')
+
     def test_politicalparty(self):
         party = PoliticalPartyFactory.build()
         self.assertEqual(party.__unicode__(), 'Scottish Socialist Party')
