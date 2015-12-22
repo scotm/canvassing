@@ -14,7 +14,7 @@ from django.contrib.auth.models import User, Group
 from django.contrib.gis.geos import Polygon, MultiPolygon
 
 from postcode_locator.tests.factories import PostcodeMappingFactory, northeast, southwest
-from core.models import Contact, Domecile, ElectoralRegistrationOffice, Ward
+from core.models import Contact, Domecile, ElectoralRegistrationOffice, Ward, PoliticalParty
 from .names import male_first_names, female_first_names, last_names
 
 
@@ -78,6 +78,11 @@ class UserFactory(factory.DjangoModelFactory):
     password = factory.PostGenerationMethodCall('set_password', 'password')
     is_staff = True
     is_active = True
+
+class PoliticalPartyFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = PoliticalParty
+    name = 'Scottish Socialist Party'
 
 
 class ContactFactory(factory.DjangoModelFactory):
