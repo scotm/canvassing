@@ -150,3 +150,5 @@ class CanvassRunsSlimTest(LazyTestCase):
         with self.login():
             response = self.get('canvass_ward_view', None, self.ward.pk)
             self.assertEqual(response.status_code, 200)
+            self.assertIn('request', response.context)
+            self.assertIn('/ward/', response.context['request'].path)
