@@ -29,7 +29,6 @@ class ViewsTest(LazyTestCase):
             self.assertEqual(response.status_code, 200)
             self.assertFalse(response.context['object_list'])
 
-
     def test_found_find_contact(self):
         c = ContactFactory()
         with self.login():
