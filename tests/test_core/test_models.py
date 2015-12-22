@@ -11,14 +11,6 @@ class ModelsTest(LazyTestCase):
         self.contact = ContactFactory.create(domecile__address_2='33', domecile__postcode='DD2 9XE',
                                              domecile__postcode_point__postcode='DD29XE')
 
-    def test_contact_page(self):
-        with self.login():
-            response = self.get('contact_view', None, self.contact.pk)
-            self.assertTrue(response.status_code == 200)
-
-    def test_contact_page_no_login(self):
-        response = self.get('contact_view', None, self.contact.pk)
-        self.assertRedirectsTo(response, '/login/?next=/')
 
     def test_domecile_lists(self):
         d = Domecile.get_sorted_addresses(self.contact.domecile.postcode)
@@ -29,4 +21,6 @@ class ModelsTest(LazyTestCase):
         self.assertIn("33, Snookit Street, Dundee", self.contact.domecile.get_address_only())
         self.assertTrue(self.contact in self.contact.domecile.get_contacts())
 
+    def test_get_address_only(self):
+        print self.contact.domecile.get_address_only()
 
