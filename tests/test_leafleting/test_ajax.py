@@ -1,6 +1,8 @@
 import json
 from random import randint
 
+from django.contrib.gis.geos import Polygon
+
 from core.models import Domecile, Contact
 from tests.factories import DomecileFactory, ContactFactory, WardFactory
 from tests.testcase import LazyTestCase
@@ -8,8 +10,9 @@ from tests.testcase import LazyTestCase
 
 class CanvassRunsTest(LazyTestCase):
     def load_data(self):
-        for street, postcode in [('Lilybank Terrace', 'DD4 6BQ'), ('Graham Place', 'DD4 6EH'),
-                                 ('Thorter Way', 'DD1 3DF'), ]:
+        self.streets_and_postcodes = [('Lilybank Terrace', 'DD4 6BQ'), ('Graham Place', 'DD4 6EH'),
+                                 ('Thorter Way', 'DD1 3DF'), ]
+        for street, postcode in self.streets_and_postcodes:
             DomecileFactory.create_batch(5, address_4=street, postcode=postcode,
                                          postcode_point__postcode=postcode.replace(' ', ''))
         for domecile in Domecile.objects.all():
@@ -47,5 +50,10 @@ class CanvassRunsTest(LazyTestCase):
             data = {'BBox': '-2.937769889831543,56.4740473445564,-2.9126644134521484,56.47997257534551',
                     'ward': self.ward.pk, 'query_type': 'canvassing'}
             response = self.get('get_domeciles', data)
+            j = json.loads(response.content)
+            self.assertEqual(len(j['data']), 3)
+            postcodes = [x[1] for x in self.streets_and_postcodes]
+            for i in j['data']:
+                self.assertIn(i['postcode'], postcodes)
 
 

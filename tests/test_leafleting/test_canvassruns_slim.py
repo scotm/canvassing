@@ -146,9 +146,16 @@ class CanvassRunsSlimTest(LazyTestCase):
             self.assertTrue(canvassrun.count_people == Contact.objects.all().count())
             self.assertTrue(canvassrun.count == Domecile.objects.all().count())
 
-    def test_page_create(self):
+    def test_canvass_create_page(self):
         with self.login():
             response = self.get('canvass_ward_view', None, self.ward.pk)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('request', response.context)
+            self.assertIn('/ward/', response.context['request'].path)
+
+    def test_leaflet_create_page(self):
+        with self.login():
+            response = self.get('leaflet_ward_view', None, self.ward.pk)
             self.assertEqual(response.status_code, 200)
             self.assertIn('request', response.context)
             self.assertIn('/ward/', response.context['request'].path)
