@@ -100,6 +100,7 @@
     <script>
         {% include "get_csrftoken.js" %}
 
+        var this_obj = {};
         // Put the focus on the first response
         var pivot = $("select[name$='_response']");
         pivot[0].focus();
@@ -119,25 +120,47 @@
             }
         });
         $("#save_data").click(function (e) {
-            console.log(e);
-            console.log(e.toElement);
-            data_to_send = $(e.toElement.form).serialize();
             // Stop it moving to another page, or refreshing
             e.preventDefault();
-            $.ajax({
-                url: '{% url 'canvass_run_input_ajax' %}',
-                method: 'post',
-                cache: false,
-                data: {
-                    data: data_to_send
-                },
-                success: function (data) {
-                    console.log(data);
-                    data['data'].forEach(function(element){
-                        $("."+element).remove();
-                    });
+            var data_to_send = $(e.toElement.form).serialize();
+            console.log(data_to_send);
+            data = data_to_send.split('&');
+            var this_obj = {};
+            console.log(data);
+            for (i = 0; i < data.length; i++) {
+                piece = data[i].split('=');
+                if (piece[piece.length - 1] != '') {
+                    answer = piece[piece.length - 1];
+                    p = piece[0].split('_');
+                    if (p.length == 3) {
+                        argument = p[1] + '_' + p[2];
+                    } else if (p.length == 2) {
+                        argument = p[1];
+                    }
+                    contact = p[0];
+                    console.log(contact);
+                    console.log(argument);
+                    console.log(answer);
+                    if (this_obj[contact] === undefined) {
+                        this_obj[contact] = {};
+                    }
+                    this_obj[contact][argument] = answer;
                 }
-            });
+            }
+            {#            $.ajax({#}
+            {#                url: '{% url 'canvass_run_input_ajax' %}',#}
+            {#                method: 'post',#}
+            {#                cache: false,#}
+            {#                data: {#}
+            {#                    data: data_to_send#}
+            {#                },#}
+            {#                success: function (data) {#}
+            {#                    console.log(data);#}
+            {#                    data['data'].forEach(function(element){#}
+            {#                        $("."+element).remove();#}
+            {#                    });#}
+            {#                }#}
+            {#            });#}
         });
     </script>
 {% endblock %}
