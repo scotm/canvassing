@@ -14,8 +14,7 @@ from tests.testcase import LazyTestCase
 class CanvassRunsSlimTest(LazyTestCase):
     def load_data(self):
         self.seconduser = UserFactory(username='scotm', password='pump')
-        self.postcodemappings = []
-        self.domeciles = []
+        self.postcodemappings, self.contacts, self.domeciles = [], [], []
         self.addresses_and_postcodes = [('Lilybank Terrace', 'DD4 6BQ'), ('Graham Place', 'DD4 6EH'), ]
         for street, postcode in self.addresses_and_postcodes:
             postcodemapping = PostcodeMappingFactory(postcode=postcode.replace(' ', ''))
@@ -23,7 +22,7 @@ class CanvassRunsSlimTest(LazyTestCase):
             self.domeciles += DomecileFactory.create_batch(2, address_4=street, postcode=postcode,
                                                            postcode_point=postcodemapping)
         for domecile in self.domeciles:
-            ContactFactory(domecile=domecile)
+            self.contacts.append(ContactFactory(domecile=domecile))
         self.canvass_run = CanvassRunFactory(postcode_points=self.postcodemappings, created_by=self.seconduser)
         self.ward = WardFactory()
 
@@ -31,7 +30,7 @@ class CanvassRunsSlimTest(LazyTestCase):
         self.canvass_run.book(self.user)
         self.assertEqual(self.canvass_run.bookedcanvassrun.booked_from, date.today())
 
-    def test_name(self):
+    def test_canvassrun_name(self):
         self.assertIn(unicode(self.canvass_run), {'This is a test', 'Another Test', 'One more test'})
 
     def test_get_points(self):
@@ -115,7 +114,7 @@ class CanvassRunsSlimTest(LazyTestCase):
             self.assertFalse(BookedCanvassRun.objects.all())
 
     def test_create_canvassrun(self):
-        questionaire = CanvassQuestionaireFactory(questions=CanvassQuestionFactory.create_batch(3))
+        questionaire = CanvassQuestionaireFactory(questions=CanvassQuestionFactory.create_batch(2))
         with self.login():
             data = {'run_name': 'A test run', 'selected_postcodes[]': [x[1] for x in self.addresses_and_postcodes],
                     'run_notes': 'Tenements', 'questionaire': questionaire.pk}
@@ -124,8 +123,8 @@ class CanvassRunsSlimTest(LazyTestCase):
             returned_data = json.loads(response.content)
             self.assertEqual(returned_data['outcome'], 'success')
             canvassrun = CanvassRun.objects.get(name=data['run_name'])
-            self.assertEqual(canvassrun.count_people, Contact.objects.all().count())
-            self.assertEqual(canvassrun.count, Domecile.objects.all().count())
+            self.assertEqual(canvassrun.count_people, len(self.contacts))
+            self.assertEqual(canvassrun.count, len(self.domeciles))
             self.assertEqual(canvassrun.questionaire, questionaire)
 
     def test_create_run_no_postcodes(self):
@@ -143,8 +142,8 @@ class CanvassRunsSlimTest(LazyTestCase):
             returned_data = json.loads(response.content)
             self.assertTrue(returned_data['outcome'] == 'success')
             canvassrun = LeafletRun.objects.get(name=data['run_name'])
-            self.assertTrue(canvassrun.count_people == Contact.objects.all().count())
-            self.assertTrue(canvassrun.count == Domecile.objects.all().count())
+            self.assertTrue(canvassrun.count_people == len(self.contacts))
+            self.assertTrue(canvassrun.count == len(self.domeciles))
 
     def test_canvass_create_page(self):
         with self.login():
@@ -159,3 +158,9 @@ class CanvassRunsSlimTest(LazyTestCase):
             self.assertEqual(response.status_code, 200)
             self.assertIn('request', response.context)
             self.assertIn('/ward/', response.context['request'].path)
+
+    def test_ward(self):
+        self.assertEqual(self.ward.__unicode__(), 'Coldside: Dundee City')
+        self.assertEqual(self.ward.name, 'Coldside')
+        self.assertEqual(self.ward.code, 'S13002548')
+        self.assertEqual(self.ward.centre_point(), (56.47700995995096, -2.9252171516418453))
