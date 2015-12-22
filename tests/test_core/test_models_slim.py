@@ -2,7 +2,7 @@ import mock as mock
 from django.test import TestCase
 
 from core.models import Domecile
-from tests.factories import DomecileFactory
+from tests.factories import DomecileFactory, PoliticalPartyFactory, EROFactory
 
 
 class ModelSlim(TestCase):
@@ -30,3 +30,11 @@ class ModelSlim(TestCase):
             test_result = Domecile.get_main_address(domeciles[0].postcode)
             self.assertEqual(test_result.prefix, '')
             self.assertEqual(test_result.suffix, 'Snookit Street Dundee')
+
+    def test_politicalparty(self):
+        party = PoliticalPartyFactory.build()
+        self.assertEqual(party.__unicode__(), 'Scottish Socialist Party')
+
+    def test_ero_model(self):
+        ero = EROFactory.build()
+        self.assertEqual(ero.__unicode__(), 'Dundee')
