@@ -20,75 +20,77 @@
         <h3>Contacts</h3>
         <form id="data">
             {% for domecile in object.get_domeciles %}
-                <strong>{{ domecile }}</strong>
-                {% for contact in domecile.get_contacts %}
-                    <div class="{{ contact.pk }}">
-                        <div class="row">
-                            <div class="small-12 columns">
-                                {{ contact }}
+                <div class="{{ domecile.pk }}">
+                    <strong>{{ domecile }}</strong>
+                    {% for contact in domecile.get_contacts %}
+                        <div class="contact_{{ contact.pk }}">
+                            <div class="row">
+                                <div class="small-12 columns">
+                                    {{ contact }}
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="medium-3 columns">
-                                <label>Status:
-                                    <select name="{{ contact.pk }}_response">
-                                        <option value="">---------</option>
-                                        <option value="responded">Responded</option>
-                                        <option value="unavailable">Unavailable</option>
-                                        <option value="busy">Too busy</option>
-                                        <option value="moved">Moved</option>
-                                        <option value="not_interested">Not Interested</option>
-                                        <option value="dnc">Do Not Contact</option>
-                                        <option value="deceased">Deceased</option>
-                                    </select>
-                                </label>
-                            </div>
-
-                            {% for question in object.questionaire.questions.all %}
+                            <div class="row">
                                 <div class="medium-3 columns">
-                                    <label>{{ question.short_name }}:
-                                        {% if question.type == 'True/False' or question.type == 'Multiple-choice' or question.type == 'Range' %}
-
-                                            <select disabled="disabled"
-                                                    name="{{ contact.pk }}_question_{{ question.pk }}">
-                                                <option value="">-------</option>
-                                                {% if question.type == 'True/False' %}
-                                                    <option value="True">True</option>
-                                                    <option value="False">False</option>
-                                                {% elif question.type == 'Multiple-choice' %}
-                                                    {% for choice in question.choices_objects %}
-                                                        <option value="{{ choice.option }}">{{ choice.option }}</option>
-                                                    {% endfor %}
-                                                {% elif question.type == 'Range' %}
-                                                    <option value="1">1</option>
-                                                    <option value="2">2</option>
-                                                    <option value="3">3</option>
-                                                    <option value="4">4</option>
-                                                    <option value="5">5</option>
-                                                    <option value="6">6</option>
-                                                    <option value="7">7</option>
-                                                    <option value="8">8</option>
-                                                    <option value="9">9</option>
-                                                    <option value="10">10</option>
-                                                {% endif %}
-                                            </select>
-                                        {% endif %}
-                                        {% if question.type == 'Detailed Answer' %}
-                                            <textarea disabled="disabled"
-                                                      name="{{ contact.pk }}_answer_{{ question.pk }}"></textarea>
-                                        {% endif %}
+                                    <label>Status:
+                                        <select name="{{ contact.pk }}_response">
+                                            <option value="">---------</option>
+                                            <option value="responded">Responded</option>
+                                            <option value="unavailable">Unavailable</option>
+                                            <option value="busy">Too busy</option>
+                                            <option value="moved">Moved</option>
+                                            <option value="not_interested">Not Interested</option>
+                                            <option value="dnc">Do Not Contact</option>
+                                            <option value="deceased">Deceased</option>
+                                        </select>
                                     </label>
                                 </div>
-                            {% endfor %}
 
-                            <div class="medium-3 columns">
-                                <label>Notes:
-                                    <textarea disabled="disabled" name="{{ contact.pk }}_notes"></textarea>
-                                </label>
+                                {% for question in object.questionaire.questions.all %}
+                                    <div class="medium-3 columns">
+                                        <label>{{ question.short_name }}:
+                                            {% if question.type == 'True/False' or question.type == 'Multiple-choice' or question.type == 'Range' %}
+
+                                                <select disabled="disabled"
+                                                        name="{{ contact.pk }}_question_{{ question.pk }}">
+                                                    <option value="">-------</option>
+                                                    {% if question.type == 'True/False' %}
+                                                        <option value="True">True</option>
+                                                        <option value="False">False</option>
+                                                    {% elif question.type == 'Multiple-choice' %}
+                                                        {% for choice in question.choices_objects %}
+                                                            <option value="{{ choice.option }}">{{ choice.option }}</option>
+                                                        {% endfor %}
+                                                    {% elif question.type == 'Range' %}
+                                                        <option value="1">1</option>
+                                                        <option value="2">2</option>
+                                                        <option value="3">3</option>
+                                                        <option value="4">4</option>
+                                                        <option value="5">5</option>
+                                                        <option value="6">6</option>
+                                                        <option value="7">7</option>
+                                                        <option value="8">8</option>
+                                                        <option value="9">9</option>
+                                                        <option value="10">10</option>
+                                                    {% endif %}
+                                                </select>
+                                            {% endif %}
+                                            {% if question.type == 'Detailed Answer' %}
+                                                <textarea disabled="disabled"
+                                                          name="{{ contact.pk }}_answer_{{ question.pk }}"></textarea>
+                                            {% endif %}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+
+                                <div class="medium-3 columns">
+                                    <label>Notes:
+                                        <textarea disabled="disabled" name="{{ contact.pk }}_notes"></textarea>
+                                    </label>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
             {% endfor %}
             <button type="submit" name="btnSubmit" id="save_data">Save Data</button>
             <button type="submit" name="btnArchive" id="archive_run">Archive Run</button>
@@ -132,8 +134,13 @@
                 },
                 success: function (data) {
                     console.log(data);
-                    data['data'].forEach(function(element){
-                        $("."+element).remove();
+                    data['data'].forEach(function (element) {
+                        v = $(".contact_" + element);
+                        p = v.parent();
+                        v.remove();
+                        if (p.find("div[class^='contact_']").length === 0) {
+                            p.remove();
+                        }
                     });
                 }
             });
