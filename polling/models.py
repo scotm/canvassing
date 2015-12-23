@@ -35,6 +35,10 @@ class CanvassChoicesAvailable(models.Model):
         return "%s -> %s" % (unicode(self.question), unicode(self.option))
 
 
+class CanvassResponseException(Exception):
+    pass
+
+
 class CanvassResponse(models.Model):
     contact = models.ForeignKey('core.Contact', null=True)
     question = models.ForeignKey(CanvassQuestion)
@@ -45,45 +49,52 @@ class CanvassResponse(models.Model):
         ordering = ('-date_added',)
 
     def store_response(self, *args, **kwargs):
-        raise Exception("Cannot call store_response on a CanvassResponse object directly")
+        raise CanvassResponseException("Cannot call store_response on a CanvassResponse object directly")
 
 
 # A choice made from the question's response set
 class CanvassChoice(CanvassResponse):
     choice = models.CharField(max_length=200)
 
-    def store_response(self, response):
-        # TODO: Fix this
-        pass
+    @classmethod
+    def store_response(cls, contact, question, answer):
+        possible_answers = set(x.option for x in question.choices_objects())
+        if answer not in possible_answers:
+            raise CanvassResponseException('Answer for %s: %s is not in the list of possible choices (%s)' % (
+            contact, question, question.choices()))
+        cls.objects.create(contact=contact, question=question, choice=answer)
 
 
 # Binary response
 class CanvassTrueFalse(CanvassResponse):
     choice = models.NullBooleanField()
 
-    def store_response(self, response):
-        self.choice = True if response == 'True' else False
-        self.save()
+    @classmethod
+    def store_response(cls, contact, question, answer):
+        if not answer in ['True', 'False']:
+            raise CanvassResponseException('Answer is neither "True", nor "False"')
+        answer = True if answer == 'True' else False
+        cls.objects.create(contact=contact, question=question, choice=answer)
 
 
 class CanvassLongAnswer(CanvassResponse):
     answer = models.TextField()
 
-    def store_response(self, response):
-        self.answer = response
-        self.save()
+    @classmethod
+    def store_response(cls, contact, question, answer):
+        cls.objects.create(contact=contact, question=question, choice=answer)
 
 
 # Scale of 1-10
 class CanvassRange(CanvassResponse):
     answer = models.IntegerField()
 
-    def store_response(self, response):
-        try:
-            self.answer = int(response)
-            self.save()
-        except:
-            pass
+    @classmethod
+    def store_response(cls, contact, question, answer):
+        answer = int(answer)
+        if not 1 <= answer <= 10:
+            raise CanvassResponseException('Answer for %s is not between 1 and 10' % question)
+        cls.objects.create(contact=contact, question=question, choice=answer)
 
 
 class CanvassParty(CanvassResponse):

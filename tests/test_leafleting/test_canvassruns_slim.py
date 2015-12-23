@@ -179,20 +179,20 @@ class CanvassRunsSlimTest(LazyTestCase):
         with patch('polling.models.CanvassQuestion.objects.get') as mock_question_get, \
                 patch('core.models.Contact.objects.get') as mock_contact:
             data = {'491706': {'question_1': '1', 'question_3': 'True', 'notes': 'asdas', 'response': 'responded'}}
-            data2 = {'491706': {'question_3': 'True', 'notes': 'asdas', 'response': 'responded'}}
+            data2 = {'491707': {'question_3': 'True', 'notes': 'asdas', 'response': 'responded'}}
             mock_contact.return_value = MagicMock()
             mock_question_get.return_value = CanvassQuestionFactory.build(type="True/False")
-            with patch('polling.models.CanvassTrueFalse.objects.create') as mock_response:
+            with patch('leafleting.views.CanvassTrueFalse.objects.create') as mock_response:
                 delete_values, errors = create_answer_objects(data)
+                self.assertEqual(errors, ['CanvassResponseException: Answer is neither "True", nor "False"'])
                 self.assertEqual(mock_response.call_count, 1)
-                self.assertEqual(errors, ['KeyError: 1'])
                 delete_values, errors = create_answer_objects(data2)
                 self.assertEqual(mock_response.call_count, 2)
 
-            data = {'491708': {'question_3': 'Green', 'response': 'responded'}}
-            mock_question_get.return_value = CanvassQuestionFactory.build(type="Multiple-choice")
-            with patch('polling.models.CanvassChoice.objects.create') as mock_response:
-                delete_values, errors = create_answer_objects(data)
-                self.assertEqual(mock_response.call_count, 1)
-                self.assertEqual(delete_values, ['491708'])
-                self.assertFalse(errors)
+            # data = {'491708': {'question_3': 'Green', 'response': 'responded'}}
+            # mock_question_get.return_value = CanvassQuestionFactory.build(type="Multiple-choice")
+            # with patch('leafleting.views.CanvassChoice.objects.create') as canvasschoice_response:
+            #
+            #     delete_values, errors = create_answer_objects(data)
+            #     # Choices should
+            # #     self.assertEqual(canvasschoice_response.call_count, 0)

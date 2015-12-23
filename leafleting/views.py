@@ -12,11 +12,11 @@ from django.db import models
 from django.http import JsonResponse, HttpResponseNotFound
 from django.views.generic import ListView, DetailView, TemplateView, UpdateView, DeleteView, RedirectView
 from django_filters.views import FilterView
-from json_views.views import JSONDataView
 
 from core.models import Ward, Contact, Domecile, Region
 from leafleting.models import LeafletRun, CanvassRun
-from polling.models import CanvassQuestion, CanvassChoice, CanvassTrueFalse, CanvassLongAnswer, CanvassRange
+from polling.models import CanvassQuestion, CanvassChoice, CanvassTrueFalse, CanvassLongAnswer, CanvassRange, \
+    CanvassQuestionaire
 from postcode_locator.models import PostcodeMapping
 
 try:
@@ -24,8 +24,8 @@ try:
 except:
     users = {}
 
-binary_dict = {'True': True, 'False': False}
-
+answer_types = {'Multiple-choice': CanvassChoice, 'True/False': CanvassTrueFalse,
+                'Detailed Answer': CanvassLongAnswer, 'Range': CanvassRange}
 
 class UserFilter(django_filters.ChoiceFilter):
     @property
@@ -168,7 +168,6 @@ class CanvassPicker(RunPicker):
     template_name = 'canvassing_picker.html'
 
     def get_context_data(self, **kwargs):
-        from polling.models import CanvassQuestionaire
         kwargs['questionaires'] = CanvassQuestionaire.objects.all()
         return super(RunPicker, self).get_context_data(**kwargs)
 
@@ -194,12 +193,6 @@ class DataInput(PrintRunDetailView):
     template_name = 'data_input.html'
 
 
-class PostCompatibleJSONDataView(JSONDataView):
-    def post(self, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        return self.render_to_response(context)
-
-
 @login_required
 def data_input_acceptor(request):
     old_data = request.POST['data']
@@ -212,23 +205,15 @@ def create_answer_objects(parsed_data):
     delete_values, errors = [], []
     for contact_pk, value in parsed_data.iteritems():
         contact = Contact.objects.get(pk=contact_pk)
-        try:
-            for descriptor, answer in value.iteritems():
+        for descriptor, answer in value.iteritems():
+            try:
                 if descriptor.startswith('question_'):
-                    question_pk = int(descriptor.replace('question_', ''))
-                    question = CanvassQuestion.objects.get(pk=question_pk)
-                    if question.type == 'Multiple-choice':
-                        CanvassChoice.objects.create(contact=contact, question=question, choice=answer)
-                    elif question.type == 'True/False':
-                        choice = binary_dict[answer]
-                        CanvassTrueFalse.objects.create(contact=contact, question=question, choice=choice)
-                    elif question.type == 'Detailed Answer':
-                        CanvassLongAnswer.objects.create(contact=contact, question=question, answer=answer)
-                    elif question.type == 'Range':
-                        CanvassRange.objects.create(contact=contact, question=question, answer=int(answer))
-            delete_values.append(contact_pk)
-        except Exception as e:
-            errors.append(": ".join([e.__class__.__name__, e.message]))
+                    question = CanvassQuestion.objects.get(pk=int(descriptor.replace('question_', '')))
+                    klass = answer_types[question.type]
+                    klass.store_response(contact=contact, question=question, answer=answer)
+            except Exception as e:
+                errors.append(": ".join([e.__class__.__name__, e.message]))
+        delete_values.append(contact_pk)
     return delete_values, errors
 
 
