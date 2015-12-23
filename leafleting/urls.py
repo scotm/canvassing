@@ -5,8 +5,8 @@ from core.models import Ward, Region
 from leafleting.models import LeafletRun, CanvassRun
 from leafleting.views import LeafletHomepage, CanvassHomepage, RunDetailView, \
     CanvassRunListView, LeafletRunListView, RunPicker, AreaPicker, PrintRunDetailView, CanvassRunDelete, CanvassRunBook, \
-    CanvassRunUnbook, UserCanvassRunFind, CanvassPicker, DataInput, DataInputJSONAcceptor, canvass_run_create, \
-    domecile_map_view, domecile_address_view, leaflet_run_create
+    CanvassRunUnbook, UserCanvassRunFind, CanvassPicker, DataInput, canvass_run_create, \
+    domecile_map_view, domecile_address_view, leaflet_run_create, data_input_acceptor
 
 __author__ = 'scotm'
 
@@ -33,7 +33,7 @@ urlpatterns = [
         name='canvass_ward_list'),
 
     url(r'^canvassing/run/input/(?P<pk>[0-9]+)$', DataInput.as_view(model=CanvassRun), name='canvass_run_input'),
-    url(r'^canvassing/run/input/ajax', DataInputJSONAcceptor.as_view(), name='canvass_run_input_ajax'),
+    url(r'^canvassing/run/input/ajax', data_input_acceptor.as_view(), name='canvass_run_input_ajax'),
     url(r'^canvassing/run/print/(?P<pk>[0-9]+)$', PrintRunDetailView.as_view(model=CanvassRun),
         name='canvass_run_print'),
     url(r'^canvassing/run/unbook/(?P<pk>[0-9]+)$', CanvassRunUnbook.as_view(), name='canvass_run_unbook'),

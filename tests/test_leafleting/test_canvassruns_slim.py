@@ -2,9 +2,10 @@ import json
 from datetime import date
 
 from django.core.urlresolvers import reverse
+from mock import patch, MagicMock
 
-from core.models import Contact, Domecile
 from leafleting.models import BookedCanvassRun, CanvassRun, LeafletRun
+from leafleting.views import parse_post_data, create_answer_objects
 from postcode_locator.tests.factories import PostcodeMappingFactory
 from tests.factories import UserFactory, ContactFactory, DomecileFactory, CanvassRunFactory, WardFactory, \
     CanvassQuestionaireFactory, CanvassQuestionFactory
@@ -164,3 +165,34 @@ class CanvassRunsSlimTest(LazyTestCase):
         self.assertEqual(self.ward.name, 'Coldside')
         self.assertEqual(self.ward.code, 'S13002548')
         self.assertEqual(self.ward.centre_point(), (56.47700995995096, -2.9252171516418453))
+
+    def test_parse_post_data(self):
+        data = "491706_response=&491707_response=&491708_response=responded&491708_question_1=True" \
+               "&491708_question_3=1&491708_notes=asdas"
+        output = parse_post_data(data)
+        self.assertIn('491708', output)
+        self.assertEqual(output, {'491708': {'question_3': '1', 'question_1': 'True', 'notes': 'asdas', 'response': 'responded'}})
+        # Contacts that return no response should not be in the output
+        self.assertNotIn('491706', output)
+
+    def test_create_answer_objects(self):
+        with patch('polling.models.CanvassQuestion.objects.get') as mock_question_get, \
+                patch('core.models.Contact.objects.get') as mock_contact:
+            data = {'491706': {'question_1': '1', 'question_3': 'True', 'notes': 'asdas', 'response': 'responded'}}
+            data2 = {'491706': {'question_3': 'True', 'notes': 'asdas', 'response': 'responded'}}
+            mock_contact.return_value = MagicMock()
+            mock_question_get.return_value = CanvassQuestionFactory.build(type="True/False")
+            with patch('polling.models.CanvassTrueFalse.objects.create') as mock_response:
+                delete_values, errors = create_answer_objects(data)
+                self.assertEqual(mock_response.call_count, 1)
+                self.assertEqual(errors, ['KeyError: 1'])
+                delete_values, errors = create_answer_objects(data2)
+                self.assertEqual(mock_response.call_count, 2)
+
+            data = {'491708': {'question_3': 'Green', 'response': 'responded'}}
+            mock_question_get.return_value = CanvassQuestionFactory.build(type="Multiple-choice")
+            with patch('polling.models.CanvassChoice.objects.create') as mock_response:
+                delete_values, errors = create_answer_objects(data)
+                self.assertEqual(mock_response.call_count, 1)
+                self.assertEqual(delete_values, ['491708'])
+                self.assertFalse(errors)

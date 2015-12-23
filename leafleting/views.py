@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.db import models
-from django.http import Http404, JsonResponse, HttpResponseNotFound
+from django.http import JsonResponse, HttpResponseNotFound
 from django.views.generic import ListView, DetailView, TemplateView, UpdateView, DeleteView, RedirectView
 from django_filters.views import FilterView
 from json_views.views import JSONDataView
@@ -98,6 +98,7 @@ def canvass_run_create(request, model=CanvassRun):
         run.ward = run.get_ward()
         run.save()
         return JsonResponse(data={'outcome': 'success'})
+
 
 leaflet_run_create = partial(canvass_run_create, model=LeafletRun)
 
@@ -199,41 +200,46 @@ class PostCompatibleJSONDataView(JSONDataView):
         return self.render_to_response(context)
 
 
-class DataInputJSONAcceptor(LoginRequiredMixin, PostCompatibleJSONDataView):
-    def get_context_data(self, **kwargs):
-        context = super(DataInputJSONAcceptor, self).get_context_data(**kwargs)
-        old_data = self.request.POST['data']
-        data = parse_qs(old_data)
-        parsed_data = defaultdict(dict)
-        for key, value in data.iteritems():
-            contact_pk, argument = tuple(key.split('_', 1))
-            parsed_data[contact_pk][argument] = value[0]
+@login_required
+def data_input_acceptor(request):
+    old_data = request.POST['data']
+    parsed_data = parse_post_data(old_data)
+    delete_values, errors = create_answer_objects(parsed_data)
+    return JsonResponse(data={'data': delete_values, 'errors': errors})
 
-        delete_values = []
-        errors = []
-        for contact_pk, value in parsed_data.iteritems():
-            contact = Contact.objects.get(pk=contact_pk)
-            try:
-                for descriptor, argument in value.iteritems():
-                    if descriptor.startswith('question_'):
-                        question_pk = int(descriptor.replace('question_', ''))
-                        question = CanvassQuestion.objects.get(pk=question_pk)
-                        if question.type == 'Multiple-choice':
-                            CanvassChoice.objects.create(contact=contact, question=question, choice=argument)
-                        elif question.type == 'True/False':
-                            print argument
-                            choice = binary_dict[argument]
-                            CanvassTrueFalse.objects.create(contact=contact, question=question, choice=choice)
-                        elif question.type == 'Detailed Answer':
-                            CanvassLongAnswer.objects.create(contact=contact, question=question, answer=argument)
-                        elif question.type == 'Range':
-                            CanvassRange.objects.create(contact=contact, question=question, answer=int(argument))
-                        print question.type
-                delete_values.append(contact.pk)
-            except Exception as e:
-                errors.append(e.message)
-        context.update({'data': delete_values, 'errors': errors})
-        return context
+
+def create_answer_objects(parsed_data):
+    delete_values, errors = [], []
+    for contact_pk, value in parsed_data.iteritems():
+        contact = Contact.objects.get(pk=contact_pk)
+        try:
+            for descriptor, answer in value.iteritems():
+                if descriptor.startswith('question_'):
+                    question_pk = int(descriptor.replace('question_', ''))
+                    question = CanvassQuestion.objects.get(pk=question_pk)
+                    if question.type == 'Multiple-choice':
+                        CanvassChoice.objects.create(contact=contact, question=question, choice=answer)
+                    elif question.type == 'True/False':
+                        choice = binary_dict[answer]
+                        CanvassTrueFalse.objects.create(contact=contact, question=question, choice=choice)
+                    elif question.type == 'Detailed Answer':
+                        CanvassLongAnswer.objects.create(contact=contact, question=question, answer=answer)
+                    elif question.type == 'Range':
+                        CanvassRange.objects.create(contact=contact, question=question, answer=int(answer))
+            delete_values.append(contact_pk)
+        except Exception as e:
+            errors.append(": ".join([e.__class__.__name__, e.message]))
+    return delete_values, errors
+
+
+def parse_post_data(post_data):
+    data = parse_qs(post_data)
+    parsed_data = defaultdict(dict)
+    for key, value in data.iteritems():
+        contact_pk, argument = tuple(key.split('_', 1))
+        parsed_data[contact_pk][argument] = value[0]
+    return parsed_data
+
 
 @login_required
 def domecile_address_view(request):

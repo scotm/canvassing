@@ -6,7 +6,7 @@ from leafleting.models import LeafletRun
 from polling.models import CanvassQuestion, CanvassChoicesAvailable, CanvassQuestionaire
 
 __author__ = 'scotm'
-from random import randint, choice
+from random import randint, choice, shuffle
 
 import factory
 from factory import fuzzy
@@ -55,8 +55,13 @@ class DomecileFactory(factory.DjangoModelFactory):
         model = Domecile
         django_get_or_create = ('address_2', 'address_4', 'address_6',)
 
+    def __init__(self, *args, **kwargs):
+        self.number_choices = list(range(1,40))
+        shuffle(self.number_choices)
+        super(DomecileFactory, self).__init__(*args, **kwargs)
+
     address_1 = ''
-    address_2 = factory.LazyAttribute(lambda x: str(randint(1, 40)))
+    address_2 = factory.LazyAttribute(lambda x: str(randint(1, 4000)))
     address_3 = ''
     address_4 = 'Snookit Street'
     address_5 = ''

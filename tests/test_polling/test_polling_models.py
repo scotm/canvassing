@@ -23,4 +23,7 @@ class ModelsTest(LazyTestCase):
     def test_questionaire(self):
         questions = CanvassQuestionFactory.create_batch(3)
         questionaire = CanvassQuestionaireFactory(questions=questions)
-        self.assertEqual(unicode(questionaire), "West Lothian Hospital, Independence, Heard of Org")
+        questionaire_string = unicode(questionaire)
+        self.assertIn("Heard of Org", questionaire_string)
+        self.assertIn("West Lothian Hospital", questionaire_string)
+        self.assertIn("Independence", questionaire_string)

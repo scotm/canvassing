@@ -57,7 +57,7 @@
                                                     <option value="False">False</option>
                                                 {% elif question.type == 'Multiple-choice' %}
                                                     {% for choice in question.choices_objects %}
-                                                        <option value="{{ choice.pk }}">{{ choice.option }}</option>
+                                                        <option value="{{ choice.option }}">{{ choice.option }}</option>
                                                     {% endfor %}
                                                 {% elif question.type == 'Range' %}
                                                     <option value="1">1</option>
@@ -119,9 +119,8 @@
             }
         });
         $("#save_data").click(function (e) {
-            console.log(e);
-            console.log(e.toElement);
             data_to_send = $(e.toElement.form).serialize();
+            console.log(data_to_send);
             // Stop it moving to another page, or refreshing
             e.preventDefault();
             $.ajax({
