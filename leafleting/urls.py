@@ -33,7 +33,7 @@ urlpatterns = [
         name='canvass_ward_list'),
 
     url(r'^canvassing/run/input/(?P<pk>[0-9]+)$', DataInput.as_view(model=CanvassRun), name='canvass_run_input'),
-    url(r'^canvassing/run/input/ajax', data_input_acceptor.as_view(), name='canvass_run_input_ajax'),
+    url(r'^canvassing/run/input/ajax', data_input_acceptor, name='canvass_run_input_ajax'),
     url(r'^canvassing/run/print/(?P<pk>[0-9]+)$', PrintRunDetailView.as_view(model=CanvassRun),
         name='canvass_run_print'),
     url(r'^canvassing/run/unbook/(?P<pk>[0-9]+)$', CanvassRunUnbook.as_view(), name='canvass_run_unbook'),
