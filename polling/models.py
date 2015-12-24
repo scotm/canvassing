@@ -19,11 +19,11 @@ class CanvassQuestion(models.Model):
     @memoize(timeout=10)
     def choices(self):
         if self.type == 'Multiple-choice':
-            return ", ".join(x.option for x in self.canvasschoicesavailable_set.all())
+            return ", ".join(x.option for x in self.choices_objects())
 
     @memoize(timeout=10)
     def choices_objects(self):
-        return [x for x in self.canvasschoicesavailable_set.all()]
+        return CanvassChoicesAvailable.objects.filter(question=self)
 
 
 # Is it a multiple-choice question? If so, what choices do we have for this question?

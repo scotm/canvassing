@@ -211,6 +211,8 @@ def create_answer_objects(parsed_data):
                     question = CanvassQuestion.objects.get(pk=int(descriptor.replace('question_', '')))
                     klass = answer_types[question.type]
                     klass.store_response(contact=contact, question=question, answer=answer)
+            except TypeError:
+                raise
             except Exception as e:
                 errors.append(": ".join([e.__class__.__name__, e.message]))
         delete_values.append(contact_pk)

@@ -8,7 +8,7 @@ from leafleting.models import BookedCanvassRun, CanvassRun, LeafletRun
 from leafleting.views import parse_post_data, create_answer_objects
 from postcode_locator.tests.factories import PostcodeMappingFactory
 from tests.factories import UserFactory, ContactFactory, DomecileFactory, CanvassRunFactory, WardFactory, \
-    CanvassQuestionaireFactory, CanvassQuestionFactory
+    CanvassQuestionaireFactory, CanvassQuestionFactory, CanvassChoicesAvailableFactory
 from tests.testcase import LazyTestCase
 
 
@@ -171,7 +171,8 @@ class CanvassRunsSlimTest(LazyTestCase):
                "&491708_question_3=1&491708_notes=asdas"
         output = parse_post_data(data)
         self.assertIn('491708', output)
-        self.assertEqual(output, {'491708': {'question_3': '1', 'question_1': 'True', 'notes': 'asdas', 'response': 'responded'}})
+        self.assertEqual(output, {
+            '491708': {'question_3': '1', 'question_1': 'True', 'notes': 'asdas', 'response': 'responded'}})
         # Contacts that return no response should not be in the output
         self.assertNotIn('491706', output)
 
@@ -182,6 +183,7 @@ class CanvassRunsSlimTest(LazyTestCase):
             data2 = {'491707': {'question_3': 'True', 'notes': 'asdas', 'response': 'responded'}}
             mock_contact.return_value = MagicMock()
             mock_question_get.return_value = CanvassQuestionFactory.build(type="True/False")
+
             with patch('leafleting.views.CanvassTrueFalse.objects.create') as mock_response:
                 delete_values, errors = create_answer_objects(data)
                 self.assertEqual(errors, ['CanvassResponseException: Answer is neither "True", nor "False"'])
@@ -189,10 +191,14 @@ class CanvassRunsSlimTest(LazyTestCase):
                 delete_values, errors = create_answer_objects(data2)
                 self.assertEqual(mock_response.call_count, 2)
 
-            # data = {'491708': {'question_3': 'Green', 'response': 'responded'}}
-            # mock_question_get.return_value = CanvassQuestionFactory.build(type="Multiple-choice")
-            # with patch('leafleting.views.CanvassChoice.objects.create') as canvasschoice_response:
-            #
-            #     delete_values, errors = create_answer_objects(data)
-            #     # Choices should
-            # #     self.assertEqual(canvasschoice_response.call_count, 0)
+            data = {'491708': {'question_3': 'Answer 0', 'question_1': 'Answer 2', 'question_2': 'Baboons', 'response': 'responded'}}
+            q = CanvassQuestionFactory.build(type="Multiple-choice")
+            choices = CanvassChoicesAvailableFactory.build_batch(3, question=q)
+            mock_question_get.return_value = q
+            with patch('leafleting.views.CanvassChoice.objects.create') as canvasschoice_response, patch(
+                    'polling.models.CanvassChoicesAvailable.objects.filter') as canvasschoiceavailable_mock:
+                canvasschoiceavailable_mock.return_value = choices
+                delete_values, errors = create_answer_objects(data)
+                self.assertEqual(len(errors), 1)
+                self.assertIn('CanvassResponseException: ', errors[0],)
+                self.assertEqual(canvasschoice_response.call_count, 2)

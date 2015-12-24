@@ -12,9 +12,9 @@ class ModelsTest(LazyTestCase):
         self.assertEqual(unicode(self.question), 'Which party will you vote for on the list in 2016?')
 
     def test_multiple_choice(self):
-        objects = CanvassChoicesAvailableFactory.create_batch(3, question=self.question)
+        objects = CanvassChoicesAvailableFactory.create_batch(3, question=self.question, __sequence=0)
 
-        self.assertEqual(self.question.choices(), 'Answer 0, Answer 1, Answer 2')
+        self.assertEqual(self.question.choices(), 'Answer 0, Answer 0, Answer 0')
         compare = self.question.choices_objects()
         for i in objects:
             self.assertIn(i, compare)
