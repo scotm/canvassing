@@ -6,7 +6,14 @@ def split_dict(my_dict, my_list):
 
 
 def transform_dict(my_dict, rename_dict):
-    renamed_dict = {rename_dict[x]: y.strip() for x, y in my_dict.items() if x in rename_dict}
+    renamed_dict = {}
+    for x, y in my_dict.items():
+        if x in rename_dict:
+            try:
+                renamed_dict[rename_dict[x]] = y.strip()
+            except:
+                print rename_dict[x], x, y
+                raise
     return renamed_dict
 
 
