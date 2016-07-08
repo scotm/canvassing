@@ -28,10 +28,13 @@ def clean_up(DEBUG=False):
     # We're only interested in Scottish constituencies - so delete the rest - their code begins with an "S".
     Region.objects.exclude(code__startswith="S").delete()
 
+    highlands_regions = Region.objects.filter(name='Highlands and Islands')
+    if not highlands_regions:
+        return
+
     # The Highlands and Islands electoral region is a massive pain in the arse.
     # Many, many pieces, small islands and areas - hardly any of them usable.
     print("Cleaning up the Highlands and Islands electoral region")
-    highlands_regions = Region.objects.filter(name='Highlands and Islands')
 
     if PostcodeMapping.objects.all().count() > 0:
         # Prune out the over two thousand landmasses without postcode points.
@@ -43,7 +46,9 @@ def clean_up(DEBUG=False):
     # Now we make a union of all the remaining geometry.
     print("Unifying Highlands & Islands geometry...")
     highlands = Region.objects.filter(name='Highlands and Islands').values_list('geom', flat=True)
-    highlands = sorted(highlands, key=lambda x: len(x[0][0]), reverse=True)  # Sort them, so we can pop the top off
+
+    # Sort them, so we can pop the top off
+    highlands = sorted(highlands, key=lambda x: len(x[0][0]), reverse=True)
     keep_separate = highlands.pop(0)  # This one is huge, and will slow down processing. Unify it at the end.
     shuffle(highlands)
 

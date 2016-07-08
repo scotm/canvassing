@@ -4,7 +4,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
 #        'HOST': 'localhost',
-        'NAME': 'comrade',
+        'NAME': 'yenl_canvassing',
 #        'USER': 'canvassing',
 #        'PASSWORD': 'm4r13y',
     }
