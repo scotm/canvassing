@@ -69,16 +69,10 @@
 {% endblock %}
 {% block before_body_close %}
     <script>
-
-        accessToken = 'pk.eyJ1Ijoic2NvdG0iLCJhIjoiMGh1dWtYYyJ9.1DmL5VwbNVjbbH3thY2qAw';
-        var mapboxTiles = L.tileLayer('https://{s}.tiles.mapbox.com/v4/scotm.o5567l3e/{z}/{x}/{y}.png?access_token=' + accessToken, {
-            attribution: '<a href="http://www.mapbox.com/about/maps/" target="_blank">Terms &amp; Feedback</a>'
-        });
-
         L.Icon.Default.imagePath = '{% static "images" %}';
-        //        var mapboxTiles = L.tileLayer('	http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg?', {
-        //            attribution: '© OpenStreetMap contributors - <a href="http://www.opendatacommons.org/licenses/odbl">Terms</a>'
-        //        });
+        var mapboxTiles = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors - <a href="http://www.opendatacommons.org/licenses/odbl">Terms</a>'
+        });
         var geojson = L.geoJson({{ object.get_points_json | safe}}, {});
 
         var map = L.map('map').addLayer(mapboxTiles);
