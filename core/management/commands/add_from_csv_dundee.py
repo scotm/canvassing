@@ -11,16 +11,16 @@ from datetime import date
 from core.models import Domecile, Contact, ElectoralRegistrationOffice
 
 
-rename_dict = {'PD': 'pd', 'ENO': 'ero_number', 'Title': 'title', 'First Names': 'first_name', 'Initials': 'initials',
-               'Surname': 'surname', 'Suffix': 'suffix', 'Date of Attainment': 'date_of_attainment',
-               'Franchise Flag': 'franchise_flag', 'Opt Out': 'opt_out', 'Address 1': 'address_1',
+rename_dict = {'PD': 'pd', 'ENO': 'ero_number', 'Title': 'title', 'First Name': 'first_name', 'Initials': 'initials',
+               'Surname': 'surname', 'Suffix': 'suffix', 'Date Of Attainment': 'date_of_attainment',
+               'Franchise Flag': 'franchise_flag', 'Address 1': 'address_1',
                'Address 2': 'address_2', 'Address 3': 'address_3', 'Address 4': 'address_4', 'Address 5': 'address_5',
                'Address 6': 'address_6', 'Address 7': 'address_7', 'Address 8': 'address_8', 'Address 9': 'address_9',
                'Postcode': 'postcode', }
 domecile_elements = ['address_1', 'address_2', 'address_3', 'address_4', 'address_5', 'address_6', 'address_7',
                      'address_8', 'address_9', 'postcode', ]
 contact_elements = ['pd', 'ero_number', 'title', 'first_name', 'initials', 'surname', 'suffix', 'date_of_attainment',
-                    'franchise_flag', 'opt_out', ]
+                    'franchise_flag', ]
 
 
 def groupby_key(x):
@@ -52,7 +52,7 @@ class Command(BaseCommand):
             print("done - %d records read" % len(data))
 
         records_done = 0
-        temp_list = []
+        temp_list, error_list = [], []
         for grouper, my_group in groupby(data, key=groupby_key):
             my_group = list(my_group)
             domecile_dict = split_dict(my_group[0], domecile_elements)
@@ -73,10 +73,25 @@ class Command(BaseCommand):
                     contact_obj = Contact(**contact_dict)
                     contact_obj.domecile = domecile_obj
                     temp_list.append(contact_obj)
-                    if records_done % 1000 == 0:
-                        print("%d records done - last one %s, %s" % (records_done, contact_obj, domecile_obj))
-                        Contact.objects.bulk_create(temp_list)
+                    if records_done % 5 == 0:
+                        try:
+                            print("%d records done - last one %s, %s" % (records_done, contact_obj, domecile_obj))
+                        except:
+                            pass
+                        try:
+                            Contact.objects.bulk_create(temp_list)
+                        except:
+                            error_list += temp_list
                         temp_list = []
         if temp_list:
-            Contact.objects.bulk_create(temp_list)
-            print(temp_list)
+            try:
+                Contact.objects.bulk_create(temp_list)
+            except:
+                error_list += temp_list
+
+        if error_list:
+            for i in error_list:
+                try:
+                    i.save()
+                except:
+                    print(i)
