@@ -94,4 +94,7 @@ class Command(BaseCommand):
                 try:
                     i.save()
                 except:
-                    print(i)
+                    try:
+                        print(i)
+                    except:
+                        pass
