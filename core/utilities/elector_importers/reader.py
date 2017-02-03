@@ -33,8 +33,10 @@ class Importer(object):
     def __repr__(self):
         return "%s (%s)" % (self.__class__.__name__, self.filename)
 
+
 class DomecileImporter(object):
-    domecile_elements = ['address_1', 'address_2', 'address_3', 'address_4', 'address_5', 'address_6', 'address_7', 'postcode']
+    domecile_elements = ['address_1', 'address_2', 'address_3', 'address_4', 'address_5', 'address_6', 'address_7',
+                         'postcode']
     ero_details = {'name': 'City of Edinburgh', 'short_name': 'edinburgh', 'address_1': '17A South Gyle Crescent',
                    'address_2': 'EDINBURGH', 'address_3': '', 'postcode': 'EH12 9FL'}
 
@@ -51,4 +53,4 @@ class DomecileImporter(object):
             self.domeciles.append(domecile_obj)
 
             # Apply that domecile object to each line in the group
-            [line.update({'domecile_obj':domecile_obj}) for line in my_group]
+            [line.update({'domecile_obj': domecile_obj}) for line in my_group]

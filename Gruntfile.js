@@ -154,7 +154,7 @@ module.exports = function (grunt) {
 
     // 3. Where we tell Grunt what to do when we type "grunt" into the terminal.
     grunt.registerTask('default', ['concat', 'uglify', 'sass', 'cssmin:dist']);
-    grunt.registerTask('basecss', ['criticalcss', 'cssmin'])
+    grunt.registerTask('basecss', ['criticalcss', 'cssmin']);
     grunt.registerTask('images', ['imagemin']);
     grunt.registerTask('watch-changes', ['concat', 'uglify', 'imagemin', 'sass', 'watch']);
     grunt.registerTask('js', ['concat', 'uglify']);

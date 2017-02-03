@@ -1,7 +1,6 @@
 from __future__ import print_function
 from core.utilities.functions import split_dict, transform_dict
 
-__author__ = 'scotm'
 import csv
 from itertools import groupby
 
@@ -11,6 +10,7 @@ from django.db.utils import DataError
 from datetime import date
 from core.models import Domecile, Contact, ElectoralRegistrationOffice
 
+__author__ = 'scotm'
 
 rename_dict = {'PD': 'pd', 'ENO': 'ero_number', 'Title': 'title', 'First Names': 'first_name', 'Initials': 'initials',
                'Surname': 'surname', 'Suffix': 'suffix', 'Date of Attainment': 'date_of_attainment',
@@ -50,12 +50,12 @@ class Command(BaseCommand):
             reader = csv.DictReader(myfile)
             data = [transform_dict(x, rename_dict) for x in reader]
             for line in data:
-                for i in range(1,8):
-                    index = 'address_'+str(i)
+                for i in range(1, 8):
+                    index = 'address_' + str(i)
                     if not line[index]:
                         try:
-                            line['postcode'] = line['address_'+str(i-1)]
-                            line['address_'+str(i-1)] = ''
+                            line['postcode'] = line['address_' + str(i - 1)]
+                            line['address_' + str(i - 1)] = ''
                             break
                         except KeyError:
                             line['postcode'] = ''

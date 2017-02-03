@@ -1,13 +1,27 @@
-__author__ = 'scotm'
-from copy import deepcopy
 import csv
+from copy import deepcopy
 
 from core.models import Contact, ElectoralRegistrationOffice, Domecile
-from postcode_locator.models import PostcodeMapping
+
+__author__ = 'scotm'
 
 
 class ImproperlyConfiguredImport(Exception):
     pass
+
+
+def separate_contacts_and_domiciles(line):
+    domecile = {key.replace('Domecile.', ''): y for key, y in line.items() if 'Domecile.' in key}
+    try:
+        matched = Domecile.objects.get(
+            **{key.replace('Domecile.', ''): y for key, y in line.items() if 'Domecile.' in key})
+    except Domecile.DoesNotExist:
+        matched = Domecile(**domecile)
+        matched.save()
+    contact = {key.replace('Contact.', ''): y for key, y in line.items() if 'Contact.' in key}
+    contact = Contact(**contact)
+    contact.domecile = matched
+    return contact
 
 
 class BaseImporter(object):
@@ -26,27 +40,15 @@ class BaseImporter(object):
             return deepcopy(input_dict)
         output_dict = {}
         if dict_mapping:
-            output_dict.update({dict_mapping[i]: j.strip() for i, j in input_dict.iteritems() if i in dict_mapping})
+            output_dict.update({dict_mapping[i]: j.strip() for i, j in input_dict.items() if i in dict_mapping})
         if processing_dict:
-            output_dict.update({i: j(output_dict.get(i, '')) for i, j in processing_dict.iteritems()})
+            output_dict.update({i: j(output_dict.get(i, '')) for i, j in processing_dict.items()})
         return output_dict
 
     def process_elector_data(self, line):
         line = BaseImporter.change_dictionary(line, self.mapping)
         line['Domecile.electoral_registration_office'] = self.electoral_registration_office
         return line
-
-    def separate_contacts_and_domiciles(self, line):
-        domecile = {key.replace('Domecile.', ''): y for key, y in line.items() if 'Domecile.' in key}
-        try:
-            matched = Domecile.objects.get(**{key.replace('Domecile.',''): y for key, y in line.items() if 'Domecile.' in key})
-        except Domecile.DoesNotExist:
-            matched = Domecile(**domecile)
-            matched.save()
-        contact = {key.replace('Contact.', ''): y for key, y in line.items() if 'Contact.' in key}
-        contact = Contact(**contact)
-        contact.domecile = matched
-        return contact
 
     def fill_up_db(self, filename):
         records_written = 0
@@ -61,7 +63,7 @@ class BaseImporter(object):
         data = (self.process_elector_data(i) for i in data)
 
         # Separate the Contacts from Domeciles
-        contacts = [self.separate_contacts_and_domiciles(i) for i in data]
+        contacts = [separate_contacts_and_domiciles(i) for i in data]
 
         Contact.objects.bulk_create(contacts)
         records_written += len(contacts)
@@ -82,4 +84,3 @@ class DundeeImporter(BaseImporter):
             super(DundeeImporter, self).__init__()
         except ElectoralRegistrationOffice.DoesNotExist:
             self.electoral_registration_office = ElectoralRegistrationOffice.objects.create(name=self.ero_name)
-

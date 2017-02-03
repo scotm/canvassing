@@ -1,7 +1,6 @@
 from __future__ import print_function
 from core.utilities.functions import split_dict, transform_dict
 
-__author__ = 'scotm'
 import csv
 from itertools import groupby
 
@@ -9,6 +8,8 @@ from django.core.management import BaseCommand
 
 from datetime import datetime
 from core.models import Domecile, Contact, ElectoralRegistrationOffice
+
+__author__ = 'scotm'
 
 rename_dict = {'DISTRICT': 'pd', 'ELNO': 'ero_number', 'FORENAMES': 'first_name', 'SURNAME': 'surname',
                'QUALIFICATION': 'franchise_flag', 'DO18': 'date_of_attainment', 'FLAT': 'address_1',

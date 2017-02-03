@@ -53,8 +53,8 @@
         var campaign = $("#campaign_select");
         campaign.change(function () {
             $('button[id^="contact_sign_"]').each(function () {
-                contact_pk = $(this).prop("id").replace("contact_sign_", '');
-                button = $(this);
+                var contact_pk = $(this).prop("id").replace("contact_sign_", '');
+                var button = $(this);
                 $.ajax({
                     url: '{% url "get_petition_ajax" %}',
                     cache: false,
@@ -74,8 +74,8 @@
 
         $('button[id^="contact_sign_"]').click(function (e) {
             e.preventDefault();
-            contact_pk = $(this).prop("id").replace("contact_sign_", '');
-            button = $(this);
+            var contact_pk = $(this).prop("id").replace("contact_sign_", '');
+            var button = $(this);
             console.log(campaign.val());
 
             $.ajax({

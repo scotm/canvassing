@@ -5,7 +5,7 @@ from django.core.management import BaseCommand
 from core.models import DataZoneSIMDInfo, DataZone
 from core.utilities.functions import transform_dict
 
-regex = re.compile(r'(\-?[0-9]+\.[0-9]*|\-?[0-9]+)')
+regex = re.compile(r'(-?[0-9]+\.[0-9]*|-?[0-9]+)')
 
 
 class Command(BaseCommand):

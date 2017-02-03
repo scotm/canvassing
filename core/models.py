@@ -205,7 +205,7 @@ class Ward(GeomMixin, models.Model):
     objects = models.GeoManager()
 
     mapping = {'ward_code': 'WD14CD', 'ward_name': 'WD14NM', 'wd14nmw': 'WD14NMW', 'local_authority_code': 'LAD14CD',
-               'local_authority_name': 'LAD14NM', 'geom': 'MULTIPOLYGON',}
+               'local_authority_name': 'LAD14NM', 'geom': 'MULTIPOLYGON', }
 
     class Meta:
         ordering = ('local_authority_name', 'ward_name',)
@@ -255,7 +255,7 @@ class Region(GeomMixin, models.Model):
     mapping = {'name': 'NAME', 'area_code': 'AREA_CODE', 'description': 'DESCRIPTIO', 'file_name': 'FILE_NAME',
                'number': 'NUMBER', 'number0': 'NUMBER0', 'polygon_id': 'POLYGON_ID', 'unit_id': 'UNIT_ID',
                'code': 'CODE', 'hectares': 'HECTARES', 'area': 'AREA', 'type_code': 'TYPE_CODE',
-               'descript0': 'DESCRIPT0', 'type_cod0': 'TYPE_COD0', 'descript1': 'DESCRIPT1', 'geom': 'POLYGON',}
+               'descript0': 'DESCRIPT0', 'type_cod0': 'TYPE_COD0', 'descript1': 'DESCRIPT1', 'geom': 'POLYGON', }
 
     class Meta:
         ordering = ('description', 'name',)

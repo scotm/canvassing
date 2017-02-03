@@ -1,11 +1,8 @@
 from __future__ import print_function
 from django.db.models.loading import get_model
-
-__author__ = 'scotm'
-
 from django.core.management import BaseCommand
-
 from core.models import Contact
+__author__ = 'scotm'
 
 
 def make_active(klasses):
@@ -16,7 +13,7 @@ def make_active(klasses):
             if Contact.objects.filter(domecile__postcode_point__point__within=i.geom).exists():
                 i.active = True
             if i.active:
-                print("%s is active" % unicode(i))
+                print(u"{} is active".format(i))
             i.save(update_fields=['active'])
 
 

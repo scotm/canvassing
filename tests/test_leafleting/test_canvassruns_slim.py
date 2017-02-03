@@ -191,7 +191,8 @@ class CanvassRunsSlimTest(LazyTestCase):
                 delete_values, errors = create_answer_objects(data2)
                 self.assertEqual(mock_response.call_count, 2)
 
-            data = {'491708': {'question_3': 'Answer 0', 'question_1': 'Answer 2', 'question_2': 'Baboons', 'response': 'responded'}}
+            data = {'491708': {'question_3': 'Answer 0', 'question_1': 'Answer 2', 'question_2': 'Baboons',
+                               'response': 'responded'}}
             q = CanvassQuestionFactory.build(type="Multiple-choice")
             choices = CanvassChoicesAvailableFactory.build_batch(3, question=q)
             mock_question_get.return_value = q

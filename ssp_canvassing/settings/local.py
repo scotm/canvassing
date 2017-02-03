@@ -1,8 +1,8 @@
 import sys
+from .base import *
 
 __author__ = 'scotm'
 
-from .base import *
 
 INTERNAL_IPS = ('127.0.0.1',)
 
@@ -31,7 +31,6 @@ if 'test' in sys.argv:
     # Remove unnecessary apps
     apps_to_remove = {'flat', 'django.contrib.admin', 'django_extensions', 'OpenStreetMap', }
     INSTALLED_APPS = tuple(filter(lambda x: x not in apps_to_remove, INSTALLED_APPS))
-
 
     # Don't bother testing migrations - https://gist.github.com/NotSqrt/5f3c76cd15e40ef62d09
     class DisableMigrations(object):

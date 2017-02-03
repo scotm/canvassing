@@ -60,8 +60,8 @@ class CanvassChoice(CanvassResponse):
     def store_response(cls, contact, question, answer):
         possible_answers = set(x.option for x in question.choices_objects())
         if answer not in possible_answers:
-            raise CanvassResponseException('Answer for %s: %s is not in the list of possible choices (%s)' % (
-            contact, question, question.choices()))
+            raise CanvassResponseException('Answer for %s: %s is not in the list of possible choices (%s)' %
+                                           (contact, question, question.choices()))
         cls.objects.create(contact=contact, question=question, choice=answer)
 
 
@@ -71,7 +71,7 @@ class CanvassTrueFalse(CanvassResponse):
 
     @classmethod
     def store_response(cls, contact, question, answer):
-        if not answer in ['True', 'False']:
+        if answer not in ['True', 'False']:
             raise CanvassResponseException('Answer is neither "True", nor "False"')
         answer = True if answer == 'True' else False
         cls.objects.create(contact=contact, question=question, choice=answer)

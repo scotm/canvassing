@@ -180,10 +180,10 @@
                 });
             } else {
                 this.setIcon(blue_icon);
-                postcode = this.options.title;
+                var postcode = this.options.title;
 
                 // Remove the row from the table
-                table = $('#postcodes_table');
+                var table = $('#postcodes_table');
                 var p = table.find('tr td').filter(function () {
                     return $(this).text() == postcode;
                 }).closest("tr");
@@ -223,7 +223,7 @@
         }
 
         function displayModal(html) {
-            modal = $('#myModal');
+            var modal = $('#myModal');
             modal.html(html);
             modal.foundation('reveal', 'open');
         }

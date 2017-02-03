@@ -1,21 +1,20 @@
 from datetime import date
-
-from campaigns.models import Campaign, DownloadFile, Signature
-from leafleting.models import CanvassRun
-from leafleting.models import LeafletRun
-from polling.models import CanvassQuestion, CanvassChoicesAvailable, CanvassQuestionaire
-
-__author__ = 'scotm'
 from random import randint, choice, shuffle
 
 import factory
-from factory import fuzzy
 from django.contrib.auth.models import User, Group
 from django.contrib.gis.geos import Polygon, MultiPolygon
+from factory import fuzzy
 
-from postcode_locator.tests.factories import PostcodeMappingFactory, northeast, southwest
+from campaigns.models import Campaign, DownloadFile, Signature
 from core.models import Contact, Domecile, ElectoralRegistrationOffice, Ward, PoliticalParty
+from leafleting.models import CanvassRun
+from leafleting.models import LeafletRun
+from polling.models import CanvassQuestion, CanvassChoicesAvailable, CanvassQuestionaire
+from postcode_locator.tests.factories import PostcodeMappingFactory, northeast, southwest
 from .names import male_first_names, female_first_names, last_names
+
+__author__ = 'scotm'
 
 
 # import logging
@@ -34,7 +33,7 @@ class WardFactory(factory.DjangoModelFactory):
     local_authority_name = 'Dundee City'
     active = True
     geom = factory.LazyAttribute(
-            lambda x: MultiPolygon(Polygon.from_bbox((southwest[1],southwest[0],northeast[1], northeast[0]))))
+        lambda x: MultiPolygon(Polygon.from_bbox((southwest[1], southwest[0], northeast[1], northeast[0]))))
 
 
 class EROFactory(factory.DjangoModelFactory):
@@ -56,7 +55,7 @@ class DomecileFactory(factory.DjangoModelFactory):
         django_get_or_create = ('address_2', 'address_4', 'address_6',)
 
     def __init__(self, *args, **kwargs):
-        self.number_choices = list(range(1,40))
+        self.number_choices = list(range(1, 40))
         shuffle(self.number_choices)
         super(DomecileFactory, self).__init__(*args, **kwargs)
 
@@ -84,9 +83,11 @@ class UserFactory(factory.DjangoModelFactory):
     is_staff = True
     is_active = True
 
+
 class PoliticalPartyFactory(factory.DjangoModelFactory):
     class Meta:
         model = PoliticalParty
+
     name = 'Scottish Socialist Party'
 
 
@@ -98,7 +99,7 @@ class ContactFactory(factory.DjangoModelFactory):
     ero_number = factory.Sequence(lambda x: str(x))
     title = fuzzy.FuzzyChoice(['Mr', 'Mr', 'Mr', 'Mrs', 'Ms', 'Miss'])
     first_name = factory.LazyAttribute(
-            lambda x: choice(male_first_names) if x.title == 'Mr' else choice(female_first_names))
+        lambda x: choice(male_first_names) if x.title == 'Mr' else choice(female_first_names))
     surname = fuzzy.FuzzyChoice(last_names)
     domecile = factory.SubFactory(DomecileFactory)
     opt_out = False
@@ -161,7 +162,8 @@ class CanvassQuestionFactory(factory.DjangoModelFactory):
 
     short_name = factory.Iterator(['Independence', 'Heard of Org', 'West Lothian Hospital'])
     polling_question = factory.Iterator(
-            ['Should Scotland be an independent country?', 'Have you heard of our organisation?', "Are you concerned about future of the children's ward at St John's Hospital"])
+        ['Should Scotland be an independent country?', 'Have you heard of our organisation?',
+         "Are you concerned about future of the children's ward at St John's Hospital"])
     type = factory.Iterator(['True/False', 'True/False', 'True/False'])
 
 

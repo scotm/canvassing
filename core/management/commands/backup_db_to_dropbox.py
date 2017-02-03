@@ -1,6 +1,4 @@
 from __future__ import print_function
-__author__ = 'scotm'
-import bz2
 from subprocess import call
 
 import os
@@ -9,6 +7,8 @@ import dropbox
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from ssp_canvassing.settings.secrets import DROPBOX_ACCESS_TOKEN
+
+__author__ = 'scotm'
 
 
 class Command(BaseCommand):

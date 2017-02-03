@@ -27,6 +27,7 @@ except:
 answer_types = {'Multiple-choice': CanvassChoice, 'True/False': CanvassTrueFalse,
                 'Detailed Answer': CanvassLongAnswer, 'Range': CanvassRange}
 
+
 class UserFilter(django_filters.ChoiceFilter):
     @property
     def field(self):
@@ -203,9 +204,9 @@ def data_input_acceptor(request):
 
 def create_answer_objects(parsed_data):
     delete_values, errors = [], []
-    for contact_pk, value in parsed_data.iteritems():
+    for contact_pk, value in parsed_data.items():
         contact = Contact.objects.get(pk=contact_pk)
-        for descriptor, answer in value.iteritems():
+        for descriptor, answer in value.items():
             try:
                 if descriptor.startswith('question_'):
                     question = CanvassQuestion.objects.get(pk=int(descriptor.replace('question_', '')))
@@ -222,7 +223,7 @@ def create_answer_objects(parsed_data):
 def parse_post_data(post_data):
     data = parse_qs(post_data)
     parsed_data = defaultdict(dict)
-    for key, value in data.iteritems():
+    for key, value in data.items():
         contact_pk, argument = tuple(key.split('_', 1))
         parsed_data[contact_pk][argument] = value[0]
     return parsed_data

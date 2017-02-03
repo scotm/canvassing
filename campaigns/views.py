@@ -30,6 +30,7 @@ class FindContactList(LoginRequiredMixin, ListView):
         kwargs['campaigns'] = Campaign.objects.all()
         return super(FindContactList, self).get_context_data(**kwargs)
 
+
 @login_required
 def get_petition_view(request):
     try:

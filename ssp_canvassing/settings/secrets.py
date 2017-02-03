@@ -3,10 +3,10 @@ SECRET_KEY = 'This_is_very_insecure'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-#        'HOST': 'localhost',
+        # 'HOST': 'localhost',
         'NAME': 'comrade',
-#        'USER': 'canvassing',
-#        'PASSWORD': 'm4r13y',
+        # 'USER': 'canvassing',
+        # 'PASSWORD': 'm4r13y',
     }
 }
 

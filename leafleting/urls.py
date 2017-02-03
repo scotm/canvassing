@@ -4,8 +4,8 @@ from django.views.generic import TemplateView
 from core.models import Ward, Region
 from leafleting.models import LeafletRun, CanvassRun
 from leafleting.views import LeafletHomepage, CanvassHomepage, RunDetailView, \
-    CanvassRunListView, LeafletRunListView, RunPicker, AreaPicker, PrintRunDetailView, CanvassRunDelete, CanvassRunBook, \
-    CanvassRunUnbook, UserCanvassRunFind, CanvassPicker, DataInput, canvass_run_create, \
+    CanvassRunListView, LeafletRunListView, RunPicker, AreaPicker, PrintRunDetailView, CanvassRunDelete, \
+    CanvassRunBook, CanvassRunUnbook, UserCanvassRunFind, CanvassPicker, DataInput, canvass_run_create, \
     domecile_map_view, domecile_address_view, leaflet_run_create, data_input_acceptor
 
 __author__ = 'scotm'

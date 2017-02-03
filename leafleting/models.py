@@ -119,7 +119,7 @@ class CanvassRun(BaseRun):
         # Get those that are available, and have not yet been booked
         booked = Q(bookedcanvassrun__isnull=True)
         if user:
-            booked = booked | Q(bookedcanvassrun__booked_by=user)
+            booked |= Q(bookedcanvassrun__booked_by=user)
         return CanvassRun.objects.filter(Q(date_available__isnull=True) | Q(date_available__lte=date.today()), booked)
 
     def archive(self, days=180):

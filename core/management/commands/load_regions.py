@@ -1,10 +1,8 @@
 from __future__ import print_function
+from django.core.management import BaseCommand
+from core.models import Region
 
 __author__ = 'scotm'
-
-from django.core.management import BaseCommand
-
-from core.models import Region
 
 
 class Command(BaseCommand):

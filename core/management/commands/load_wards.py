@@ -1,11 +1,8 @@
 from __future__ import print_function
-
-__author__ = 'scotm'
-
 from django.core.management import BaseCommand
-
 from core.models import Ward
 
+__author__ = 'scotm'
 
 class Command(BaseCommand):
     help = 'Fills up the DB with regional data'

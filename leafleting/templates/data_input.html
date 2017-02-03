@@ -121,7 +121,7 @@
             }
         });
         $("#save_data").click(function (e) {
-            data_to_send = $(e.toElement.form).serialize();
+            var data_to_send = $(e.toElement.form).serialize();
             console.log(data_to_send);
             // Stop it moving to another page, or refreshing
             e.preventDefault();
@@ -136,7 +136,7 @@
                     console.log(data);
                     data['data'].forEach(function (element) {
                         v = $(".contact_" + element);
-                        p = v.parent();
+                        var p = v.parent();
                         v.remove();
                         if (p.find("div[class^='contact_']").length === 0) {
                             p.remove();

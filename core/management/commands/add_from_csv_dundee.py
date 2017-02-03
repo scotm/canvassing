@@ -1,15 +1,15 @@
 from __future__ import print_function
-from core.utilities.functions import split_dict, transform_dict
 
-__author__ = 'scotm'
 import csv
+from datetime import date
 from itertools import groupby
 
 from django.core.management import BaseCommand
 
-from datetime import date
 from core.models import Domecile, Contact, ElectoralRegistrationOffice
+from core.utilities.functions import split_dict, transform_dict
 
+__author__ = 'scotm'
 
 rename_dict = {'PD': 'pd', 'ENO': 'ero_number', 'Title': 'title', 'First Name': 'first_name', 'Initials': 'initials',
                'Surname': 'surname', 'Suffix': 'suffix', 'Date Of Attainment': 'date_of_attainment',

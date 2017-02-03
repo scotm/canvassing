@@ -87,7 +87,8 @@ class Command(BaseCommand):
             domecile_obj, result = Domecile.objects.get_or_create(**domecile_dict)
             for line in my_group:
                 contact = split_dict(line, contact_elements)
-                contact_obj = Contact.objects.filter(domecile=domecile_obj, ero_number=contact['ero_number'], pd=contact['pd']).first()
+                contact_obj = Contact.objects.filter(domecile=domecile_obj, ero_number=contact['ero_number'],
+                                                     pd=contact['pd']).first()
                 records_done += 1
                 if not contact_obj:
                     contact_obj = Contact(**contact)

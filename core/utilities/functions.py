@@ -1,3 +1,4 @@
+from __future__ import print_function
 __author__ = 'scotm'
 
 
@@ -12,7 +13,7 @@ def transform_dict(my_dict, rename_dict):
             try:
                 renamed_dict[rename_dict[x]] = y.strip()
             except:
-                print rename_dict[x], x, y
+                print(rename_dict[x], x, y)
                 raise
     return renamed_dict
 

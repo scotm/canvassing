@@ -11,7 +11,7 @@ from tests.testcase import LazyTestCase
 class CanvassRunsTest(LazyTestCase):
     def load_data(self):
         self.streets_and_postcodes = [('Lilybank Terrace', 'DD4 6BQ'), ('Graham Place', 'DD4 6EH'),
-                                 ('Thorter Way', 'DD1 3DF'), ]
+                                      ('Thorter Way', 'DD1 3DF'), ]
         for street, postcode in self.streets_and_postcodes:
             DomecileFactory.create_batch(5, address_4=street, postcode=postcode,
                                          postcode_point__postcode=postcode.replace(' ', ''))

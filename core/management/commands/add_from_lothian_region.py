@@ -11,7 +11,6 @@ from django.core.management import BaseCommand
 from core.models import Domecile, Contact, ElectoralRegistrationOffice
 from core.utilities.functions import split_dict, transform_dict
 
-
 __author__ = 'scotm'
 
 rename_dict = {'PD': 'pd', 'ENO': 'ero_number', 'Title': 'title', 'First Name': 'first_name', 'Initials': 'initials',
@@ -31,11 +30,10 @@ def groupby_key(x):
 
 
 def preprocess_dict(my_dict):
-    my_dict = {x:y.decode('iso8859_2') for x,y in my_dict.items()}
-    #print(my_dict['Date Of Attainment'], type(my_dict['Date Of Attainment']))
+    my_dict = {x: y.decode('iso8859_2') for x, y in my_dict.items()}
+    # print(my_dict['Date Of Attainment'], type(my_dict['Date Of Attainment']))
     my_dict['Date Of Attainment'] = datetime.strptime(my_dict['Date Of Attainment'], '%d/%m/%Y').date() if my_dict[
         'Date Of Attainment'] else ''
-
 
     for i in range(5, 0, -1):
         address_field = 'Address %d' % i
@@ -55,7 +53,7 @@ def preprocess_dict(my_dict):
         for i, piece in enumerate(address_pieces[1:]):
             my_dict['Address %d' % (i + 5)] = piece
         my_dict['Address 1'] = ''
-    #print(my_dict, rename_dict)
+    # print(my_dict, rename_dict)
     my_dict = transform_dict(my_dict, rename_dict)
     if my_dict['date_of_attainment'] == '':
         my_dict['date_of_attainment'] = None
@@ -93,7 +91,8 @@ class Command(BaseCommand):
             domecile_obj, result = Domecile.objects.get_or_create(**domecile_dict)
             for line in my_group:
                 contact = split_dict(line, contact_elements)
-                contact_obj = Contact.objects.filter(domecile=domecile_obj, ero_number=contact['ero_number'], pd=contact['pd']).first()
+                contact_obj = Contact.objects.filter(domecile=domecile_obj, ero_number=contact['ero_number'],
+                                                     pd=contact['pd']).first()
                 records_done += 1
                 if not contact_obj:
                     contact_obj = Contact(**contact)

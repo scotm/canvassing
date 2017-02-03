@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django import forms
 from django.contrib import admin
 
@@ -12,7 +13,7 @@ class CanvassChoicesAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CanvassChoicesAdminForm, self).__init__(*args, **kwargs)
-        print self.fields
+        print(self.fields)
         self.fields['question'].queryset = self.fields['question'].queryset.filter(type='Multiple-choice')
         if self.instance and self.instance.pk:
             self.fields['question'].queryset = self.fields['question'].queryset.filter(pk=self.instance.question.pk)

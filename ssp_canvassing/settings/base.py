@@ -41,7 +41,7 @@ DEBUG = True
 
 # Attempt to import the email details.
 try:
-    from secrets import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_HOST, EMAIL_PORT, EMAIL_USE_SSL
+    from .secrets import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_HOST, EMAIL_PORT, EMAIL_USE_SSL
 except ImportError:
     pass
 
