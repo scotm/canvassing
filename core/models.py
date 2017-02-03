@@ -304,7 +304,7 @@ class IntermediateZone(GeomMixin, models.Model):
         print("Regions imported")
 
 
-class DataZone(models.Model):
+class DataZone(GeomMixin, models.Model):
     code = models.CharField(max_length=12)
     name = models.CharField(max_length=110)
     gaelic = models.CharField(max_length=110)
@@ -396,3 +396,50 @@ class DataZoneSIMDInfo(models.Model):
     recorded_offences_per_10000 = models.IntegerField(blank=True, null=True)
     crime_score = models.FloatField(blank=True, null=True)
     crime_rank = models.IntegerField(blank=True, null=True)
+
+
+class DataZone2011(models.Model):
+    objectid = models.IntegerField()
+    datazone = models.CharField(max_length=10)
+    name = models.CharField(max_length=65)
+    totpop2011 = models.IntegerField()
+    respop2011 = models.IntegerField()
+    hhcnt2011 = models.IntegerField()
+    stdareaha = models.FloatField()
+    stdareakm2 = models.FloatField()
+    shape_leng = models.FloatField()
+    shape_area = models.FloatField()
+    geom = models.MultiPolygonField(srid=4326)
+    objects = models.GeoManager()
+
+    # Auto-generated `LayerMapping` dictionary for DataZone2011 model
+    mapping = {
+        'objectid': 'OBJECTID',
+        'datazone': 'DataZone',
+        'name': 'Name',
+        'totpop2011': 'TotPop2011',
+        'respop2011': 'ResPop2011',
+        'hhcnt2011': 'HHCnt2011',
+        'stdareaha': 'StdAreaHa',
+        'stdareakm2': 'StdAreaKm2',
+        'shape_leng': 'Shape_Leng',
+        'shape_area': 'Shape_Area',
+        'geom': 'MULTIPOLYGON',
+    }
+
+    @property
+    def code(self):
+        return self.datazone
+
+    def __unicode__(self):
+        if self.name:
+            return "%s: %s" % (self.code, self.name)
+        else:
+            return "%s: %s" % (self.code, self.councila_2)
+
+    @staticmethod
+    def fill_up_db(shapefile, verbose=False):
+        lm = LayerMapping(DataZone2011, shapefile, DataZone2011.mapping, transform=True, encoding='iso-8859-1')
+        lm.save(strict=True, verbose=verbose)
+        print("Data Zones imported")
+
